@@ -1,6 +1,6 @@
 <?php
 
-namespace Symfony\Bundle\DoctrineAbstractBundle\Tests;
+namespace Symfony\Bundle\DoctrineFixturesBundle\Tests;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {

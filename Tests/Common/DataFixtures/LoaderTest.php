@@ -1,10 +1,10 @@
 <?php
 
-namespace Symfony\Bundle\DoctrineAbstractBundle\Tests\Common\DataFixtures;
+namespace Symfony\Bundle\DoctrineFixturesBundle\Tests\Common\DataFixtures;
 
-use Symfony\Bundle\DoctrineAbstractBundle\Tests\TestCase;
-use Symfony\Bundle\DoctrineAbstractBundle\Tests\Common\ContainerAwareFixture;
-use Symfony\Bundle\DoctrineAbstractBundle\Common\DataFixtures\Loader;
+use Symfony\Bundle\DoctrineFixturesBundle\Tests\TestCase;
+use Symfony\Bundle\DoctrineFixturesBundle\Tests\Common\ContainerAwareFixture;
+use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader;
 
 class LoaderTest extends TestCase
 {

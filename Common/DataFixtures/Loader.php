@@ -1,6 +1,6 @@
 <?php
 
-namespace Symfony\Bundle\DoctrineAbstractBundle\Common\DataFixtures;
+namespace Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\DataFixtures\Loader as BaseLoader;

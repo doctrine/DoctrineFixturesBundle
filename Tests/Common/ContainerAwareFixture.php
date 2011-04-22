@@ -1,6 +1,6 @@
 <?php
 
-namespace Symfony\Bundle\DoctrineAbstractBundle\Tests\Common;
+namespace Symfony\Bundle\DoctrineFixturesBundle\Tests\Common;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;

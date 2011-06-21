@@ -65,7 +65,7 @@ EOT
         $emName = $emName ? $emName : 'default';
         $emServiceName = sprintf('doctrine.orm.%s_entity_manager', $emName);
 
-        if (!$this->container->has($emServiceName)) {
+        if (!$this->getContainer()->has($emServiceName)) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Could not find an entity manager configured with the name "%s". Check your '.
@@ -74,7 +74,7 @@ EOT
             );
         }
 
-        $em = $this->container->get($emServiceName);
+        $em = $this->getContainer()->get($emServiceName);
         $dirOrFile = $input->getOption('fixtures');
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
@@ -85,7 +85,7 @@ EOT
             }
         }
 
-        $loader = new DataFixturesLoader($this->container);
+        $loader = new DataFixturesLoader($this->getContainer());
         foreach ($paths as $path) {
             if (is_dir($path)) {
                 $loader->loadFromDirectory($path);

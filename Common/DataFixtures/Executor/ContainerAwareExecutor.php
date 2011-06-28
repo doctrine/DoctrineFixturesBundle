@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Doctrine\Common\DataFixtures\Purger\PurgerInterface;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\ORM\EntityManager;
 
 class ContainerAwareExecutor extends ORMExecutor

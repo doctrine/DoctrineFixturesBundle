@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\DoctrineFixturesBundle\Command;
 
+use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Executor\ContainerAwareExecutor;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,7 +21,6 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Bundle\FrameworkBundle\Util\Filesystem;
 use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
 use Symfony\Bundle\DoctrineBundle\Command\DoctrineCommand;
-use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
@@ -98,7 +98,7 @@ EOT
             );
         }
         $purger = new ORMPurger($em);
-        $executor = new ORMExecutor($em, $purger);
+        $executor = new ContainerAwareExecutor($em, $purger, $this->getContainer());
         $executor->setLogger(function($message) use ($output) {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });

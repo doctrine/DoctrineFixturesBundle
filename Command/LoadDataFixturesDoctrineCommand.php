@@ -17,7 +17,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Finder\Finder;
-use Symfony\Bundle\FrameworkBundle\Util\Filesystem;
 use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
 use Symfony\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -46,15 +45,15 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->setHelp(<<<EOT
 The <info>doctrine:fixtures:load</info> command loads data fixtures from your bundles:
 
-  <info>./app/console doctrine:fixtures:load</info>
+  <info>php app/console doctrine:fixtures:load</info>
 
 You can also optionally specify the path to fixtures with the <info>--fixtures</info> option:
 
-  <info>./app/console doctrine:fixtures:load --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
+  <info>php app/console doctrine:fixtures:load --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
 
 If you want to append the fixtures instead of flushing the database first you can use the <info>--append</info> option:
 
-  <info>./app/console doctrine:fixtures:load --append</info>
+  <info>php app/console doctrine:fixtures:load --append</info>
 EOT
         );
     }

@@ -1,0 +1,34 @@
+<?php
+
+namespace {{ bundleNamespace }}\DataFixtures\ORM;
+
+use Doctrine\Common\DataFixtures\FixtureInterface;
+{% if containerAware %}
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+{% endif %}
+
+class {{ className }} implements FixtureInterface{{ containerAware ? ', ContainerAwareInterface' : '' }}
+{
+{% if containerAware %}
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+{% endif %}
+
+    public function load($manager)
+    {
+        // Example fixture code: replace with your own
+        // $product = new Product();
+        // $product->setName(\'test product\');
+        // $manager->persist($product);
+
+        // $manager->flush();
+    }
+}

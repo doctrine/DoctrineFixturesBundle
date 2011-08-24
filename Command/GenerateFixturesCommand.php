@@ -65,7 +65,7 @@ EOT
         }
 
         self::renderFile(
-            'fixturesClass.twig',
+            'fixturesClass.php.twig',
             $target,
             array(
                 'bundleNamespace' => $bundle->getNamespace(),
@@ -93,7 +93,7 @@ EOT
         return $this->getApplication()->getKernel();
     }
 
-    protected function renderFile($template, $target, $parameters)
+    static protected function renderFile($template, $target, $parameters)
     {
         if (!is_dir(dirname($target))) {
             mkdir(dirname($target), 0777, true);

@@ -41,8 +41,9 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->setName('doctrine:fixtures:load')
             ->setDescription('Load data fixtures to your database.')
             ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The directory or file to load data fixtures from.')
-            ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of flushing the database first.')
+            ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
+            ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
             ->setHelp(<<<EOT
 The <info>doctrine:fixtures:load</info> command loads data fixtures from your bundles:
 
@@ -55,6 +56,11 @@ You can also optionally specify the path to fixtures with the <info>--fixtures</
 If you want to append the fixtures instead of flushing the database first you can use the <info>--append</info> option:
 
   <info>./app/console doctrine:fixtures:load --append</info>
+
+By default Doctrine Data Fixtures uses DELETE statements to drop the existing rows from
+the database. If you want to use a TRUNCATE statement instead you can use the <info>--purge-with-truncate</info> flag:
+
+  <info>./app/console doctrine:fixtures:load --purge-with-truncate</info>
 EOT
         );
     }
@@ -98,6 +104,7 @@ EOT
             );
         }
         $purger = new ORMPurger($em);
+        $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);
         $executor->setLogger(function($message) use ($output) {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));

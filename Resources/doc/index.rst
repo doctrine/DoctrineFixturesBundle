@@ -22,8 +22,8 @@ file:
         git=http://github.com/doctrine/data-fixtures.git
 
     [DoctrineFixturesBundle]
-        git=http://github.com/symfony/DoctrineFixturesBundle.git
-        target=/bundles/Symfony/Bundle/DoctrineFixturesBundle
+        git=http://github.com/doctrine/DoctrineFixturesBundle.git
+        target=/bundles/Doctrine/Bundle/DoctrineFixturesBundle
 
 Update the vendor libraries:
 
@@ -63,7 +63,7 @@ Finally, register the Bundle ``DoctrineFixturesBundle`` in ``app/AppKernel.php``
     {
         $bundles = array(
             // ...
-            new Symfony\Bundle\DoctrineFixturesBundle\DoctrineFixturesBundle(),
+            new Doctrine\Bundle\DoctrineFixturesBundle\DoctrineFixturesBundle(),
             // ...
         );
         // ...

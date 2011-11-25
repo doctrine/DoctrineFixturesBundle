@@ -1,0 +1,25 @@
+{
+    "name": "symfony/doctrine-fixtures-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony2 Doctrine Fixtures Bundle",
+    "keywords": ["database", "symfony"],
+    "homepage": "http://www.doctrine-project.org",
+    "license": "MIT",
+    "authors": [
+        {"name": "Fabien Potencier", "email": "fabien@symfony.com"},
+        {"name": "Benjamin Eberlei", "email": "kontakt@beberlei.de"},
+        {"name": "Albert Jessurum", "email": "ajessu@gmail.com"},
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "doctrine/data-fixtures": "*",
+        "symfony/doctrine-bridge": "*",
+        "symfony/framework-bundle": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Symfony\\Bundle\\DoctrineFixturesBundle": ""
+        }
+    },
+    "target-dir" : "Symfony/Bundle/DoctrineFixturesBundle"
+}

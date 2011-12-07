@@ -12,11 +12,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineFixturesBundle\Tests\Common\DataFixtures;
+namespace Doctrine\Bundle\FixturesBundle\Tests\Common\DataFixtures;
 
-use Doctrine\Bundle\DoctrineFixturesBundle\Tests\TestCase;
-use Doctrine\Bundle\DoctrineFixturesBundle\Tests\Common\ContainerAwareFixture;
-use Doctrine\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader;
+use Doctrine\Bundle\FixturesBundle\Tests\TestCase;
+use Doctrine\Bundle\FixturesBundle\Tests\Common\ContainerAwareFixture;
+use Doctrine\Bundle\FixturesBundle\Common\DataFixtures\Loader;
 
 class LoaderTest extends TestCase
 {

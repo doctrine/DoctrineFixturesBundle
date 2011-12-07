@@ -12,7 +12,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineFixturesBundle\Command;
+namespace Doctrine\Bundle\FixturesBundle\Command;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,7 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Finder\Finder;
 use Doctrine\Bundle\FrameworkBundle\Util\Filesystem;
-use Doctrine\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
+use Doctrine\Bundle\FixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;

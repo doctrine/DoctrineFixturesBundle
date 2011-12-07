@@ -12,7 +12,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineFixturesBundle\Common\DataFixtures;
+namespace Doctrine\Bundle\FixturesBundle\Common\DataFixtures;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\DataFixtures\Loader as BaseLoader;

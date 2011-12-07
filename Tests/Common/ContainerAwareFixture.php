@@ -12,7 +12,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineFixturesBundle\Tests\Common;
+namespace Doctrine\Bundle\FixturesBundle\Tests\Common;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;

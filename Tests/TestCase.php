@@ -12,7 +12,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\DoctrineFixturesBundle\Tests;
+namespace Doctrine\Bundle\FixturesBundle\Tests;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {

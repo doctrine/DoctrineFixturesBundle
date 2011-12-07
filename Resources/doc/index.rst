@@ -23,7 +23,7 @@ file:
 
     [DoctrineFixturesBundle]
         git=http://github.com/doctrine/DoctrineFixturesBundle.git
-        target=/bundles/Doctrine/Bundle/DoctrineFixturesBundle
+        target=/bundles/Doctrine/Bundle/FixturesBundle
 
 Update the vendor libraries:
 

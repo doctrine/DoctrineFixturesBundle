@@ -22,8 +22,8 @@ file:
         git=http://github.com/doctrine/data-fixtures.git
 
     [DoctrineFixturesBundle]
-        git=http://github.com/symfony/DoctrineFixturesBundle.git
-        target=/bundles/Symfony/Bundle/DoctrineFixturesBundle
+        git=http://github.com/doctrine/DoctrineFixturesBundle.git
+        target=/bundles/Doctrine/Bundle/FixturesBundle
 
 Update the vendor libraries:
 
@@ -41,6 +41,7 @@ Register the ``Doctrine\Common\DataFixtures`` namespace in ``app/autoload.php``.
     // ...
     $loader->registerNamespaces(array(
         // ...
+        'Doctrine\\Bundle' => __DIR__.'/../vendor/bundles',
         'Doctrine\\Common\\DataFixtures' => __DIR__.'/../vendor/doctrine-fixtures/lib',
         'Doctrine\\Common' => __DIR__.'/../vendor/doctrine-common/lib',
         // ...
@@ -63,7 +64,7 @@ Finally, register the Bundle ``DoctrineFixturesBundle`` in ``app/AppKernel.php``
     {
         $bundles = array(
             // ...
-            new Symfony\Bundle\DoctrineFixturesBundle\DoctrineFixturesBundle(),
+            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             // ...
         );
         // ...

@@ -1,10 +1,22 @@
 <?php
 
-namespace Symfony\Bundle\DoctrineFixturesBundle\Tests\Common\DataFixtures;
+/*
+ * This file is part of the Doctrine Fixtures Bundle
+ *
+ * The code was originally distributed inside the Symfony framework.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-use Symfony\Bundle\DoctrineFixturesBundle\Tests\TestCase;
-use Symfony\Bundle\DoctrineFixturesBundle\Tests\Common\ContainerAwareFixture;
-use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader;
+namespace Doctrine\Bundle\FixturesBundle\Tests\Common\DataFixtures;
+
+use Doctrine\Bundle\FixturesBundle\Tests\TestCase;
+use Doctrine\Bundle\FixturesBundle\Tests\Common\ContainerAwareFixture;
+use Doctrine\Bundle\FixturesBundle\Common\DataFixtures\Loader;
 
 class LoaderTest extends TestCase
 {

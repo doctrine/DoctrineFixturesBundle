@@ -21,11 +21,12 @@
     ],
     "require": {
         "php": ">=5.3.2",
-        "symfony/symfony": ">=2.0,<2.1"
+        "symfony/symfony": ">=2.0,<2.1",
+        "doctrine/data-fixtures": "*"
     },
     "autoload": {
-        "psr-0": { "Doctrine\\Bundle\\DoctrineFixturesBundle": "" }
+        "psr-0": { "Symfony\\Bundle\\DoctrineFixturesBundle": "" }
     },
-    "target-dir": "Doctrine/Bundle/DoctrineFixturesBundle"
+    "target-dir": "Symfony/Bundle/DoctrineFixturesBundle"
 }
 

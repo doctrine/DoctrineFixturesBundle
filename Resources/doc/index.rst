@@ -92,11 +92,12 @@ entry:
     namespace Acme\HelloBundle\DataFixtures\ORM;
 
     use Doctrine\Common\DataFixtures\FixtureInterface;
+    use Doctrine\Common\Persistence\ObjectManager;
     use Acme\HelloBundle\Entity\User;
 
     class LoadUserData implements FixtureInterface
     {
-        public function load($manager)
+        public function load(ObjectManager $manager)
         {
             $userAdmin = new User();
             $userAdmin->setUsername('admin');

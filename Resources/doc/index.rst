@@ -358,17 +358,16 @@ component when checking it:
         }
     }
 
-As you can see, all you need to do is add ``ContainerAwareInterface`` to the
-class and then create a new :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`
+As you can see, all you need to do is add :method:`Symfony\\Component\\DependencyInjection\\ContainerAwareInterface`
+to the class and then create a new :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`
 method that implements that interface. Before the fixture is executed, Symfony
 will call the :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`
 method automatically. As long as you store the container as a property on the
-class (as shown above), you can access it in the :method:`Doctrine\\Common\\DataFixtures\\FixtureInterface::load`
-method.
+class (as shown above), you can access it in the ``load()`` method.
 
 .. note::
 
-    If you are too lazy to implement the to needed method :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`,
-    you can then just extend your class with :class:`Symfony\\Component\\DependencyInjection\\ContainerAware`.
+    If you are too lazy to implement the needed method :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`,
+    you can then extend your class with :class:`Symfony\\Component\\DependencyInjection\\ContainerAware`.
 
 .. _`Doctrine Data Fixtures`: https://github.com/doctrine/data-fixtures

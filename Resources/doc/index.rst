@@ -358,7 +358,7 @@ component when checking it:
         }
     }
 
-As you can see, all you need to do is add :method:`Symfony\\Component\\DependencyInjection\\ContainerAwareInterface`
+As you can see, all you need to do is add :class:`Symfony\\Component\\DependencyInjection\\ContainerAwareInterface`
 to the class and then create a new :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`
 method that implements that interface. Before the fixture is executed, Symfony
 will call the :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`

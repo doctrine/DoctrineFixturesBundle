@@ -89,6 +89,7 @@ entry:
 .. code-block:: php
 
     // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserData.php
+
     namespace Acme\HelloBundle\DataFixtures\ORM;
 
     use Doctrine\Common\DataFixtures\FixtureInterface;
@@ -97,6 +98,9 @@ entry:
 
     class LoadUserData implements FixtureInterface
     {
+        /**
+         * {@inheritDoc}
+         */
         public function load(ObjectManager $manager)
         {
             $userAdmin = new User();
@@ -176,11 +180,15 @@ the order in which fixtures are loaded.
 
     use Doctrine\Common\DataFixtures\AbstractFixture;
     use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+    use Doctrine\Common\Persistence\ObjectManager;
     use Acme\HelloBundle\Entity\User;
 
     class LoadUserData extends AbstractFixture implements OrderedFixtureInterface
     {
-        public function load($manager)
+        /**
+         * {@inheritDoc}
+         */
+        public function load(ObjectManager $manager)
         {
             $userAdmin = new User();
             $userAdmin->setUsername('admin');
@@ -192,6 +200,9 @@ the order in which fixtures are loaded.
             $this->addReference('admin-user', $userAdmin);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public function getOrder()
         {
             return 1; // the order in which fixtures will be loaded
@@ -206,15 +217,20 @@ of 2:
 .. code-block:: php
 
     // src/Acme/HelloBundle/DataFixtures/ORM/LoadGroupData.php
+
     namespace Acme\HelloBundle\DataFixtures\ORM;
 
     use Doctrine\Common\DataFixtures\AbstractFixture;
     use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+    use Doctrine\Common\Persistence\ObjectManager;
     use Acme\HelloBundle\Entity\Group;
 
     class LoadGroupData extends AbstractFixture implements OrderedFixtureInterface
     {
-        public function load($manager)
+        /**
+         * {@inheritDoc}
+         */
+        public function load(ObjectManager $manager)
         {
             $groupAdmin = new Group();
             $groupAdmin->setGroupName('admin');
@@ -225,6 +241,9 @@ of 2:
             $this->addReference('admin-group', $groupAdmin);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public function getOrder()
         {
             return 2; // the order in which fixtures will be loaded
@@ -240,15 +259,20 @@ references:
 .. code-block:: php
 
     // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserGroupData.php
+
     namespace Acme\HelloBundle\DataFixtures\ORM;
 
     use Doctrine\Common\DataFixtures\AbstractFixture;
     use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+    use Doctrine\Common\Persistence\ObjectManager;
     use Acme\HelloBundle\Entity\UserGroup;
 
     class LoadUserGroupData extends AbstractFixture implements OrderedFixtureInterface
     {
-        public function load($manager)
+        /**
+         * {@inheritDoc}
+         */
+        public function load(ObjectManager $manager)
         {
             $userGroupAdmin = new UserGroup();
             $userGroupAdmin->setUser($manager->merge($this->getReference('admin-user')));
@@ -258,6 +282,9 @@ references:
             $manager->flush();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public function getOrder()
         {
             return 3;
@@ -288,6 +315,7 @@ component when checking it:
 .. code-block:: php
 
     // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserData.php
+
     namespace Acme\HelloBundle\DataFixtures\ORM;
 
     use Doctrine\Common\DataFixtures\FixtureInterface;
@@ -297,31 +325,49 @@ component when checking it:
 
     class LoadUserData implements FixtureInterface, ContainerAwareInterface
     {
+        /**
+         * @var ContainerInterface
+         */
         private $container;
 
+        /**
+         * {@inheritDoc}
+         */
         public function setContainer(ContainerInterface $container = null)
         {
             $this->container = $container;
         }
 
-        public function load($manager)
+        /**
+         * {@inheritDoc}
+         */
+        public function load(ObjectManager $manager)
         {
-            $userAdmin = new User();
-            $userAdmin->setUsername('admin');
-            $userAdmin->setSalt(md5(time()));
+            $user = new User();
+            $user->setUsername('admin');
+            $user->setSalt(md5(uniqid()));
 
-            $encoder = $this->container->get('security.encoder_factory')->getEncoder($userAdmin);
-            $userAdmin->setPassword($encoder->encodePassword('test', $userAdmin->getSalt()));
+            $encoder = $this->container
+                ->get('security.encoder_factory')
+                ->getEncoder($user)
+            ;
+            $user->setPassword($encoder->encodePassword('secret', $user->getSalt()));
 
-            $manager->persist($userAdmin);
+            $manager->persist($user);
             $manager->flush();
         }
     }
 
-As you can see, all you need to do is add ``ContainerAwareInterface`` to
-the class and then create a new ``setContainer()`` method that implements
-that interface. Before the fixture is executed, Symfony will call the ``setContainer()``
-method automatically. As long as you store the container as a property on
-the class (as shown above), you can access it in the ``load()`` method.
+As you can see, all you need to do is add :class:`Symfony\\Component\\DependencyInjection\\ContainerAwareInterface`
+to the class and then create a new :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`
+method that implements that interface. Before the fixture is executed, Symfony
+will call the :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`
+method automatically. As long as you store the container as a property on the
+class (as shown above), you can access it in the ``load()`` method.
+
+.. note::
+
+    If you are too lazy to implement the needed method :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`,
+    you can then extend your class with :class:`Symfony\\Component\\DependencyInjection\\ContainerAware`.
 
 .. _`Doctrine Data Fixtures`: https://github.com/doctrine/data-fixtures

@@ -90,12 +90,13 @@ entry:
     // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserData.php
     namespace Acme\HelloBundle\DataFixtures\ORM;
 
+    use Doctrine\Common\Persistence\ObjectManager;
     use Doctrine\Common\DataFixtures\FixtureInterface;
     use Acme\HelloBundle\Entity\User;
 
     class LoadUserData implements FixtureInterface
     {
-        public function load($manager)
+        public function load(ObjectManager $manager)
         {
             $userAdmin = new User();
             $userAdmin->setUsername('admin');
@@ -172,13 +173,14 @@ the order in which fixtures are loaded.
     // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserData.php
     namespace Acme\HelloBundle\DataFixtures\ORM;
 
+    use Doctrine\Common\Persistence\ObjectManager;
     use Doctrine\Common\DataFixtures\AbstractFixture;
     use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
     use Acme\HelloBundle\Entity\User;
 
     class LoadUserData extends AbstractFixture implements OrderedFixtureInterface
     {
-        public function load($manager)
+        public function load(ObjectManager $manager)
         {
             $userAdmin = new User();
             $userAdmin->setUsername('admin');
@@ -206,13 +208,14 @@ of 2:
     // src/Acme/HelloBundle/DataFixtures/ORM/LoadGroupData.php
     namespace Acme\HelloBundle\DataFixtures\ORM;
 
+    use Doctrine\Common\Persistence\ObjectManager;
     use Doctrine\Common\DataFixtures\AbstractFixture;
     use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
     use Acme\HelloBundle\Entity\Group;
 
     class LoadGroupData extends AbstractFixture implements OrderedFixtureInterface
     {
-        public function load($manager)
+        public function load(ObjectManager $manager)
         {
             $groupAdmin = new Group();
             $groupAdmin->setGroupName('admin');
@@ -240,13 +243,14 @@ references:
     // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserGroupData.php
     namespace Acme\HelloBundle\DataFixtures\ORM;
 
+    use Doctrine\Common\Persistence\ObjectManager;
     use Doctrine\Common\DataFixtures\AbstractFixture;
     use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
     use Acme\HelloBundle\Entity\UserGroup;
 
     class LoadUserGroupData extends AbstractFixture implements OrderedFixtureInterface
     {
-        public function load($manager)
+        public function load(ObjectManager $manager)
         {
             $userGroupAdmin = new UserGroup();
             $userGroupAdmin->setUser($manager->merge($this->getReference('admin-user')));
@@ -288,6 +292,7 @@ component when checking it:
     // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserData.php
     namespace Acme\HelloBundle\DataFixtures\ORM;
 
+    use Doctrine\Common\Persistence\ObjectManager;
     use Doctrine\Common\DataFixtures\FixtureInterface;
     use Symfony\Component\DependencyInjection\ContainerAwareInterface;
     use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -302,7 +307,7 @@ component when checking it:
             $this->container = $container;
         }
 
-        public function load($manager)
+        public function load(ObjectManager $manager)
         {
             $userAdmin = new User();
             $userAdmin->setUsername('admin');

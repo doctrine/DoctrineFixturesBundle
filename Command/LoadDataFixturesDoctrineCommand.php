@@ -1,15 +1,18 @@
 <?php
 
 /*
- * This file is part of the Symfony package.
+ * This file is part of the Doctrine Fixtures Bundle
+ *
+ * The code was originally distributed inside the Symfony framework.
  *
  * (c) Fabien Potencier <fabien@symfony.com>
+ * (c) Doctrine Project
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\DoctrineFixturesBundle\Command;
+namespace Doctrine\Bundle\FixturesBundle\Command;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,9 +20,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Finder\Finder;
-use Symfony\Bundle\FrameworkBundle\Util\Filesystem;
-use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
-use Symfony\Bundle\DoctrineBundle\Command\DoctrineCommand;
+use Doctrine\Bundle\FrameworkBundle\Util\Filesystem;
+use Doctrine\Bundle\FixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
+use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManager;
@@ -40,7 +43,6 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
         $this
             ->setName('doctrine:fixtures:load')
             ->setDescription('Load data fixtures to your database.')
-            ->addOption('bundles', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The bundle names to load data fixtures from.')
             ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The directory or file to load data fixtures from.')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
@@ -53,10 +55,6 @@ The <info>doctrine:fixtures:load</info> command loads data fixtures from your bu
 You can also optionally specify the path to fixtures with the <info>--fixtures</info> option:
 
   <info>./app/console doctrine:fixtures:load --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
-
-You can optionally specify the bundle names with the <info>--bundles</info> option. It is shorter like --fixtures:
-
-  <info>./app/console doctrine:fixtures:load --bundles=Foo1Bundle --bundles=Bar1Bundle</info>
 
 If you want to append the fixtures instead of flushing the database first you can use the <info>--append</info> option:
 
@@ -87,21 +85,12 @@ EOT
 
         $em = $this->getContainer()->get($emServiceName);
         $dirOrFile = $input->getOption('fixtures');
-        $bundles   = $input->getOption('bundles');
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
-        } elseif(!$bundles) {
+        } else {
             $paths = array();
             foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
                 $paths[] = $bundle->getPath().'/DataFixtures/ORM';
-            }
-        } else {
-            $bundles = is_array($bundles) ? $bundles : array($bundles);
-            $paths = array();
-            foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
-                if(in_array($bundle->getName(), $bundles)) {
-                    $paths[] = $bundle->getPath().'/DataFixtures/ORM';
-                }
             }
         }
 

@@ -25,6 +25,11 @@
         "doctrine/doctrine-bundle": "~1.0",
         "doctrine/data-fixtures": "~1.0"
     },
+    "require-dev": {
+        "symfony/console": "~2.1",
+        "doctrine/orm": "~2.0",
+        "phpunit/phpunit": "~4.0"
+    },
     "autoload": {
         "psr-0": { "Doctrine\\Bundle\\FixturesBundle": "" }
     },

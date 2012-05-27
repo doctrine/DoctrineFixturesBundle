@@ -20,7 +20,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Finder\Finder;
-use Doctrine\Bundle\FrameworkBundle\Util\Filesystem;
 use Doctrine\Bundle\FixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -45,7 +44,8 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->setDescription('Load data fixtures to your database.')
             ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The directory or file to load data fixtures from.')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
-            ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
+            ->addOption('om', null, InputOption::VALUE_OPTIONAL, 'The object manager to use for this command.', null)
+            ->addOption('type', null, InputOption::VALUE_OPTIONAL, 'The object manager type (\'ORM\', \'MongoDB\', \'PHPCR\') to use for this command.', 'ORM')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
             ->setHelp(<<<EOT
 The <info>doctrine:fixtures:load</info> command loads data fixtures from your bundles:
@@ -60,7 +60,7 @@ If you want to append the fixtures instead of flushing the database first you ca
 
   <info>./app/console doctrine:fixtures:load --append</info>
 
-By default Doctrine Data Fixtures uses DELETE statements to drop the existing rows from
+By default when using the ORM type Doctrine Data Fixtures uses DELETE statements to drop the existing rows from
 the database. If you want to use a TRUNCATE statement instead you can use the <info>--purge-with-truncate</info> flag:
 
   <info>./app/console doctrine:fixtures:load --purge-with-truncate</info>
@@ -70,27 +70,35 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $emName = $input->getOption('em');
-        $emName = $emName ? $emName : 'default';
-        $emServiceName = sprintf('doctrine.orm.%s_entity_manager', $emName);
+        $type = strtoupper($input->getOption('type'));
 
-        if (!$this->getContainer()->has($emServiceName)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Could not find an entity manager configured with the name "%s". Check your '.
-                    'application configuration to configure your Doctrine entity managers.', $emName
-                )
-            );
+        switch ($type) {
+            case 'ORM':
+                $registryName = 'doctrine';
+                break;
+            case 'MongoDB':
+                $registryName = 'doctrine_mongodb';
+                break;
+            case 'PHPCR':
+                $registryName = 'doctrine_phpcr';
+                break;
+            default:
+                throw new InvalidArgumentException(
+                    sprintf('The provided type %s is not supported.', $type)
+                );
         }
 
-        $em = $this->getContainer()->get($emServiceName);
+        $registry = $this->getContainer()->get($registryName);
+        $omName = $input->getOption('om');
+        $om = $registry->getManager($omName);
+
         $dirOrFile = $input->getOption('fixtures');
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
         } else {
             $paths = array();
             foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
-                $paths[] = $bundle->getPath().'/DataFixtures/ORM';
+                $paths[] = $bundle->getPath().'/DataFixtures/'. $type;
             }
         }
 
@@ -100,15 +108,23 @@ EOT
                 $loader->loadFromDirectory($path);
             }
         }
+
         $fixtures = $loader->getFixtures();
         if (!$fixtures) {
             throw new InvalidArgumentException(
                 sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths))
             );
         }
-        $purger = new ORMPurger($em);
-        $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
-        $executor = new ORMExecutor($em, $purger);
+
+        $purgerClass = 'Doctrine\\Common\\DataFixtures\Purger\\' . $type . 'Purger';
+        $purger = new $purgerClass($om);
+        if ('ORM' === $type) {
+            $purger->setPurgeMode($input->getOption('purge-with-truncate')
+                ? $purgerClass::PURGE_MODE_TRUNCATE : $purgerClass::PURGE_MODE_DELETE);
+        }
+
+        $executorClass = 'Doctrine\\Common\\DataFixtures\Executor\\' . $type . 'Executor';
+        $executor = new $executorClass($om, $purger);
         $executor->setLogger(function($message) use ($output) {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });

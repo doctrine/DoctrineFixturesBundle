@@ -22,7 +22,7 @@ use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Finder\Finder;
 use Doctrine\Bundle\FrameworkBundle\Util\Filesystem;
 use Doctrine\Bundle\FixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
-use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
+use Symfony\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManager;

@@ -13,53 +13,39 @@ Setup and Configuration
 If you don't have the `Doctrine Data Fixtures`_ library configured with Symfony2
 yet, follow these steps to do so.
 
-If you're using the Standard Distribution, add the following to your ``deps``
-file:
+Install the bundle with Composer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To install DoctrineFixturesBundle with Composer just add the following to your
+`composer.json` file::
 
 .. code-block:: text
 
-    [doctrine-fixtures]
-        git=http://github.com/doctrine/data-fixtures.git
+    {
+        require: {
+            "doctrine/doctrine-fixtures-bundle": "dev-master"
+        }
+    }
 
-    [DoctrineFixturesBundle]
-        git=http://github.com/doctrine/DoctrineFixturesBundle.git
-        target=/bundles/Doctrine/Bundle/FixturesBundle
+Then, you can install the new dependencies by running Composer's ``update``
+command from the directory where your ``composer.json`` file is located:
 
-Update the vendor libraries:
+.. code-block :: bash
 
-.. code-block:: bash
+    php composer.phar update
 
-    $ php bin/vendors install
+Now, Composer will automatically download all required files, and install them
+for you.
 
-If everything worked, the ``doctrine-fixtures`` library can now be found
-at ``vendor/doctrine-fixtures``.
+Register the bundle
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Register the ``Doctrine\Common\DataFixtures`` namespace in ``app/autoload.php``.
-
-.. code-block:: php
-
-    // ...
-    $loader->registerNamespaces(array(
-        // ...
-        'Doctrine\\Bundle' => __DIR__.'/../vendor/bundles',
-        'Doctrine\\Common\\DataFixtures' => __DIR__.'/../vendor/doctrine-fixtures/lib',
-        'Doctrine\\Common' => __DIR__.'/../vendor/doctrine-common/lib',
-        // ...
-    ));
-
-.. caution::
-
-    Be sure to register the new namespace *before* ``Doctrine\Common``. Otherwise,
-    Symfony will look for data fixture classes inside the ``Doctrine\Common``
-    directory. Symfony's autoloader always looks for a class inside the directory
-    of the first matching namespace, so more specific namespaces should always
-    come first.
-
-Finally, register the Bundle ``DoctrineFixturesBundle`` in ``app/AppKernel.php``.
+All that is left to do is to update your ``AppKernel.php`` file, and
+register the new bundle::
 
 .. code-block:: php
 
-    // ...
+    // app/AppKernel.php
     public function registerBundles()
     {
         $bundles = array(
@@ -67,6 +53,7 @@ Finally, register the Bundle ``DoctrineFixturesBundle`` in ``app/AppKernel.php``
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             // ...
         );
+
         // ...
     }
 

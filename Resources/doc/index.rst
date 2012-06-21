@@ -13,47 +13,31 @@ Setup and Configuration
 If you don't have the `Doctrine Data Fixtures`_ library configured with Symfony2
 yet, follow these steps to do so.
 
-If you're using the Standard Distribution, add the following to your ``deps``
-file:
+If you're using the Standard Distribution, add the following to your
+``composer.json`` file:
 
-.. code-block:: text
+.. code-block:: json
 
-    [doctrine-fixtures]
-        git=http://github.com/doctrine/data-fixtures.git
-
-    [DoctrineFixturesBundle]
-        git=http://github.com/doctrine/DoctrineFixturesBundle.git
-        target=/bundles/Doctrine/Bundle/FixturesBundle
+{
+    "require": {
+        "doctrine/doctrine-fixtures-bundle": "dev-master"
+    }
+}
 
 Update the vendor libraries:
 
 .. code-block:: bash
 
-    $ php bin/vendors install
+    $ php composer.phar install
 
-If everything worked, the ``doctrine-fixtures`` library can now be found
-at ``vendor/doctrine-fixtures``.
+If everything worked, the ``doctrine-fixtures-bundle`` can now be found
+at ``vendor/doctrine/doctrine-fixtures-bundle``.
 
-Register the ``Doctrine\Common\DataFixtures`` namespace in ``app/autoload.php``.
+.. note::
 
-.. code-block:: php
-
-    // ...
-    $loader->registerNamespaces(array(
-        // ...
-        'Doctrine\\Bundle' => __DIR__.'/../vendor/bundles',
-        'Doctrine\\Common\\DataFixtures' => __DIR__.'/../vendor/doctrine-fixtures/lib',
-        'Doctrine\\Common' => __DIR__.'/../vendor/doctrine-common/lib',
-        // ...
-    ));
-
-.. caution::
-
-    Be sure to register the new namespace *before* ``Doctrine\Common``. Otherwise,
-    Symfony will look for data fixture classes inside the ``Doctrine\Common``
-    directory. Symfony's autoloader always looks for a class inside the directory
-    of the first matching namespace, so more specific namespaces should always
-    come first.
+    ``DoctrineFixturesBundle`` installs
+    `Doctrine Data Fixtures`_ library. The library can be found
+    at ``vendor/doctrine/data-fixtures``.
 
 Finally, register the Bundle ``DoctrineFixturesBundle`` in ``app/AppKernel.php``.
 

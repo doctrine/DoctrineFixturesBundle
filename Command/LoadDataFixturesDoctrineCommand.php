@@ -37,6 +37,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
         $this
             ->setName('doctrine:fixtures:load')
             ->setDescription('Load data fixtures to your database.')
+            ->addOption('bundles', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The bundle names to load data fixtures from.')
             ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The directory or file to load data fixtures from.')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
@@ -49,6 +50,10 @@ The <info>doctrine:fixtures:load</info> command loads data fixtures from your bu
 You can also optionally specify the path to fixtures with the <info>--fixtures</info> option:
 
   <info>./app/console doctrine:fixtures:load --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
+
+You can optionally specify the bundle names with the <info>--bundles</info> option. It is shorter like --fixtures:
+
+  <info>./app/console doctrine:fixtures:load --bundles=Foo1Bundle --bundles=Bar1Bundle</info>
 
 If you want to append the fixtures instead of flushing the database first you can use the <info>--append</info> option:
 
@@ -69,12 +74,21 @@ EOT
         $em = $doctrine->getManager($input->getOption('em'));
 
         $dirOrFile = $input->getOption('fixtures');
+        $bundles   = $input->getOption('bundles');
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
-        } else {
+        } elseif(!$bundles) {
             $paths = array();
             foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
                 $paths[] = $bundle->getPath().'/DataFixtures/ORM';
+            }
+        } else {
+            $bundles = is_array($bundles) ? $bundles : array($bundles);
+            $paths = array();
+            foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
+                if(in_array($bundle->getName(), $bundles)) {
+                    $paths[] = $bundle->getPath().'/DataFixtures/ORM';
+                }
             }
         }
 

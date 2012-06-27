@@ -64,20 +64,10 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $emName = $input->getOption('em');
-        $emName = $emName ? $emName : 'default';
-        $emServiceName = sprintf('doctrine.orm.%s_entity_manager', $emName);
+        /** @var $doctrine \Doctrine\Common\Persistence\ManagerRegistry */
+        $doctrine = $this->getContainer()->get('doctrine');
+        $em = $doctrine->getManager($input->getOption('em'));
 
-        if (!$this->getContainer()->has($emServiceName)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Could not find an entity manager configured with the name "%s". Check your '.
-                    'application configuration to configure your Doctrine entity managers.', $emName
-                )
-            );
-        }
-
-        $em = $this->getContainer()->get($emServiceName);
         $dirOrFile = $input->getOption('fixtures');
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);

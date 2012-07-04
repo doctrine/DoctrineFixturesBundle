@@ -18,11 +18,11 @@ If you're using the Standard Distribution, add the following to your
 
 .. code-block:: json
 
-{
-    "require": {
-        "doctrine/doctrine-fixtures-bundle": "dev-master"
+    {
+        "require": {
+            "doctrine/doctrine-fixtures-bundle": "dev-master"
+        }
     }
-}
 
 Update the vendor libraries:
 

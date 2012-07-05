@@ -10,11 +10,11 @@ but Doctrine2 has a library to help you write fixtures for the Doctrine
 Setup and Configuration
 -----------------------
 
-If you don't have the `Doctrine Data Fixtures`_ library configured with Symfony2
-yet, follow these steps to do so.
+Doctrine fixtures for Symfony are maintained in the `DoctrineFixturesBundle`_.
+The bundle uses external `Doctrine Data Fixtures`_ library.
 
-If you're using the Standard Distribution, add the following to your
-``composer.json`` file:
+Follow these steps to install the bundle and the library in the Symfony
+Standard edition. Add the following to your ``composer.json`` file:
 
 .. code-block:: json
 
@@ -30,7 +30,7 @@ Update the vendor libraries:
 
     $ php composer.phar update
 
-If everything worked, the ``doctrine-fixtures-bundle`` can now be found
+If everything worked, the ``DoctrineFixturesBundle`` can now be found
 at ``vendor/doctrine/doctrine-fixtures-bundle``.
 
 .. note::
@@ -354,4 +354,5 @@ class (as shown above), you can access it in the ``load()`` method.
     If you are too lazy to implement the needed method :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`,
     you can then extend your class with :class:`Symfony\\Component\\DependencyInjection\\ContainerAware`.
 
+.. _DoctrineFixturesBundle: https://github.com/doctrine/DoctrineFixturesBundle
 .. _`Doctrine Data Fixtures`: https://github.com/doctrine/data-fixtures

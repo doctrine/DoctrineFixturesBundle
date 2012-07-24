@@ -19,7 +19,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as DataFixturesLoader;
-use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
+use Symfony\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use InvalidArgumentException;

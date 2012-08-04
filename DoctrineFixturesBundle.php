@@ -12,7 +12,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Doctrine\Bundle\FixturesBundle;
+namespace Doctrine\Bundle\DoctrineFixturesBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

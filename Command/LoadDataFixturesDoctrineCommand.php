@@ -67,6 +67,7 @@ EOT
         /** @var $doctrine \Doctrine\Common\Persistence\ManagerRegistry */
         $doctrine = $this->getContainer()->get('doctrine');
         $em = $doctrine->getManager($input->getOption('em'));
+
         if ($input->isInteractive()) {
             if (!$input->getOption('append')){
                 $dialog = $this->getHelperSet()->get('dialog');

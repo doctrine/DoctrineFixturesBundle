@@ -68,12 +68,10 @@ EOT
         $doctrine = $this->getContainer()->get('doctrine');
         $em = $doctrine->getManager($input->getOption('em'));
 
-        if ($input->isInteractive()) {
-            if (!$input->getOption('append')){
-                $dialog = $this->getHelperSet()->get('dialog');
-                if (!$dialog->askConfirmation($output, '<question>Careful, database will be purged. Do you want to continue Y/N ?</question>', false)) {
-                    return;
-                }
+        if ($input->isInteractive() && !$input->getOption('append')) {
+            $dialog = $this->getHelperSet()->get('dialog');
+            if (!$dialog->askConfirmation($output, '<question>Careful, database will be purged. Do you want to continue Y/N ?</question>', false)) {
+                return;
             }
         }
         

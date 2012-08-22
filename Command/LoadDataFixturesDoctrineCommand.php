@@ -41,6 +41,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
+            ->addOption('no-confirmation', null, InputOption::VALUE_NONE, 'Do not ask for a confirmation when purging the database')
             ->setHelp(<<<EOT
 The <info>doctrine:fixtures:load</info> command loads data fixtures from your bundles:
 
@@ -68,7 +69,7 @@ EOT
         $doctrine = $this->getContainer()->get('doctrine');
         $em = $doctrine->getManager($input->getOption('em'));
 
-        if ($input->isInteractive() && !$input->getOption('append')) {
+        if ($input->isInteractive() && !$input->getOption('append') && !$input->getOption('no-confirmation')) {
             $dialog = $this->getHelperSet()->get('dialog');
             if (!$dialog->askConfirmation($output, '<question>Careful, database will be purged. Do you want to continue Y/N ?</question>', false)) {
                 return;

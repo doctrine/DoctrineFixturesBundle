@@ -40,7 +40,8 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
         $this
             ->setName('doctrine:fixtures:load')
             ->setDescription('Load data fixtures to your database.')
-            ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The directory or file to load data fixtures from.')
+            ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The directory to load data fixtures from.')
+            ->addOption('fixture-classes', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The fixtures classes to load data fixtures from.')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
@@ -52,6 +53,11 @@ The <info>doctrine:fixtures:load</info> command loads data fixtures from your bu
 You can also optionally specify the path to fixtures with the <info>--fixtures</info> option:
 
   <info>./app/console doctrine:fixtures:load --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
+
+You can also optionally specify the classes of fixtures with the <info>--fixture-classes</info> option
+(replace <comment>\</comment> in class name with <comment>/</comment>):
+
+  <info>./app/console doctrine:fixtures:load --fixture-classes=ClassName/Of/Fixtures1 --fixture-classes=ClassName/Of/Fixtures2</info>
 
 If you want to append the fixtures instead of flushing the database first you can use the <info>--append</info> option:
 
@@ -86,21 +92,54 @@ EOT
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
         } else {
             $paths = array();
+        }
+
+        $classNames = $input->getOption('fixture-classes');
+        if ($classNames) {
+            $classNames = is_array($classNames) ? $classNames : array($classNames);
+            $classNames = array_map(function ($className) {
+                return str_replace('/', '\\', $className);
+            }, $classNames);
+        } else {
+            $classNames = array();
+        }
+
+        if (!$paths && !$classNames) {
             foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
                 $paths[] = $bundle->getPath().'/DataFixtures/ORM';
             }
         }
 
         $loader = new DataFixturesLoader($this->getContainer());
+
         foreach ($paths as $path) {
             if (is_dir($path)) {
                 $loader->loadFromDirectory($path);
             }
         }
+
+        foreach ($classNames as $className) {
+            if (!class_exists($className)) {
+                throw new InvalidArgumentException(
+                    sprintf('Could not load class %s', $className)
+                );
+            }
+            if (!$loader->isTransient($className)) {
+                $loader->addFixture(new $className);
+            }
+        }
+
         $fixtures = $loader->getFixtures();
         if (!$fixtures) {
+            $message = array();
+            if ($paths) {
+                $message[] = sprintf('in paths: %s', "\n\n- ".implode("\n- ", $paths));
+            }
+            if ($classNames) {
+                $message[] = sprintf('in classes: %s', "\n\n- ".implode("\n- ", $classNames));
+            }
             throw new InvalidArgumentException(
-                sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths))
+                sprintf('Could not find any fixtures to load %s', implode("\n\nand ", $message))
             );
         }
         $purger = new ORMPurger($em);

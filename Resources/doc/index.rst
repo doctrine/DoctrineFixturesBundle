@@ -128,6 +128,9 @@ Both commands come with a few options:
 * ``--fixtures=/path/to/fixture`` - Use this option to manually specify the
   directory where the fixtures classes should be loaded;
 
+* ``--fixture-classes=ClassName/Of/Fixture`` - Use this option to manualy specify the
+  class of the fixtures that should be loaded (replace ``\`` in class name with ``/``);
+
 * ``--append`` - Use this flag to append data instead of deleting data before
   loading it (deleting first is the default behavior);
 

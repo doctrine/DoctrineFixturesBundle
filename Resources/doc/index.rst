@@ -259,8 +259,8 @@ references:
         public function load(ObjectManager $manager)
         {
             $userGroupAdmin = new UserGroup();
-            $userGroupAdmin->setUser($manager->merge($this->getReference('admin-user')));
-            $userGroupAdmin->setGroup($manager->merge($this->getReference('admin-group')));
+            $userGroupAdmin->setUser($this->getReference('admin-user'));
+            $userGroupAdmin->setGroup($this->getReference('admin-group'));
 
             $manager->persist($userGroupAdmin);
             $manager->flush();

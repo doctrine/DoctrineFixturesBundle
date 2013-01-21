@@ -17,19 +17,15 @@ namespace Doctrine\Bundle\FixturesBundle\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\Output;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as DataFixturesLoader;
+use Symfony\Component\Finder\Finder;
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
-use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\Annotations\Reader;
 use InvalidArgumentException;
+use ReflectionClass;
 
-/**
- * Load data fixtures from bundles.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- * @author Jonathan H. Wage <jonwage@gmail.com>
- */
+
 class LoadDataFixturesDoctrineCommand extends DoctrineCommand
 {
     protected function configure()
@@ -59,44 +55,80 @@ the database. If you want to use a TRUNCATE statement instead you can use the <i
 
   <info>./app/console doctrine:fixtures:load --purge-with-truncate</info>
 EOT
-        );
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var $reader Reader */
+        $reader = $this->getContainer()->get('annotation_reader');
+
         /** @var $doctrine \Doctrine\Common\Persistence\ManagerRegistry */
         $doctrine = $this->getContainer()->get('doctrine');
         $em = $doctrine->getManager($input->getOption('em'));
 
-        if ($input->isInteractive() && !$input->getOption('append')) {
-            $dialog = $this->getHelperSet()->get('dialog');
-            if (!$dialog->askConfirmation($output, '<question>Careful, database will be purged. Do you want to continue Y/N ?</question>', false)) {
-                return;
+        $fixtures = $input->getOption('fixtures');
+
+        $paths = array();
+        $files = array();
+        if (empty($fixtures)) {
+            foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
+                if (file_exists($path = $bundle->getPath().'/DataFixtures/ORM')) {
+                    $paths[] = $path;
+                }
             }
         }
-        
-        $dirOrFile = $input->getOption('fixtures');
-        if ($dirOrFile) {
-            $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
-        } else {
-            $paths = array();
-            foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
-                $paths[] = $bundle->getPath().'/DataFixtures/ORM';
+        else
+        {
+            foreach ($fixtures as $fixture) {
+                if (!file_exists($fixture)) {
+                    throw new InvalidArgumentException('Fixture ' . $fixture . ' not found');
+                }
+
+                if (is_dir($fixture)) {
+                    $paths[] = $fixture;
+                }
+                else {
+                    $files[] = $fixture;
+                }
             }
         }
 
-        $loader = new DataFixturesLoader($this->getContainer());
-        foreach ($paths as $path) {
-            if (is_dir($path)) {
-                $loader->loadFromDirectory($path);
+        $fixtures = array();
+        $files    = array_merge($files, $this->getFiles($paths));
+        foreach ($files as $file)
+        {
+            $className = $this->getClassName($file);
+            $reflection = new ReflectionClass($className);
+            $annotation = $reader->getClassAnnotation($reflection, 'Doctrine\Bundle\FixturesBundle\Annotation\Fixture');
+
+            // has any annotation?
+            if (null === $annotation) {
+                continue;
             }
+
+            // configured properly?
+            if (null === $annotation->env) {
+                continue;
+            }
+
+            if (!in_array($input->getOption('env'), $annotation->env)) {
+                continue;
+            }
+
+            $instance = new $className;
+
+            if ($reflection->implementsInterface('Symfony\Component\DependencyInjection\ContainerAwareInterface')) {
+                $instance->setContainer($this->getContainer());
+            }
+
+            $fixtures[$annotation->order . $className] = $instance;
         }
-        $fixtures = $loader->getFixtures();
-        if (!$fixtures) {
-            throw new InvalidArgumentException(
-                sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths))
-            );
-        }
+
+        // sort according order and username
+        ksort($fixtures);
+        $fixtures = array_values($fixtures);
+
         $purger = new ORMPurger($em);
         $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);
@@ -104,5 +136,50 @@ EOT
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));
+
+    }
+
+    protected function getFiles(array $dirs)
+    {
+        if (empty($dirs)) {
+            return array();
+        }
+
+        $finder = new Finder();
+        $finder
+            ->files()
+            ->in($dirs)
+            ->ignoreVCS(true)
+            ->filter(function($file)
+            {
+                if (__FILE__ === realpath($file->getPathName())) {
+                    return false;
+                }
+
+                if (false !== strpos($file->getPathName(), 'Doctrine/Bundle/FixturesBundle/Annotation/Fixture.php')) {
+                    return false;
+                }
+
+                return false !== strpos(file_get_contents($file->getPathName()), 'Doctrine\Bundle\FixturesBundle\Annotation\Fixture');
+            })
+        ;
+
+        return array_keys(iterator_to_array($finder));
+    }
+
+    protected function getClassName($filename)
+    {
+        $src = file_get_contents($filename);
+
+        if (!preg_match('/\bnamespace\s+([^;]+);/s', $src, $match)) {
+            throw new InvalidArgumentException(sprintf('Namespace could not be determined for file "%s".', $filename));
+        }
+        $namespace = $match[1];
+
+        if (!preg_match('/\bclass\s+([^\s]+)\s+(?:extends|implements|{)/s', $src, $match)) {
+            throw new InvalidArgumentException(sprintf('Could not extract class name from file "%s".', $filename));
+        }
+
+        return $namespace.'\\'.$match[1];
     }
 }

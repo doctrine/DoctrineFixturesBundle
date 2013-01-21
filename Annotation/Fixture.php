@@ -16,16 +16,18 @@ class Fixture
         if (array_key_exists('value', $data)) {
             $value = $data['value'];
 
-            if (!is_array($value))
+            if (!is_array($value)) {
                 $value = array($value);
+            }
 
             $this->env = $value;
         }
 
         if (array_key_exists('env', $data)) {
             $env = $data['env'];
-            if (!is_array($env))
+            if (!is_array($env)) {
                 $env = array($env);
+            }
 
             $this->env = $env;
         }

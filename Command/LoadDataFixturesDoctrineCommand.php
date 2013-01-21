@@ -25,7 +25,12 @@ use Doctrine\Common\Annotations\Reader;
 use InvalidArgumentException;
 use ReflectionClass;
 
-
+/**
+ * Load data fixtures from bundles.
+ *
+ * @author Fabien Potencier <fabien@symfony.com>
+ * @author Jonathan H. Wage <jonwage@gmail.com>
+ */
 class LoadDataFixturesDoctrineCommand extends DoctrineCommand
 {
     protected function configure()
@@ -55,7 +60,7 @@ the database. If you want to use a TRUNCATE statement instead you can use the <i
 
   <info>./app/console doctrine:fixtures:load --purge-with-truncate</info>
 EOT
-            );
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -77,9 +82,7 @@ EOT
                     $paths[] = $path;
                 }
             }
-        }
-        else
-        {
+        } else {
             foreach ($fixtures as $fixture) {
                 if (!file_exists($fixture)) {
                     throw new InvalidArgumentException('Fixture ' . $fixture . ' not found');
@@ -87,8 +90,7 @@ EOT
 
                 if (is_dir($fixture)) {
                     $paths[] = $fixture;
-                }
-                else {
+                } else {
                     $files[] = $fixture;
                 }
             }
@@ -96,8 +98,7 @@ EOT
 
         $fixtures = array();
         $files    = array_merge($files, $this->getFiles($paths));
-        foreach ($files as $file)
-        {
+        foreach ($files as $file) {
             $className = $this->getClassName($file);
             $reflection = new ReflectionClass($className);
             $annotation = $reader->getClassAnnotation($reflection, 'Doctrine\Bundle\FixturesBundle\Annotation\Fixture');

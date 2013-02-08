@@ -28,5 +28,10 @@
     "autoload": {
         "psr-0": { "Doctrine\\Bundle\\FixturesBundle": "" }
     },
-    "target-dir": "Doctrine/Bundle/FixturesBundle"
+    "target-dir": "Doctrine/Bundle/FixturesBundle",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.1.x-dev"
+        }
+    }
 }

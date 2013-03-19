@@ -41,6 +41,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
+            ->addOption('groups', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The fixture groups which should be loaded')
             ->setHelp(<<<EOT
 The <info>doctrine:fixtures:load</info> command loads data fixtures from your bundles:
 
@@ -86,6 +87,7 @@ EOT
         }
 
         $loader = new DataFixturesLoader($this->getContainer());
+        $loader->setFixtureGroups((array)$input->getOption('groups'));
         foreach ($paths as $path) {
             if (is_dir($path)) {
                 $loader->loadFromDirectory($path);

@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="doctrine_fixtures.event_listener.connection_registry_event_subscriber.class">Doctrine\Fixture\Persistence\ConnectionRegistryEventSubscriber</parameter>
+        <parameter key="doctrine_fixtures.event_listener.manager_registry_event_subscriber.class">Doctrine\Fixture\Persistence\ManagerRegistryEventSubscriber</parameter>
+        <parameter key="doctrine_fixtures.event_listener.container_aware_event_subscriber.class">Doctrine\Bundle\FixturesBundle\EventListener\ContainerAwareEventSubscriber</parameter>
+
+        <parameter key="doctrine_fixtures.executor.class">Doctrine\Bundle\FixturesBundle\Service\ExecutorService</parameter>
+        <parameter key="doctrine_fixtures.loader.class">Doctrine\Bundle\FixturesBundle\Service\LoaderService</parameter>
+        <parameter key="doctrine_fixtures.filter.class">Doctrine\Fixture\Filter\ChainFilter</parameter>
+        <parameter key="doctrine_fixtures.configuration.class">Doctrine\Fixture\Configuration</parameter>
+        <parameter key="doctrine_fixtures.event_manager.class">Doctrine\Common\EventManager</parameter>
+        <parameter key="doctrine_fixtures.calculator_factory.class">Doctrine\Fixture\Sorter\CalculatorFactory</parameter>
+    </parameters>
+
+    <services>
+        <service id="doctrine_fixtures.executor"
+                 class="Doctrine\Bundle\FixturesBundle\Service\ExecutorService">
+            <argument type="service" id="doctrine_fixtures.configuration"/>
+            <argument type="service" id="doctrine_fixtures.loader"/>
+            <argument type="service" id="doctrine_fixtures.filter"/>
+        </service>
+
+        <service id="doctrine_fixtures.loader"
+                 class="%doctrine_fixtures.loader.class%">
+            <argument type="service" id="http_kernel"/>
+        </service>
+
+        <service id="doctrine_fixtures.filter"
+                 class="%doctrine_fixtures.filter.class%">
+        </service>
+
+        <!-- Configuration -->
+        <service id="doctrine_fixtures.configuration"
+                 class="%doctrine_fixtures.configuration.class%">
+            <call method="setEventManager">
+                <argument type="service" id="doctrine_fixtures.event_manager"/>
+            </call>
+            <call method="setCalculatorFactory">
+                <argument type="service" id="doctrine_fixtures.calculator_factory"/>
+            </call>
+        </service>
+
+        <service id="doctrine_fixtures.event_manager"
+                 class="%doctrine_fixtures.event_manager.class%">
+        </service>
+
+        <service id="doctrine_fixtures.calculator_factory"
+                 class="%doctrine_fixtures.calculator_factory.class%">
+        </service>
+
+        <!-- Event Listeners -->
+        <service id="doctrine_fixtures.event_listener.connection_registry_event_subscriber"
+                 class="%doctrine_fixtures.event_listener.connection_registry_event_subscriber.class%">
+            <tag name="doctrine_fixtures.event_manager"/>
+            <argument type="service" id="doctrine"/>
+        </service>
+
+        <service id="doctrine_fixtures.event_listener.manager_registry_event_subscriber"
+                 class="%doctrine_fixtures.event_listener.manager_registry_event_subscriber.class%">
+            <tag name="doctrine_fixtures.event_manager"/>
+            <argument type="service" id="doctrine"/>
+        </service>
+
+        <service id="doctrine_fixtures.event_listener.container_aware_event_subscriber"
+                 class="%doctrine_fixtures.container_aware_event_subscriber.class%">
+            <tag name="doctrine_fixtures.event_manager"/>
+            <argument type="service" id="service_container"/>
+        </service>
+</container>

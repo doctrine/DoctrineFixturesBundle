@@ -67,8 +67,9 @@
         </service>
 
         <service id="doctrine_fixtures.event_listener.container_aware_event_subscriber"
-                 class="%doctrine_fixtures.container_aware_event_subscriber.class%">
+                 class="%doctrine_fixtures.event_listener.container_aware_event_subscriber.class%">
             <tag name="doctrine_fixtures.event_manager"/>
             <argument type="service" id="service_container"/>
         </service>
+    </services>
 </container>

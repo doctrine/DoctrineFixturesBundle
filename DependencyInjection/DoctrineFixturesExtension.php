@@ -32,7 +32,7 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
-class FixturesExtension extends Extension
+class DoctrineFixturesExtension extends Extension
 {
     /**
      * {@inheritDoc}

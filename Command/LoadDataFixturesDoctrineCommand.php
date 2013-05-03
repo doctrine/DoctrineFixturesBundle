@@ -80,9 +80,14 @@ EOT
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
         } else {
             $paths = array();
-            foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
-                $paths[] = $bundle->getPath().'/DataFixtures/ORM';
+            $allMetadata = $em->getMetadataFactory()->getAllMetadata();
+            /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+            foreach ($allMetadata as $metadata) {
+                list($vendor, $bundle, $entityFolder) = explode('\\', $metadata->getName());
+                $paths[] = 'src/'.$vendor.'/'.$bundle.'/DataFixtures/ORM';
             }
+
+            $paths = array_unique($paths);
         }
 
         $loader = new DataFixturesLoader($this->getContainer());

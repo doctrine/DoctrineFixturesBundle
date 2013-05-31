@@ -280,6 +280,53 @@ by ``getOrder()``. Any object that is set with the ``setReference()`` method
 can be accessed via ``getReference()`` in fixture classes that have a higher
 order.
 
+You can also specify explicit dependencies with the ``DependentFixtureInterface``:
+
+.. code-block:: php
+
+    // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserGroupData.php
+
+    namespace Acme\HelloBundle\DataFixtures\ORM;
+
+    use Doctrine\Common\DataFixtures\AbstractFixture;
+    use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+    use Doctrine\Common\Persistence\ObjectManager;
+    use Acme\HelloBundle\Entity\UserGroup;
+
+    class LoadUserGroupData extends AbstractFixture implements DependentFixtureInterface
+    {
+        /**
+         * {@inheritDoc}
+         */
+        public function load(ObjectManager $manager)
+        {
+            $userGroupAdmin = new UserGroup();
+            $userGroupAdmin->setUser($this->getReference('admin-user'));
+            $userGroupAdmin->setGroup($this->getReference('admin-group'));
+
+            $manager->persist($userGroupAdmin);
+            $manager->flush();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public function getDependencies()
+        {
+            return array(
+                'Acme\HelloBundle\DataFixtures\ORM\LoadUserData',
+                'Acme\HelloBundle\DataFixtures\ORM\LoadGroupData',
+            );
+        }
+    }
+
+If you implement DependentFixtureInterface, your getDependencies() method
+must return an array containing at least one class to load.
+
+Both ``OrderedFixtureInterface`` and ``DependentFixtureInterface`` can be
+used together.
+
+
 Fixtures allow you to create any type of data you need via the normal PHP
 interface for creating and persisting objects. By controlling the order of
 fixtures and setting references, almost anything can be handled by fixtures.

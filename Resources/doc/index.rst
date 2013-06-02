@@ -48,9 +48,15 @@ Finally, register the Bundle ``DoctrineFixturesBundle`` in ``app/AppKernel.php``
     {
         $bundles = array(
             // ...
-            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
-            // ...
+        
         );
+        
+        if (...) {
+            // ...
+            $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
+        };
+        
+        
         // ...
     }
 

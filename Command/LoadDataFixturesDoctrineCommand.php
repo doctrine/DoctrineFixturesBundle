@@ -74,7 +74,7 @@ EOT
                 return;
             }
         }
-        
+
         $dirOrFile = $input->getOption('fixtures');
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);

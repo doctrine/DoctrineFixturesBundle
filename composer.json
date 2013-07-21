@@ -23,7 +23,7 @@
         "php": ">=5.3.2",
         "symfony/doctrine-bridge": ">=2.1.0,<2.4-dev",
         "doctrine/doctrine-bundle": "~1.0",
-        "doctrine/data-fixtures": "*"
+        "doctrine/data-fixtures": "dev-master"
     },
     "autoload": {
         "psr-0": { "Doctrine\\Bundle\\FixturesBundle": "" }

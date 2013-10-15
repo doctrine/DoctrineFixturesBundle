@@ -63,7 +63,7 @@ class ListFixturesCommand extends DoctrineCommand
 			if($fixture instanceof OrderedFixtureInterface ) {
 				$output->writeln(sprintf("[%d]\t%s", $fixture->getOrder(), get_class($fixture)));
 			}else {
-				$output->writeln(sprintf("[x]\t%s", get_class($fixture)));
+				$output->writeln(sprintf("[-]\t%s", get_class($fixture)));
 			}
 		}
 

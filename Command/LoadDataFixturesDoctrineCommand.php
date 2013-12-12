@@ -70,7 +70,7 @@ EOT
 
         if ($input->isInteractive() && !$input->getOption('append')) {
             $dialog = $this->getHelperSet()->get('dialog');
-            if (!$dialog->askConfirmation($output, '<question>Careful, database will be purged. Do you want to continue Y/N ?</question>', false)) {
+            if (!$dialog->askConfirmation($output, '<question>Careful, database will be purged. Do you want to continue [y/N]?</question>', false)) {
                 return;
             }
         }

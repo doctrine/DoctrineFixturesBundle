@@ -28,7 +28,7 @@ Update the vendor libraries:
 
 .. code-block:: bash
 
-    $ php composer.phar update
+    $ php composer.phar update doctrine/doctrine-fixtures-bundle
 
 If everything worked, the ``DoctrineFixturesBundle`` can now be found
 at ``vendor/doctrine/doctrine-fixtures-bundle``.

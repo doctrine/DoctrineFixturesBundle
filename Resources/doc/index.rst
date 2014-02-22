@@ -20,7 +20,7 @@ Standard edition. Add the following to your ``composer.json`` file:
 
     {
         "require": {
-            "doctrine/doctrine-fixtures-bundle": "dev-master"
+            "doctrine/doctrine-fixtures-bundle": "2.2.*"
         }
     }
 

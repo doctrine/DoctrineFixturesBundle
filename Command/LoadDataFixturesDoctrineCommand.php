@@ -41,6 +41,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
+            ->addOption('foreign-key-checks', null, InputOption::VALUE_NONE, 'Purge data by using SET FOREIGN_KEY_CHECKS=1')
             ->setHelp(<<<EOT
 The <info>doctrine:fixtures:load</info> command loads data fixtures from your bundles:
 
@@ -58,6 +59,11 @@ By default Doctrine Data Fixtures uses DELETE statements to drop the existing ro
 the database. If you want to use a TRUNCATE statement instead you can use the <info>--purge-with-truncate</info> flag:
 
   <info>./app/console doctrine:fixtures:load --purge-with-truncate</info>
+            		
+If you want to purge with foreign key checks use the <info>--foreign-key-checks</info> option:
+
+  <info>./app/console doctrine:fixtures:load --foreign-key-checks</info>
+            		
 EOT
         );
     }
@@ -97,6 +103,12 @@ EOT
                 sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths))
             );
         }
+        $connection = $em->getConnection();
+        
+        if (!$input->getOption('foreign-key-checks')) {
+        	$connection->query('SET FOREIGN_KEY_CHECKS=0');
+        }
+        
         $purger = new ORMPurger($em);
         $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);
@@ -104,5 +116,9 @@ EOT
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));
+        
+        if (!$input->getOption('foreign-key-checks')) {
+        	$connection->query('SET FOREIGN_KEY_CHECKS=1');
+        }
     }
 }

@@ -97,12 +97,23 @@ EOT
                 sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths))
             );
         }
-        $purger = new ORMPurger($em);
+        $purger = $this->getORMPurger($em);
         $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);
         $executor->setLogger(function($message) use ($output) {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));
+    }
+
+    /**
+     * Get a new instance of ORMPurger
+     *
+     * @param $em
+     * @return ORMPurger
+     */
+    protected function getORMPurger($em)
+    {
+        return new ORMPurger($em);
     }
 }

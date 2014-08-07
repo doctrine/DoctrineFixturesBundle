@@ -151,7 +151,7 @@ Sharing Objects between Fixtures
 Writing a basic fixture is simple. But what if you have multiple fixture classes
 and want to be able to refer to the data loaded in other fixture classes?
 For example, what if you load a ``User`` object in one fixture, and then
-want to refer to reference it in a different fixture in order to assign that
+want to refer to it in a different fixture in order to assign that
 user to a particular group?
 
 The Doctrine fixtures library handles this easily by allowing you to specify

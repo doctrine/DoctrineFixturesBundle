@@ -41,6 +41,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
+            ->addOption('exclude', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The short name of the bundles from which we don\'t want the fixtures.')
             ->setHelp(<<<EOT
 The <info>doctrine:fixtures:load</info> command loads data fixtures from your bundles:
 
@@ -49,6 +50,10 @@ The <info>doctrine:fixtures:load</info> command loads data fixtures from your bu
 You can also optionally specify the path to fixtures with the <info>--fixtures</info> option:
 
   <info>./app/console doctrine:fixtures:load --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
+
+When not using <info>--fixtures</info>, you can prevent fixtures from being loaded from some bundles, by using <info>--exclude</info> with the short name of the bundle :
+
+  <info>./app/console doctrine:fixtures:load --exclude=AcmeBlogBundle --exclude=AcmeMainBundle</info>
 
 If you want to append the fixtures instead of flushing the database first you can use the <info>--append</info> option:
 
@@ -75,12 +80,23 @@ EOT
             }
         }
 
+        $exclude = $input->getOption('exclude');
+        if ($exclude) {
+            $excluded = is_array($exclude) ? $exclude : array($exclude);
+        }
+        else {
+            $excluded = array();
+        }
+
         $dirOrFile = $input->getOption('fixtures');
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
         } else {
             $paths = array();
             foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
+                if (in_array($bundle->getName(),$excluded)) {
+                        continue;
+                }
                 $paths[] = $bundle->getPath().'/DataFixtures/ORM';
             }
         }

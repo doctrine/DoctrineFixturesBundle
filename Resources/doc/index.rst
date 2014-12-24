@@ -3,54 +3,54 @@ DoctrineFixturesBundle
 
 Fixtures are used to load a controlled set of data into a database. This data
 can be used for testing or could be the initial data required for the
-application to run smoothly. Symfony2 has no built in way to manage fixtures
+application to run smoothly. Symfony has no built in way to manage fixtures
 but Doctrine2 has a library to help you write fixtures for the Doctrine
 :doc:`ORM</book/doctrine>` or :doc:`ODM</bundles/DoctrineMongoDBBundle/index>`.
 
 Setup and Configuration
 -----------------------
 
-Doctrine fixtures for Symfony are maintained in the `DoctrineFixturesBundle`_.
-The bundle uses external `Doctrine Data Fixtures`_ library.
+Doctrine fixtures for Symfony are maintained in the `DoctrineFixturesBundle`_,
+which uses external `Doctrine Data Fixtures`_ library.
 
-Follow these steps to install the bundle and the library in the Symfony
-Standard edition. Add the following to your ``composer.json`` file:
+Follow these steps to install the bundle in your Symfony applications:
 
-.. code-block:: json
+Step 1: Download the Bundle
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    {
-        "require": {
-            "doctrine/doctrine-fixtures-bundle": "2.2.*"
-        }
-    }
-
-Update the vendor libraries:
+Open a command console, enter your project directory and execute the
+following command to download the latest stable version of this bundle:
 
 .. code-block:: bash
 
-    $ php composer.phar update doctrine/doctrine-fixtures-bundle
+    composer require --dev doctrine/doctrine-fixtures-bundle
 
-If everything worked, the ``DoctrineFixturesBundle`` can now be found
-at ``vendor/doctrine/doctrine-fixtures-bundle``.
+This command requires you to have Composer installed globally, as explained
+in the `installation chapter`_ of the Composer documentation.
 
-.. note::
+Step 2: Enable the Bundle
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    ``DoctrineFixturesBundle`` installs
-    `Doctrine Data Fixtures`_ library. The library can be found
-    at ``vendor/doctrine/data-fixtures``.
-
-Finally, register the Bundle ``DoctrineFixturesBundle`` in ``app/AppKernel.php``.
+Then, add the following line in the ``app/AppKernel.php`` file to enable this
+bundle only for the ``dev`` and ``test`` environments:
 
 .. code-block:: php
 
+    // app/AppKernel.php
     // ...
-    public function registerBundles()
+
+    class AppKernel extends Kernel
     {
-        $bundles = array(
+        public function registerBundles()
+        {
             // ...
-            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
-            // ...
-        );
+            if (in_array($this->getEnvironment(), array('dev', 'test'))) {
+                $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
+            }
+
+            return $bundles
+        }
+
         // ...
     }
 
@@ -58,33 +58,29 @@ Writing Simple Fixtures
 -----------------------
 
 Doctrine2 fixtures are PHP classes where you can create objects and persist
-them to the database. Like all classes in Symfony2, fixtures should live inside
+them to the database. Like all classes in Symfony, fixtures should live inside
 one of your application bundles.
 
-For a bundle located at ``src/Acme/HelloBundle``, the fixture classes
-should live inside ``src/Acme/HelloBundle/DataFixtures/ORM`` or
-``src/Acme/HelloBundle/DataFixtures/MongoDB`` respectively for the ORM and ODM,
-This tutorial assumes that you are using the ORM - but fixtures can be added
-just as easily if you're using the ODM.
+For a bundle located at ``src/AppBundle``, the fixture classes should live inside
+``src/AppBundle/DataFixtures/ORM`` or ``src/AppBundle/DataFixtures/MongoDB``
+respectively for the ORM and ODM. This tutorial assumes that you are using the ORM,
+but fixtures can be added just as easily if you're using the ODM.
 
 Imagine that you have a ``User`` class, and you'd like to load one ``User``
 entry:
 
 .. code-block:: php
 
-    // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserData.php
+    // src/AppBundle/DataFixtures/ORM/LoadUserData.php
 
-    namespace Acme\HelloBundle\DataFixtures\ORM;
+    namespace AppBundle\DataFixtures\ORM;
 
     use Doctrine\Common\DataFixtures\FixtureInterface;
     use Doctrine\Common\Persistence\ObjectManager;
-    use Acme\HelloBundle\Entity\User;
+    use AppBundle\Entity\User;
 
     class LoadUserData implements FixtureInterface
     {
-        /**
-         * {@inheritDoc}
-         */
         public function load(ObjectManager $manager)
         {
             $userAdmin = new User();
@@ -100,11 +96,8 @@ In Doctrine2, fixtures are just objects where you load data by interacting
 with your entities as you normally do. This allows you to create the exact
 fixtures you need for your application.
 
-The most serious limitation is that you cannot share objects between fixtures.
-Later, you'll see how to overcome this limitation.
-
-Executing Fixtures
-------------------
+Loading Fixtures
+----------------
 
 Once your fixtures have been written, you can load them via the command
 line by using the ``doctrine:fixtures:load`` command:
@@ -119,7 +112,7 @@ If you're using the ODM, use the ``doctrine:mongodb:fixtures:load`` command inst
 
     php app/console doctrine:mongodb:fixtures:load
 
-The task will look inside the ``DataFixtures/ORM`` (or ``DataFixtures/MongoDB``
+The task will look inside the ``DataFixtures/ORM/`` (or ``DataFixtures/MongoDB/``
 for the ODM) directory of each bundle and execute each class that implements
 the ``FixtureInterface``.
 
@@ -127,10 +120,8 @@ Both commands come with a few options:
 
 * ``--fixtures=/path/to/fixture`` - Use this option to manually specify the
   directory where the fixtures classes should be loaded;
-
 * ``--append`` - Use this flag to append data instead of deleting data before
   loading it (deleting first is the default behavior);
-
 * ``--em=manager_name`` - Manually specify the entity manager to use for
   loading the data.
 
@@ -150,28 +141,25 @@ Sharing Objects between Fixtures
 
 Writing a basic fixture is simple. But what if you have multiple fixture classes
 and want to be able to refer to the data loaded in other fixture classes?
-For example, what if you load a ``User`` object in one fixture, and then
-want to refer to it in a different fixture in order to assign that
-user to a particular group?
+For example, what if you load a ``User`` object in one fixture, and then want to
+refer to it in a different fixture in order to assign that user to a particular
+group?
 
 The Doctrine fixtures library handles this easily by allowing you to specify
 the order in which fixtures are loaded.
 
 .. code-block:: php
 
-    // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserData.php
-    namespace Acme\HelloBundle\DataFixtures\ORM;
+    // src/AppBundle/DataFixtures/ORM/LoadUserData.php
+    namespace AppBundle\DataFixtures\ORM;
 
     use Doctrine\Common\DataFixtures\AbstractFixture;
     use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
     use Doctrine\Common\Persistence\ObjectManager;
-    use Acme\HelloBundle\Entity\User;
+    use AppBundle\Entity\User;
 
     class LoadUserData extends AbstractFixture implements OrderedFixtureInterface
     {
-        /**
-         * {@inheritDoc}
-         */
         public function load(ObjectManager $manager)
         {
             $userAdmin = new User();
@@ -184,12 +172,11 @@ the order in which fixtures are loaded.
             $this->addReference('admin-user', $userAdmin);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         public function getOrder()
         {
-            return 1; // the order in which fixtures will be loaded
+            // the order in which fixtures will be loaded
+            // the lower the number, the sooner that this fixture is loaded
+            return 1;
         }
     }
 
@@ -200,20 +187,16 @@ of 2:
 
 .. code-block:: php
 
-    // src/Acme/HelloBundle/DataFixtures/ORM/LoadGroupData.php
-
-    namespace Acme\HelloBundle\DataFixtures\ORM;
+    // src/AppBundle/DataFixtures/ORM/LoadGroupData.php
+    namespace AppBundle\DataFixtures\ORM;
 
     use Doctrine\Common\DataFixtures\AbstractFixture;
     use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
     use Doctrine\Common\Persistence\ObjectManager;
-    use Acme\HelloBundle\Entity\Group;
+    use ApBundle\Entity\Group;
 
     class LoadGroupData extends AbstractFixture implements OrderedFixtureInterface
     {
-        /**
-         * {@inheritDoc}
-         */
         public function load(ObjectManager $manager)
         {
             $groupAdmin = new Group();
@@ -225,12 +208,11 @@ of 2:
             $this->addReference('admin-group', $groupAdmin);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         public function getOrder()
         {
-            return 2; // the order in which fixtures will be loaded
+            // the order in which fixtures will be loaded
+            // the lower the number, the sooner that this fixture is loaded
+            return 2;
         }
     }
 
@@ -242,20 +224,16 @@ references:
 
 .. code-block:: php
 
-    // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserGroupData.php
-
-    namespace Acme\HelloBundle\DataFixtures\ORM;
+    // src/AppBundle/DataFixtures/ORM/LoadUserGroupData.php
+    namespace AppBundle\DataFixtures\ORM;
 
     use Doctrine\Common\DataFixtures\AbstractFixture;
     use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
     use Doctrine\Common\Persistence\ObjectManager;
-    use Acme\HelloBundle\Entity\UserGroup;
+    use AppBundle\Entity\UserGroup;
 
     class LoadUserGroupData extends AbstractFixture implements OrderedFixtureInterface
     {
-        /**
-         * {@inheritDoc}
-         */
         public function load(ObjectManager $manager)
         {
             $userGroupAdmin = new UserGroup();
@@ -266,9 +244,6 @@ references:
             $manager->flush();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         public function getOrder()
         {
             return 3;
@@ -288,7 +263,7 @@ Using the Container in the Fixtures
 -----------------------------------
 
 In some cases you may need to access some services to load the fixtures.
-Symfony2 makes it really easy: the container will be injected in all fixture
+Symfony makes it really easy: the container will be injected in all fixture
 classes implementing :class:`Symfony\\Component\\DependencyInjection\\ContainerAwareInterface`.
 
 Let's rewrite the first fixture to encode the password before it's stored
@@ -298,15 +273,14 @@ component when checking it:
 
 .. code-block:: php
 
-    // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserData.php
-
-    namespace Acme\HelloBundle\DataFixtures\ORM;
+    // src/AppBundle/DataFixtures/ORM/LoadUserData.php
+    namespace AppBundle\DataFixtures\ORM;
 
     use Doctrine\Common\DataFixtures\FixtureInterface;
     use Doctrine\Common\Persistence\ObjectManager;
     use Symfony\Component\DependencyInjection\ContainerAwareInterface;
     use Symfony\Component\DependencyInjection\ContainerInterface;
-    use Acme\HelloBundle\Entity\User;
+    use AppBundle\Entity\User;
 
     class LoadUserData implements FixtureInterface, ContainerAwareInterface
     {
@@ -315,28 +289,22 @@ component when checking it:
          */
         private $container;
 
-        /**
-         * {@inheritDoc}
-         */
         public function setContainer(ContainerInterface $container = null)
         {
             $this->container = $container;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         public function load(ObjectManager $manager)
         {
+
             $user = new User();
             $user->setUsername('admin');
             $user->setSalt(md5(uniqid()));
 
-            $encoder = $this->container
-                ->get('security.encoder_factory')
-                ->getEncoder($user)
-            ;
-            $user->setPassword($encoder->encodePassword('secret', $user->getSalt()));
+            // the 'security.password_encoder' service requires Symfony 2.6 or higher
+            $encoder = $this->container->get('security.password_encoder');
+            $password = $encoder->encodePassword($user, 'secret_password');
+            $user->setPassword($password);
 
             $manager->persist($user);
             $manager->flush();
@@ -347,13 +315,14 @@ As you can see, all you need to do is add :class:`Symfony\\Component\\Dependency
 to the class and then create a new :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`
 method that implements that interface. Before the fixture is executed, Symfony
 will call the :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`
-method automatically. As long as you store the container as a property on the
+method automatically. As long as you store the container as a property in the
 class (as shown above), you can access it in the ``load()`` method.
 
 .. note::
 
-    If you are too lazy to implement the needed method :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`,
+    If you prefer not to implement the needed method :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`,
     you can then extend your class with :class:`Symfony\\Component\\DependencyInjection\\ContainerAware`.
 
 .. _DoctrineFixturesBundle: https://github.com/doctrine/DoctrineFixturesBundle
 .. _`Doctrine Data Fixtures`: https://github.com/doctrine/data-fixtures
+.. _`installation chapter`: https://getcomposer.org/doc/00-intro.md

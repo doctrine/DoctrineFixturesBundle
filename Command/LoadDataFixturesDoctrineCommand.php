@@ -14,10 +14,10 @@
 
 namespace Doctrine\Bundle\FixturesBundle\Command;
 
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\Output;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as DataFixturesLoader;
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -69,8 +69,7 @@ EOT
         $em = $doctrine->getManager($input->getOption('em'));
 
         if ($input->isInteractive() && !$input->getOption('append')) {
-            $dialog = $this->getHelperSet()->get('dialog');
-            if (!$dialog->askConfirmation($output, '<question>Careful, database will be purged. Do you want to continue Y/N ?</question>', false)) {
+            if (!$this->askConfirmation($input, $output, '<question>Careful, database will be purged. Do you want to continue Y/N ?</question>', false)) {
                 return;
             }
         }
@@ -100,9 +99,30 @@ EOT
         $purger = new ORMPurger($em);
         $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);
-        $executor->setLogger(function($message) use ($output) {
+        $executor->setLogger(function ($message) use ($output) {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));
+    }
+
+    /**
+     * @param  InputInterface  $input
+     * @param  OutputInterface $output
+     * @param  string          $question
+     * @param  bool            $default
+     * @return bool
+     */
+    private function askConfirmation(InputInterface $input, OutputInterface $output, $question, $default)
+    {
+        if (!class_exists('Symfony\Component\Console\Question\ConfirmationQuestion')) {
+            $dialog = $this->getHelperSet()->get('dialog');
+
+            return $dialog->askConfirmation($output, $question, $default);
+        }
+
+        $questionHelper = $this->getHelperSet()->get('question');
+        $question = new ConfirmationQuestion($question, $default);
+
+        return $questionHelper->ask($input, $output, $question);
     }
 }

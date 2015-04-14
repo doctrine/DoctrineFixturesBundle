@@ -95,6 +95,13 @@ EOT
             }
         }
 
+        if ($this->getContainer()->hasParameter('doctrine_fixtures.paths')) {
+            $paths = array_merge(
+                $paths,
+                $this->getContainer()->getParameter('doctrine_fixtures.paths')
+            );
+        }
+
         $loader = new DataFixturesLoader($this->getContainer());
         foreach ($paths as $path) {
             if (is_dir($path)) {

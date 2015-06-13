@@ -286,6 +286,24 @@ by ``getOrder()``. Any object that is set with the ``setReference()`` method
 can be accessed via ``getReference()`` in fixture classes that have a higher
 order.
 
+.. note::
+
+    If you get a ``ContextErrorException`` when trying to load the fixtures, then
+    add the ``__toString()`` method to all of the corresponding entity classes:
+
+    .. code-block:: php
+
+        // src/Acme/HelloBundle/Entity/User.php
+
+        // ...
+
+        public function __toString()
+        {
+            return (string) $this->getId();
+        }
+
+        // ...
+
 Fixtures allow you to create any type of data you need via the normal PHP
 interface for creating and persisting objects. By controlling the order of
 fixtures and setting references, almost anything can be handled by fixtures.

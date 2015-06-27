@@ -69,7 +69,7 @@ one of your application bundles.
 
 For a bundle located at ``src/Acme/HelloBundle``, the fixture classes
 should live inside ``src/Acme/HelloBundle/DataFixtures/ORM`` or
-``src/Acme/HelloBundle/DataFixtures/MongoDB`` respectively for the ORM and ODM,
+``src/Acme/HelloBundle/DataFixtures/MongoDB`` respectively for the ORM and ODM.
 This tutorial assumes that you are using the ORM - but fixtures can be added
 just as easily if you're using the ODM.
 

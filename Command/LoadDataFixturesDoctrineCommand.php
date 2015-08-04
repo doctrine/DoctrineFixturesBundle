@@ -106,10 +106,11 @@ EOT
     }
 
     /**
-     * @param  InputInterface  $input
-     * @param  OutputInterface $output
-     * @param  string          $question
-     * @param  bool            $default
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     * @param string          $question
+     * @param bool            $default
+     *
      * @return bool
      */
     private function askConfirmation(InputInterface $input, OutputInterface $output, $question, $default)

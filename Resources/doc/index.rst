@@ -13,22 +13,11 @@ Setup and Configuration
 Doctrine fixtures for Symfony are maintained in the `DoctrineFixturesBundle`_.
 The bundle uses external `Doctrine Data Fixtures`_ library.
 
-Follow these steps to install the bundle and the library in the Symfony
-Standard edition. Add the following to your ``composer.json`` file:
-
-.. code-block:: json
-
-    {
-        "require": {
-            "doctrine/doctrine-fixtures-bundle": "2.2.*"
-        }
-    }
-
-Update the vendor libraries:
+First, install the bundle with Composer:
 
 .. code-block:: bash
 
-    $ php composer.phar update doctrine/doctrine-fixtures-bundle
+    $ composer require doctrine/doctrine-fixtures-bundle
 
 If everything worked, the ``DoctrineFixturesBundle`` can now be found
 at ``vendor/doctrine/doctrine-fixtures-bundle``.
@@ -48,15 +37,15 @@ Finally, register the Bundle ``DoctrineFixturesBundle`` in ``app/AppKernel.php``
     {
         $bundles = array(
             // ...
-        
+
         );
-        
+
         if (...) {
             // ...
             $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
         };
-        
-        
+
+
         // ...
     }
 
@@ -74,9 +63,7 @@ This tutorial assumes that you are using the ORM - but fixtures can be added
 just as easily if you're using the ODM.
 
 Imagine that you have a ``User`` class, and you'd like to load one ``User``
-entry:
-
-.. code-block:: php
+entry::
 
     // src/Acme/HelloBundle/DataFixtures/ORM/LoadUserData.php
 
@@ -117,13 +104,13 @@ line by using the ``doctrine:fixtures:load`` command:
 
 .. code-block:: bash
 
-    php app/console doctrine:fixtures:load
+    $ php app/console doctrine:fixtures:load
 
 If you're using the ODM, use the ``doctrine:mongodb:fixtures:load`` command instead:
 
 .. code-block:: bash
 
-    php app/console doctrine:mongodb:fixtures:load
+    $ php app/console doctrine:mongodb:fixtures:load
 
 The task will look inside the ``DataFixtures/ORM`` (or ``DataFixtures/MongoDB``
 for the ODM) directory of each bundle and execute each class that implements
@@ -149,7 +136,7 @@ A full example use might look like this:
 
 .. code-block:: bash
 
-   php app/console doctrine:fixtures:load --fixtures=/path/to/fixture1 --fixtures=/path/to/fixture2 --append --em=foo_manager
+   $ php app/console doctrine:fixtures:load --fixtures=/path/to/fixture1 --fixtures=/path/to/fixture2 --append --em=foo_manager
 
 Sharing Objects between Fixtures
 --------------------------------

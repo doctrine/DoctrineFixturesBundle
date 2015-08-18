@@ -50,6 +50,10 @@ You can also optionally specify the path to fixtures with the <info>--fixtures</
 
   <info>./app/console doctrine:fixtures:load --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
 
+or using @AcmeBundle notation
+
+  <info>./app/console doctrine:fixtures:load --fixtures=@MyBundle --fixtures=@Doman\AcmeBundle</info>
+
 If you want to append the fixtures instead of flushing the database first you can use the <info>--append</info> option:
 
   <info>./app/console doctrine:fixtures:load --append</info>
@@ -59,7 +63,7 @@ the database. If you want to use a TRUNCATE statement instead you can use the <i
 
   <info>./app/console doctrine:fixtures:load --purge-with-truncate</info>
 EOT
-        );
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -74,13 +78,24 @@ EOT
             }
         }
 
+        $fixturesPath = DIRECTORY_SEPARATOR . 'DataFixtures' . DIRECTORY_SEPARATOR . 'ORM';
         $dirOrFile = $input->getOption('fixtures');
         if ($dirOrFile) {
-            $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
+            $paths = array();
+            $pathsParams = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
+            foreach ($pathsParams as $path) {
+                if (preg_match('/^\@([^\/\\\\]+)(.*)$/', $path, $matches)) {
+                    $bundle = $this->getApplication()->getKernel()->getBundle($matches[1]);
+                    $paths[] = realpath($bundle->getPath()) . $fixturesPath . $matches[2];
+                } else {
+                    $paths[] = $path;
+                }
+            }
+
         } else {
             $paths = array();
             foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
-                $paths[] = $bundle->getPath().'/DataFixtures/ORM';
+                $paths[] = $bundle->getPath() . $fixturesPath;
             }
         }
 

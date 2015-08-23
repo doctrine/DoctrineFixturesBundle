@@ -348,5 +348,18 @@ class (as shown above), you can access it in the ``load()`` method.
     If you are too lazy to implement the needed method :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`,
     you can then extend your class with :class:`Symfony\\Component\\DependencyInjection\\ContainerAware`.
 
+Automatically Generated Fixtures with HautelookAliceBundle
+-----------------------------------------------------------
+
+You can also use Alice_ to configure how to generate any amount of entities with random data produced by Faker_. This combo is really powerful as it can produce realistically looking data that can even be tuned for certain countries and can be set to generate nasty edge cases.
+
+To integrate Alice_ and Faker_ with Symfony, you can use `HautelookAliceBundle`_.
+
+For more information, check out `HautelookAliceBundle documentation`_!
+
 .. _DoctrineFixturesBundle: https://github.com/doctrine/DoctrineFixturesBundle
 .. _`Doctrine Data Fixtures`: https://github.com/doctrine/data-fixtures
+.. _HautelookAliceBundle: https://github.com/hautelook/AliceBundle
+.. _`HautelookAliceBundle documentation`: https://github.com/hautelook/AliceBundle
+.. _`Alice`: https://github.com/nelmio/alice
+.. _`Faker`: https://github.com/fzaninotto/Faker

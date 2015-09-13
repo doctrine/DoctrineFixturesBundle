@@ -18,6 +18,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as DataFixturesLoader;
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -78,10 +79,9 @@ EOT
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
         } else {
-            $paths = array();
-            foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
-                $paths[] = $bundle->getPath().'/DataFixtures/ORM';
-            }
+            $paths = array_map(function (Bundle $bundle) {
+                return $bundle->getPath().'/DataFixtures/ORM';
+            }, $this->getApplication()->getKernel()->getBundles());
         }
 
         $loader = new DataFixturesLoader($this->getContainer());

@@ -17,7 +17,7 @@ First, install the bundle with Composer:
 
 .. code-block:: bash
 
-    $ composer require doctrine/doctrine-fixtures-bundle
+    $ composer require --dev doctrine/doctrine-fixtures-bundle
 
 If everything worked, the ``DoctrineFixturesBundle`` can now be found
 at ``vendor/doctrine/doctrine-fixtures-bundle``.

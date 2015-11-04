@@ -71,7 +71,7 @@ EOT
         $em = $doctrine->getManager($input->getOption('em'));
 
         if ($input->isInteractive() && !$input->getOption('append')) {
-            if (!$this->askConfirmation($input, $output, '<question>Careful, database will be purged. Do you want to continue Y/N ?</question>', false)) {
+            if (!$this->askConfirmation($input, $output, '<question>Careful, database will be purged. Do you want to continue y/N ?</question>', false)) {
                 return;
             }
         }

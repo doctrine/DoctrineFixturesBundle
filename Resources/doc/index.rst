@@ -102,6 +102,11 @@ Executing Fixtures
 Once your fixtures have been written, you can load them via the command
 line by using the ``doctrine:fixtures:load`` command:
 
+.. caution::
+
+    By default the ``load`` command purges the database, removing all data from every table.
+    To append your fixtures' data specify the ``--append`` option.
+
 .. code-block:: bash
 
     $ php app/console doctrine:fixtures:load

@@ -98,6 +98,8 @@ EOT
         foreach ($paths as $path) {
             if (is_dir($path)) {
                 $loader->loadFromDirectory($path);
+            } elseif (is_file($path)) {
+                $loader->loadFromFile($path);
             }
         }
         $fixtures = $loader->getFixtures();

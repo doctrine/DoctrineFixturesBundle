@@ -284,20 +284,12 @@ component when checking it:
     use Doctrine\Common\DataFixtures\FixtureInterface;
     use Doctrine\Common\Persistence\ObjectManager;
     use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-    use Symfony\Component\DependencyInjection\ContainerInterface;
+    use Symfony\Component\DependencyInjection\ContainerAwareTrait;
     use AppBundle\Entity\User;
 
     class LoadUserData implements FixtureInterface, ContainerAwareInterface
     {
-        /**
-         * @var ContainerInterface
-         */
-        private $container;
-
-        public function setContainer(ContainerInterface $container = null)
-        {
-            $this->container = $container;
-        }
+        use ContainerAwareTrait;
 
         public function load(ObjectManager $manager)
         {

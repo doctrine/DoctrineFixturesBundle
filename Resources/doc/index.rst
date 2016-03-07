@@ -5,7 +5,7 @@ Fixtures are used to load a controlled set of data into a database. This data
 can be used for testing or could be the initial data required for the
 application to run smoothly. Symfony has no built in way to manage fixtures
 but Doctrine2 has a library to help you write fixtures for the Doctrine
-:doc:`ORM</book/doctrine>` or :doc:`ODM</bundles/DoctrineMongoDBBundle/index>`.
+`ORM`_ or `ODM`_.
 
 Setup and Configuration
 -----------------------
@@ -331,3 +331,5 @@ class (as shown above), you can access it in the ``load()`` method.
 .. _DoctrineFixturesBundle: https://github.com/doctrine/DoctrineFixturesBundle
 .. _`Doctrine Data Fixtures`: https://github.com/doctrine/data-fixtures
 .. _`installation chapter`: https://getcomposer.org/doc/00-intro.md
+.. _`ORM`: https://symfony.com/doc/current/book/doctrine.html
+.. _`ODM`: https://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/index.html

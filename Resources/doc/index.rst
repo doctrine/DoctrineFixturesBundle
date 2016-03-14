@@ -318,7 +318,7 @@ component when checking it:
 
 As you can see, all you need to do is add :class:`Symfony\\Component\\DependencyInjection\\ContainerAwareInterface`
 to the class and then create a new :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`
-method that implements that interface. Before the fixture is executed, Symfony
+method that is required by that interface. Before the fixture is executed, Symfony
 will call the :method:`Symfony\\Component\\DependencyInjection\\ContainerInterface::setContainer`
 method automatically. As long as you store the container as a property in the
 class (as shown above), you can access it in the ``load()`` method.

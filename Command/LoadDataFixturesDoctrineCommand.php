@@ -14,12 +14,9 @@
 
 namespace Doctrine\Bundle\FixturesBundle\Command;
 
-use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\DBAL\Sharding\PoolingShardConnection;
-use InvalidArgumentException;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as DataFixturesLoader;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,8 +27,9 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Jonathan H. Wage <jonwage@gmail.com>
+ * @author miholeus <me@miholeus.com>
  */
-class LoadDataFixturesDoctrineCommand extends DoctrineCommand
+class LoadDataFixturesDoctrineCommand extends AbstractFixturesCommand
 {
     protected function configure()
     {
@@ -86,29 +84,8 @@ EOT
         }
 
         $dirOrFile = $input->getOption('fixtures');
-        if ($dirOrFile) {
-            $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
-        } else {
-            $paths = array();
-            foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
-                $paths[] = $bundle->getPath().'/DataFixtures/ORM';
-            }
-        }
+        $fixtures = $this->getFixtures($dirOrFile);
 
-        $loader = new DataFixturesLoader($this->getContainer());
-        foreach ($paths as $path) {
-            if (is_dir($path)) {
-                $loader->loadFromDirectory($path);
-            } elseif (is_file($path)) {
-                $loader->loadFromFile($path);
-            }
-        }
-        $fixtures = $loader->getFixtures();
-        if (!$fixtures) {
-            throw new InvalidArgumentException(
-                sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths))
-            );
-        }
         $purger = new ORMPurger($em);
         $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);

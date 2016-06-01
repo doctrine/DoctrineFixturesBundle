@@ -141,6 +141,24 @@ A full example use might look like this:
 
    php bin/console doctrine:fixtures:load --fixtures=/path/to/fixture1 --fixtures=/path/to/fixture2 --append --em=foo_manager
 
+List of Available fixtures
+--------------------------
+
+You can view all available fixtures with the following command:
+
+.. code-block:: bash
+
+    php app/console doctrine:fixtures:list
+
+These command will show you all migrations. If your migrations use OrderedFixtureInterface, then migrations
+will be sorted by order.
+
+Command come with a few options:
+
+* ``--fixtures=/path/to/fixture`` - Use this option to manually specify the
+  directory where the fixtures classes should be loaded;
+* ``--order`` - Use this option to search for migration with selected order;
+
 Sharing Objects between Fixtures
 --------------------------------
 

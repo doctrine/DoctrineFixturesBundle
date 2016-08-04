@@ -11,11 +11,13 @@
 
 namespace Symfony\Bundle\DoctrineFixturesBundle\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\Output;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Bundle\FrameworkBundle\Util\Filesystem;
 use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader as DataFixturesLoader;
@@ -91,7 +93,7 @@ EOT
             }
         }
 
-        $loader = new DataFixturesLoader($this->getContainer());
+        $loader = $this->createDataFixturesLoader($this->getContainer());
         foreach ($paths as $path) {
             if (is_dir($path)) {
                 $loader->loadFromDirectory($path);
@@ -103,12 +105,40 @@ EOT
                 sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths))
             );
         }
-        $purger = new ORMPurger($em);
+        $purger = $this->createORMPurger($em);
         $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
-        $executor = new ORMExecutor($em, $purger);
+        $executor = $this->createORMExecutor($em, $purger);
         $executor->setLogger(function($message) use ($output) {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));
+    }
+
+    /**
+     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+     * @return \Doctrine\Common\DataFixtures\Loader
+     */
+    protected function createDataFixturesLoader(ContainerInterface $container)
+    {
+        return new DataFixturesLoader($container);
+    }
+
+    /**
+     * @param \Doctrine\ORM\EntityManagerInterface $em
+     * @return \Doctrine\Common\DataFixtures\Purger\ORMPurger
+     */
+    protected function createORMPurger(EntityManagerInterface $em)
+    {
+        return new ORMPurger($em);
+    }
+
+    /**
+     * @param \Doctrine\ORM\EntityManagerInterface $em
+     * @param \Doctrine\Common\DataFixtures\Purger\ORMPurger $purger
+     * @return \Doctrine\Common\DataFixtures\Executor\ORMExecutor
+     */
+    protected function createORMExecutor(EntityManagerInterface $em, ORMPurger $purger)
+    {
+        return new ORMExecutor($em, $purger);
     }
 }

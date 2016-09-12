@@ -86,6 +86,7 @@ entry:
             $userAdmin = new User();
             $userAdmin->setUsername('admin');
             $userAdmin->setPassword('test');
+            $userAdmin->setRoles(array('ROLE_ADMIN'));
 
             $manager->persist($userAdmin);
             $manager->flush();
@@ -170,6 +171,7 @@ the order in which fixtures are loaded.
             $userAdmin = new User();
             $userAdmin->setUsername('admin');
             $userAdmin->setPassword('test');
+            $userAdmin->setRoles(array('ROLE_ADMIN'));
 
             $manager->persist($userAdmin);
             $manager->flush();

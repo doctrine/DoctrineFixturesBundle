@@ -86,6 +86,7 @@ entry:
             $userAdmin = new User();
             $userAdmin->setUsername('admin');
             $userAdmin->setPassword('test');
+            $userAdmin->setEmail('root@example.org');
 
             $manager->persist($userAdmin);
             $manager->flush();

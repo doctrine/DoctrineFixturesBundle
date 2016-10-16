@@ -109,13 +109,13 @@ line by using the ``doctrine:fixtures:load`` command:
 
 .. code-block:: bash
 
-    php app/console doctrine:fixtures:load
+    php app/console doctrine:fixtures:load -env=test
 
 If you're using the ODM, use the ``doctrine:mongodb:fixtures:load`` command instead:
 
 .. code-block:: bash
 
-    php app/console doctrine:mongodb:fixtures:load
+    php app/console doctrine:mongodb:fixtures:load -env=test
 
 The task will look inside the ``DataFixtures/ORM/`` (or ``DataFixtures/MongoDB/``
 for the ODM) directory of each bundle and execute each class that implements

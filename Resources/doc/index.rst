@@ -44,11 +44,12 @@ bundle only for the ``dev`` and ``test`` environments:
         public function registerBundles()
         {
             // ...
-            if (in_array($this->getEnvironment(), array('dev', 'test'))) {
+            if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {
+                // ...
                 $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
             }
 
-            return $bundles
+            return $bundles;
         }
 
         // ...

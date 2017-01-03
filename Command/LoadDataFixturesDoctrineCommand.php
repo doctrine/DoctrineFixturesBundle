@@ -109,7 +109,7 @@ EOT
                 sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths))
             );
         }
-        $purger = new ORMPurger($em);
+        $purger = new ORMPurger($em, $this->getContainer()->getParameter('doctrine_fixtures.exclude_from_purge'));
         $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);
         $executor->setLogger(function ($message) use ($output) {

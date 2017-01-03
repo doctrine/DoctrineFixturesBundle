@@ -7,7 +7,7 @@ application to run smoothly. Symfony has no built in way to manage fixtures
 but Doctrine2 has a library to help you write fixtures for the Doctrine
 :doc:`ORM</book/doctrine>` or :doc:`ODM</bundles/DoctrineMongoDBBundle/index>`.
 
-Setup and Configuration
+Setup
 -----------------------
 
 Doctrine fixtures for Symfony are maintained in the `DoctrineFixturesBundle`_,
@@ -53,6 +53,17 @@ bundle only for the ``dev`` and ``test`` environments:
 
         // ...
     }
+
+Configuration
+-------------
+
+You can configure fixtures in your ``config.yml``. The examples below are the default values.
+
+.. code-block:: yaml
+
+    # app/config/config.yml
+    doctrine_fixtures:
+        exclude_from_purge: [] # Table names to be excluded from purge.
 
 Writing Simple Fixtures
 -----------------------

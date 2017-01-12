@@ -1,5 +1,5 @@
 {
-    "name": "doctrine/doctrine-fixtures-bundle",
+    "name": "kstppv/doctrine-fixtures-bundle",
     "type": "symfony-bundle",
     "description": "Symfony DoctrineFixturesBundle",
     "keywords": ["Persistence", "Fixture"],
@@ -22,8 +22,8 @@
     "require": {
         "php": ">=5.3.2",
         "symfony/doctrine-bridge": "~2.3|~3.0",
-        "doctrine/doctrine-bundle": "~1.0",
-        "doctrine/data-fixtures": "~1.0"
+        "doctrine/doctrine-bundle": "dev-master",
+        "doctrine/data-fixtures": "~1.2"
     },
     "autoload": {
         "psr-4": { "Doctrine\\Bundle\\FixturesBundle\\": "" }

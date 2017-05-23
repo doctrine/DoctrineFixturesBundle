@@ -139,7 +139,7 @@ A full example use might look like this:
 
 .. code-block:: bash
 
-   php bin/console doctrine:fixtures:load --fixtures=/path/to/fixture1 --fixtures=/path/to/fixture2 --append --em=foo_manager  
+   php bin/console doctrine:fixtures:load --fixtures=/path/to/fixture1 --fixtures=/path/to/fixture2 --append --em=foo_manager
 
 Sharing Objects between Fixtures
 --------------------------------

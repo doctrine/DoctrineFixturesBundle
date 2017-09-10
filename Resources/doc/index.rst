@@ -55,13 +55,28 @@ bundle only for the ``dev`` and ``test`` environments:
         // ...
     }
 
+Step 3 (Optional): Configure Fixture Paths
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If your fixtures live in a directory outside of the default bundle location,
+you will need to specify the path to them:
+
+.. code-block:: yaml
+
+    // app/config/config.yml
+
+    doctrine_fixtures:
+        paths:
+            - /path/to/fixtures
+            - /path/to/more/fixtures
+
 Writing Simple Fixtures
 -----------------------
 
 Doctrine2 fixtures are PHP classes where you can create objects and persist
-them to the database. Like all classes in Symfony, fixtures should live inside
-one of your application bundles.
+them to the database.
 
+If you did not configure a custom location for your fixtures, they are expected to be inside your bundles.
 For a bundle located at ``src/AppBundle``, the fixture classes should live inside
 ``src/AppBundle/DataFixtures/ORM`` or ``src/AppBundle/DataFixtures/MongoDB``
 respectively for the ORM and ODM. This tutorial assumes that you are using the ORM,

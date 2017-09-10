@@ -43,7 +43,6 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
-            ->addOption('multiple-transactions', null, InputOption::VALUE_NONE, 'Use one transaction per fixture file instead of a single transaction for all')
             ->setHelp(<<<EOT
 The <info>%command.name%</info> command loads data fixtures from your bundles:
 
@@ -117,7 +116,7 @@ EOT
         $executor->setLogger(function ($message) use ($output) {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
-        $executor->execute($fixtures, $input->getOption('append'), $input->getOption('multiple-transactions'));
+        $executor->execute($fixtures, $input->getOption('append'));
     }
 
     /**

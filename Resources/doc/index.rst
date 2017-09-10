@@ -334,3 +334,5 @@ class (as shown above), you can access it in the ``load()`` method.
 .. _DoctrineFixturesBundle: https://github.com/doctrine/DoctrineFixturesBundle
 .. _`Doctrine Data Fixtures`: https://github.com/doctrine/data-fixtures
 .. _`installation chapter`: https://getcomposer.org/doc/00-intro.md
+.. _`ORM`: https://symfony.com/doc/current/book/doctrine.html
+.. _`ODM`: https://symfony.com/doc/current/bundles/DoctrineMongoDBBundle/index.html

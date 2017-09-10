@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="doctrine_fixtures.database_populator" class="Doctrine\Bundle\FixturesBundle\Loader\DatabasePopulator">
+            <argument type="service" id="doctrine_fixtures.fixture_loader" />
+            <argument type="service" id="doctrine_fixtures.orm_purger" />
+        </service>
+        <service id="doctrine_fixtures.fixture_loader" class="Doctrine\Bundle\FixturesBundle\Loader\FixtureLoader">
+            <argument type="service" id="doctrine_fixtures.container_aware_loader" />
+            <argument type="service" id="kernel" />
+        </service>
+        <service id="doctrine_fixtures.container_aware_loader" class="Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader">
+            <argument type="service" id="service_container" />
+        </service>
+        <service id="doctrine_fixtures.orm_purger" class="Doctrine\Common\DataFixtures\Purger\ORMPurger" />
+    </services>
+
+</container>

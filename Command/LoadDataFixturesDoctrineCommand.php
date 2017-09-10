@@ -14,16 +14,13 @@
 
 namespace Doctrine\Bundle\FixturesBundle\Command;
 
-use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
-use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
-use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-use Doctrine\DBAL\Sharding\PoolingShardConnection;
-use InvalidArgumentException;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as DataFixturesLoader;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
+use Doctrine\DBAL\Sharding\PoolingShardConnection;
+use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 
 /**
  * Load data fixtures from bundles.
@@ -43,7 +40,6 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
-            ->addOption('multiple-transactions', null, InputOption::VALUE_NONE, 'Use one transaction per fixture file instead of a single transaction for all')
             ->setHelp(<<<EOT
 The <info>%command.name%</info> command loads data fixtures from your bundles:
 
@@ -85,37 +81,16 @@ EOT
             $em->getConnection()->connect($input->getOption('shard'));
         }
 
-        $dirOrFile = $input->getOption('fixtures');
-        if ($dirOrFile) {
-            $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
-        } else {
-            $paths = array();
-            foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
-                $paths[] = $bundle->getPath().'/DataFixtures/ORM';
-            }
-        }
 
-        $loader = new DataFixturesLoader($this->getContainer());
-        foreach ($paths as $path) {
-            if (is_dir($path)) {
-                $loader->loadFromDirectory($path);
-            } elseif (is_file($path)) {
-                $loader->loadFromFile($path);
-            }
-        }
-        $fixtures = $loader->getFixtures();
-        if (!$fixtures) {
-            throw new InvalidArgumentException(
-                sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths))
-            );
-        }
-        $purger = new ORMPurger($em);
-        $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
-        $executor = new ORMExecutor($em, $purger);
-        $executor->setLogger(function ($message) use ($output) {
+        $logger = function ($message) use ($output) {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
-        });
-        $executor->execute($fixtures, $input->getOption('append'),$input->getOption('multiple-transactions'));
+        };
+
+        $loader = $this->getContainer()->get('doctrine_fixtures.database_populator');
+        $loader->setDirOrFile($input->getOption('fixtures'));
+        $loader->setPurgeWithTruncate($input->getOption('purge-with-truncate'));
+        $loader->setAppend($input->getOption('append'));
+        $loader->load($em, new ORMExecutor($em), $logger);
     }
 
     /**

@@ -45,22 +45,22 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
             ->addOption('multiple-transactions', null, InputOption::VALUE_NONE, 'Use one transaction per fixture file instead of a single transaction for all')
             ->setHelp(<<<EOT
-The <info>doctrine:fixtures:load</info> command loads data fixtures from your bundles:
+The <info>%command.name%</info> command loads data fixtures from your bundles:
 
-  <info>./app/console doctrine:fixtures:load</info>
+  <info>php %command.full_name%</info>
 
 You can also optionally specify the path to fixtures with the <info>--fixtures</info> option:
 
-  <info>./app/console doctrine:fixtures:load --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
+  <info>php %command.full_name% --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
 
 If you want to append the fixtures instead of flushing the database first you can use the <info>--append</info> option:
 
-  <info>./app/console doctrine:fixtures:load --append</info>
+  <info>php %command.full_name% --append</info>
 
 By default Doctrine Data Fixtures uses DELETE statements to drop the existing rows from
 the database. If you want to use a TRUNCATE statement instead you can use the <info>--purge-with-truncate</info> flag:
 
-  <info>./app/console doctrine:fixtures:load --purge-with-truncate</info>
+  <info>php %command.full_name% --purge-with-truncate</info>
 EOT
         );
     }

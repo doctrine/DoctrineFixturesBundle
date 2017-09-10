@@ -98,10 +98,10 @@ Once your fixtures have been written, load them by executing this command:
 .. code-block:: bash
 
     # when using the ORM
-    $ php app/console doctrine:fixtures:load
+    $ php bin/console doctrine:fixtures:load
 
     # when using the ODM
-    $ php app/console doctrine:mongodb:fixtures:load
+    $ php bin/console doctrine:mongodb:fixtures:load
 
 .. caution::
 

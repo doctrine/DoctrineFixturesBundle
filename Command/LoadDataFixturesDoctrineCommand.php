@@ -128,12 +128,6 @@ EOT
      */
     private function askConfirmation(InputInterface $input, OutputInterface $output, $question, $default)
     {
-        if (!class_exists('Symfony\Component\Console\Question\ConfirmationQuestion')) {
-            $dialog = $this->getHelperSet()->get('dialog');
-
-            return $dialog->askConfirmation($output, $question, $default);
-        }
-
         $questionHelper = $this->getHelperSet()->get('question');
         $question = new ConfirmationQuestion($question, $default);
 

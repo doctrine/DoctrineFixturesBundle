@@ -257,7 +257,7 @@ references:
     }
 
 The fixtures will now be executed in the ascending order of the value returned
-by ``getOrder()``. Any object that is set with the ``setReference()`` method
+by ``getOrder()``. Any object that is set with the ``addReference()`` method
 can be accessed via ``getReference()`` in fixture classes that have a higher
 order.
 

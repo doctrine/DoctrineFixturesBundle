@@ -115,7 +115,7 @@ EOT
         $executor->setLogger(function ($message) use ($output) {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
-        $executor->execute($fixtures, $input->getOption('append'),$input->getOption('multiple-transactions'));
+        $executor->execute($fixtures, $input->getOption('append'), $input->getOption('multiple-transactions'));
     }
 
     /**

@@ -17,7 +17,7 @@ following command to download the latest stable version of this bundle:
 
 .. code-block:: bash
 
-    composer require --dev doctrine/doctrine-fixtures-bundle
+    composer require doctrine/doctrine-fixtures-bundle
 
 This command assumes you have Composer installed globally, as explained
 in the `installation chapter`_ of the Composer documentation.

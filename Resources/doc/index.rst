@@ -56,7 +56,7 @@ Data fixtures are PHP classes where you create objects and persist them to the
 database. By default, these classes live in ``src/AppBundle/DataFixtures/ORM/``
 (``src/AppBundle/DataFixtures/MongoDB/`` when using ODM).
 
-Imagine that you want to add some ``Product`` objects to you database. No problem!
+Imagine that you want to add some ``Product`` objects to your database. No problem!
 Just create a fixtures class and start adding products!
 
 .. code-block:: php

@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+
+        <!-- commands -->
+        <service id="doctrine.fixtures_load_command" class="Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand">
+            <tag name="console.command" command="doctrine:fixtures:load" />
+        </service>
+
+    </services>
+</container>

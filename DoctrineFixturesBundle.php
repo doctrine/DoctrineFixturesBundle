@@ -14,6 +14,8 @@
 
 namespace Doctrine\Bundle\FixturesBundle;
 
+use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -24,4 +26,9 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class DoctrineFixturesBundle extends Bundle
 {
+    public function build(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new FixturesCompilerPass());
+    }
+
 }

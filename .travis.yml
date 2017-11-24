@@ -1,0 +1,39 @@
+language: php
+sudo: false
+cache:
+    directories:
+        - $HOME/.composer/cache/files
+
+matrix:
+    fast_finish: true
+    include:
+          # Minimum supported PHP and Symfony version
+        - php: 5.5
+          env: DEPENDENCIES="minimum"
+
+          # Test the latest stable release
+        - php: 5.5
+        - php: 5.6
+        - php: 7.0
+        - php: 7.1
+        - php: 7.2
+
+          # Test LTS version we support
+        - php: 7.2
+          env: DEPENDENCIES="symfony/lts:v3"
+
+        - php: 7.2
+          env: DEPENDENCIES="beta"
+
+before_install:
+    - if [ "$DEPENDENCIES" = "minimum" ]; then COMPOSER_FLAGS="--prefer-stable --prefer-lowest"; fi;
+    - if [ "$DEPENDENCIES" = "beta" ]; then composer config minimum-stability beta; fi;
+    - if [[ $DEPENDENCIES == *"/"* ]]; then composer require --no-update $DEPENDENCIES; fi;
+
+install:
+    # To be removed when this issue will be resolved: https://github.com/composer/composer/issues/5355
+    - if [[ "$COMPOSER_FLAGS" == *"--prefer-lowest"* ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --quiet; fi
+    - travis_retry composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
+
+script:
+    - ./vendor/bin/simple-phpunit

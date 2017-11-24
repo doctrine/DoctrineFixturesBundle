@@ -14,6 +14,8 @@
 
 namespace Doctrine\Bundle\FixturesBundle\DependencyInjection;
 
+use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass;
+use Doctrine\Bundle\FixturesBundle\ORMFixtureInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -29,5 +31,8 @@ class DoctrineFixturesExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(dirname(__DIR__).'/Resources/config'));
 
         $loader->load('services.xml');
+
+        $container->registerForAutoconfiguration(ORMFixtureInterface::class)
+            ->addTag(FixturesCompilerPass::FIXTURE_TAG);
     }
 }

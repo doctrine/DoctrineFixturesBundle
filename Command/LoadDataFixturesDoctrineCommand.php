@@ -15,6 +15,7 @@
 namespace Doctrine\Bundle\FixturesBundle\Command;
 
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
+use Doctrine\Bundle\FixturesBundle\EmptyFixture;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\DBAL\Sharding\PoolingShardConnection;
@@ -114,6 +115,14 @@ EOT
         $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);
         $executor->setLogger(function ($message) use ($output) {
+            /*
+             * Hides the "Loading ... EmptyFixture" line, which is confusing.
+             * See the Fixture::getDependencies() method for details about this.
+             */
+            if (strpos($message, EmptyFixture::class) !== false) {
+                return;
+            }
+
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));

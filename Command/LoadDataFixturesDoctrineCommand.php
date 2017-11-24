@@ -15,6 +15,7 @@
 namespace Doctrine\Bundle\FixturesBundle\Command;
 
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
+use Doctrine\Bundle\FixturesBundle\EmptyFixture;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\DBAL\Sharding\PoolingShardConnection;
@@ -118,7 +119,7 @@ EOT
              * Hides the "Loading ... EmptyFixture" line, which is confusing.
              * See the Fixture::getDependencies() method for details about this.
              */
-            if (strpos($message, 'Doctrine\\Bundle\\FixturesBundle\\EmptyFixture') !== false) {
+            if (strpos($message, EmptyFixture::class) !== false) {
                 return;
             }
 

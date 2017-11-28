@@ -20,15 +20,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  *
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  */
-abstract class Fixture extends AbstractFixture implements ContainerAwareInterface, DependentFixtureInterface
+abstract class Fixture extends AbstractFixture implements ORMFixtureInterface
 {
-    use ContainerAwareTrait;
-
-    public function getDependencies()
-    {
-        // 'EmptyFixture' is a fixture class that loads no data. It's required
-        // because Doctrine doesn't allow to return an empty array in this method
-        // See https://github.com/doctrine/data-fixtures/pull/252
-        return array(EmptyFixture::class);
-    }
 }

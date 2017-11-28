@@ -236,8 +236,9 @@ this one:
     namespace AppBundle\DataFixtures\ORM;
     // ...
     use AppBundle\DataFixtures\ORM\UserFixtures;
+    use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
-    class GroupFixtures extends Fixture
+    class GroupFixtures extends Fixture implements DependentFixtureInterface
     {
         public function load(ObjectManager $manager)
         {

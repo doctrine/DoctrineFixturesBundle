@@ -19,6 +19,8 @@ following command to download the latest stable version of this bundle:
 If you're *not* using Symfony Flex (i.e. Symfony 3 and lower), you will
 also need to enable the bundle in your ``AppKernel`` class:
 
+.. code-block:: php
+
     // app/AppKernel.php
 
     // ...

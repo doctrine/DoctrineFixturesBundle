@@ -30,8 +30,11 @@ final class FixturesCompilerPass implements CompilerPassInterface
         $definition = $container->getDefinition('doctrine.fixtures.loader');
         $taggedServices = $container->findTaggedServiceIds(self::FIXTURE_TAG);
 
+        $fixtures = [];
         foreach ($taggedServices as $serviceId => $tags) {
-            $definition->addMethodCall('addFixture', [new Reference($serviceId)]);
+            $fixtures[] = new Reference($serviceId);
         }
+
+        $definition->addMethodCall('addFixtures', [$fixtures]);
     }
 }

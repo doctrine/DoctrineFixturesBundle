@@ -19,8 +19,31 @@ use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
  */
 final class SymfonyFixturesLoader extends ContainerAwareLoader
 {
+    private $loadedFixtures = [];
+
+    /**
+     * @internal
+     */
+    public function addFixtures(array $fixtures)
+    {
+        // Store all loaded fixtures so that we can resolve the dependencies correctly.
+        foreach ($fixtures as $fixture) {
+            $this->loadedFixtures[get_class($fixture)] = $fixture;
+        }
+
+        // Now load all the fixtures
+        foreach ($this->loadedFixtures as $fixture) {
+            $this->addFixture($fixture);
+        }
+    }
+
     public function addFixture(FixtureInterface $fixture)
     {
+        $class = get_class($fixture);
+        if (!isset($this->loadedFixtures[$class])) {
+            $this->loadedFixtures[$class] = $fixture;
+        }
+
         // see https://github.com/doctrine/data-fixtures/pull/274
         // this is to give a clear error if you do not have this version
         if (!method_exists(Loader::class, 'createFixture')) {
@@ -35,15 +58,18 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
      */
     protected function createFixture($class)
     {
-        try {
-            /*
-             * We don't actually need to create the fixture. We just
-             * return the one that already exists.
-             */
-            return $this->getFixture($class);
-        } catch (\InvalidArgumentException $e) {
-            throw new \LogicException(sprintf('The "%s" fixture class is trying to be loaded, but is not available. Make sure this class is defined as a service and tagged with "%s".', $class, FixturesCompilerPass::FIXTURE_TAG));
+        /*
+         * We don't actually need to create the fixture. We just
+         * return the one that already exists.
+         */
+
+        if (!isset($this->loadedFixtures[$class])) {
+            throw new \LogicException(sprintf(
+                'The "%s" fixture class is trying to be loaded, but is not available. Make sure this class is defined as a service and tagged with "%s".', $class, FixturesCompilerPass::FIXTURE_TAG
+            ));
         }
+
+        return $this->loadedFixtures[$class];
     }
 
     /**

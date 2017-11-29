@@ -10,7 +10,7 @@ UPGRADE to 3.0
     or implement the new ``Doctrine\Bundle\FixturesBundle\ORMFixtureInterface``.
 
 * The base ``Fixture`` class no longer implements ``ContainerAwareInterface``
-    and so no longer have a ``$this->contanier`` property. You *can* manually
+    and so no longer have a ``$this->container`` property. You *can* manually
     implement this interface. Or, a better idea is to update your fixtures
     to use dependency injection:
     

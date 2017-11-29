@@ -33,7 +33,7 @@ class MyFixture extends Fixture
 ```
 
 * The base ``Fixture`` class no longer implements ``DependentFixtureInterface``.
-    If you want to have a ``getDependencies()`` method, be sure to imlement
+    If you want to have a ``getDependencies()`` method, be sure to implement
     this interface explicitly:
     
 ```diff

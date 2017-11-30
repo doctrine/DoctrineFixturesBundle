@@ -4,7 +4,6 @@ namespace Doctrine\Bundle\FixturesBundle\Tests\IntegrationTest;
 
 use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
-use Doctrine\Bundle\FixturesBundle\EmptyFixture;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\DependentOnRequiredConstructorArgsFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures;
@@ -31,6 +30,39 @@ class IntegrationTest extends TestCase
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
             $c->autowire(WithDependenciesFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->setAlias('test.doctrine.fixtures.loader', new Alias('doctrine.fixtures.loader', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        /** @var ContainerAwareLoader $loader */
+        $loader = $container->get('test.doctrine.fixtures.loader');
+
+        $actualFixtures = $loader->getFixtures();
+        $this->assertCount(2, $actualFixtures);
+        $actualFixtureClasses = array_map(function($fixture) {
+            return get_class($fixture);
+        }, $actualFixtures);
+
+        $this->assertSame([
+            OtherFixtures::class,
+            WithDependenciesFixtures::class,
+        ], $actualFixtureClasses);
+        $this->assertInstanceOf(WithDependenciesFixtures::class, $actualFixtures[1]);
+    }
+
+    public function testFixturesLoaderWhenFixtureHasDepdencenyThatIsNotYetLoaded()
+    {
+        // See https://github.com/doctrine/DoctrineFixturesBundle/issues/215
+
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(function(ContainerBuilder $c) {
+            $c->autowire(WithDependenciesFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
             $c->setAlias('test.doctrine.fixtures.loader', new Alias('doctrine.fixtures.loader', true));

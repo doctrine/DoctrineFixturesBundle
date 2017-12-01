@@ -57,16 +57,17 @@ The <info>%command.name%</info> command loads data fixtures from your applicatio
 
   <info>php %command.full_name%</info>
 
-Fixtures are services that are tagged with doctrine.fixture.orm.
+Fixtures are services that are tagged with <comment>doctrine.fixture.orm</comment>.
 
-If you want to append the fixtures instead of flushing the database first you can use the <info>--append</info> option:
+If you want to append the fixtures instead of flushing the database first you can use the <comment>--append</comment> option:
 
-  <info>php %command.full_name% --append</info>
+  <info>php %command.full_name%</info> <comment>--append</comment>
 
-By default Doctrine Data Fixtures uses DELETE statements to drop the existing rows from
-the database. If you want to use a TRUNCATE statement instead you can use the <info>--purge-with-truncate</info> flag:
+By default Doctrine Data Fixtures uses DELETE statements to drop the existing rows from the database.
+If you want to use a TRUNCATE statement instead you can use the <comment>--purge-with-truncate</comment> flag:
 
-  <info>php %command.full_name% --purge-with-truncate</info>
+  <info>php %command.full_name%</info> <comment>--purge-with-truncate</comment>
+
 EOT
         );
     }

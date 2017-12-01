@@ -47,7 +47,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
     {
         $this
             ->setName('doctrine:fixtures:load')
-            ->setDescription('Load data fixtures to your database.')
+            ->setDescription('Load data fixtures to your database')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')

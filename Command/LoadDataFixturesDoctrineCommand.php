@@ -24,6 +24,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Load data fixtures from bundles.
@@ -72,19 +73,22 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ui = new SymfonyStyle($input, $output);
+
         /** @var $doctrine \Doctrine\Common\Persistence\ManagerRegistry */
         $doctrine = $this->getContainer()->get('doctrine');
         $em = $doctrine->getManager($input->getOption('em'));
 
-        if ($input->isInteractive() && !$input->getOption('append')) {
-            if (!$this->askConfirmation($input, $output, '<question>Careful, database will be purged. Do you want to continue y/N ?</question>', false)) {
-                return;
-            }
+        if (!$input->getOption('append')) {
+            $ui->ask('Careful, database will be purged. Do you want to continue y/N ?', false);
         }
 
         if ($input->getOption('shard')) {
             if (!$em->getConnection() instanceof PoolingShardConnection) {
-                throw new \LogicException(sprintf("Connection of EntityManager '%s' must implement shards configuration.", $input->getOption('em')));
+                throw new \LogicException(sprintf(
+                    'Connection of EntityManager "%s" must implement shards configuration.',
+                    $input->getOption('em')
+                ));
             }
 
             $em->getConnection()->connect($input->getOption('shard'));
@@ -92,32 +96,16 @@ EOT
 
         $fixtures = $this->fixturesLoader->getFixtures();
         if (!$fixtures) {
-            throw new InvalidArgumentException(
-                'Could not find any fixture services to load.'
-            );
+            $ui->error('Could not find any fixture services to load.');
+
+            return 1;
         }
         $purger = new ORMPurger($em);
         $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);
-        $executor->setLogger(function ($message) use ($output) {
-            $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
+        $executor->setLogger(function ($message) use ($ui) {
+            $ui->text(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));
-    }
-
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     * @param string          $question
-     * @param bool            $default
-     *
-     * @return bool
-     */
-    private function askConfirmation(InputInterface $input, OutputInterface $output, $question, $default)
-    {
-        $questionHelper = $this->getHelperSet()->get('question');
-        $question = new ConfirmationQuestion($question, $default);
-
-        return $questionHelper->ask($input, $output, $question);
     }
 }

@@ -219,7 +219,7 @@ an array of the fixture classes that must be loaded before this one:
     use App\DataFixtures\UserFixtures;
     use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
-    class GroupFixtures extends Fixture implements DependentFixtureInterface;
+    class GroupFixtures extends Fixture implements DependentFixtureInterface
     {
         public function load(ObjectManager $manager)
         {

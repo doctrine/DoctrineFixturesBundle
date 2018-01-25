@@ -12,7 +12,7 @@ services:
     tags: ['doctrine.fixture.orm']
     autowire: true # if you need dependency injection, see next bullet point
 
-  AppBundle\DataFixtures\ORM:
+  AppBundle\DataFixtures\ORM\:
     resource: '../../DataFixtures/ORM/*'
 ```
 

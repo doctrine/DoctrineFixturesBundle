@@ -3,9 +3,21 @@ UPGRADE to 3.0
 
 * The automatic loading of fixtures in a directory (e.g.
     AppBundle\DataFixtures\ORM) was removed. Instead, register
-    your fixture classes as services and tag then with doctrine.fixture.orm.
-    This will happen automatically if you're using the Symfony 3.3
-    or higher default service configuration and your fixture classes
+    your fixture classes as services and tag then with `doctrine.fixture.orm`,
+    like this:
+```yaml
+# src/AppBundle/Resources/config/dataFixture.yml
+services:
+  _defaults:
+    tags: ['doctrine.fixture.orm']
+    autowire: true # if you need dependency injection, see next bullet point
+
+  AppBundle\DataFixtures\ORM\:
+    resource: '../../DataFixtures/ORM/*'
+```
+
+  This will happen automatically if you're using the Symfony 3.3
+    or higher **default service configuration** and your fixture classes
     extend the normal ``Doctrine\Bundle\FixturesBundle\Fixture`` class,
     or implement the new ``Doctrine\Bundle\FixturesBundle\ORMFixtureInterface``.
 

@@ -158,14 +158,16 @@ exact same object via its name:
     // ...
     class UserFixtures extends Fixture
     {
+        public const ADMIN_USER_REFERENCE = 'admin-user';
+
         public function load(ObjectManager $manager)
         {
             $userAdmin = new User('admin', 'pass_1234');
             $manager->persist($userAdmin);
             $manager->flush();
 
-            // other fixtures can get this object using the 'admin-user' name
-            $this->addReference('admin-user', $userAdmin);
+            // other fixtures can get this object using the UserFixtures::ADMIN_USER_REFERENCE constant
+            $this->addReference(self::ADMIN_USER_REFERENCE, $userAdmin);
         }
     }
 
@@ -177,7 +179,7 @@ exact same object via its name:
         {
             $userGroup = new Group('administrators');
             // this reference returns the User object created in UserFixtures
-            $userGroup->addUser($this->getReference('admin-user'));
+            $userGroup->addUser($this->getReference(UserFixtures::ADMIN_USER_REFERENCE));
 
             $manager->persist($userGroup);
             $manager->flush();

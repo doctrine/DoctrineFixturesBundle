@@ -25,7 +25,7 @@ also need to enable the bundle in your ``AppKernel`` class:
 
     // ...
     // registerBundles()
-    if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {
+    if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
         // ...
         $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
     }

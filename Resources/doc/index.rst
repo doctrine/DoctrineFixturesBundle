@@ -4,7 +4,7 @@ DoctrineFixturesBundle
 Fixtures are used to load a "fake" set of data into a database that can then
 be used for testing or to help give you some interesting data while you're
 developing your application. This bundle makes creating fixtures *easy*, and
-supports the :doc:`ORM </doctrine>` (MySQL, PostgreSQL, SQLite, etc.).
+supports the `ORM`_ (MySQL, PostgreSQL, SQLite, etc.).
 
 Installation
 ------------
@@ -236,5 +236,6 @@ an array of the fixture classes that must be loaded before this one:
         }
     }
 
+.. _`ORM`: https://symfony.com/doc/current/doctrine.html
 .. _`installation chapter`: https://getcomposer.org/doc/00-intro.md
 .. _`default service configuration`: https://symfony.com/doc/current/service_container.html#service-container-services-load-example

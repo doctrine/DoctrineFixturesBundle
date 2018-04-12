@@ -16,6 +16,11 @@ following command to download the latest stable version of this bundle:
 
     composer require --dev doctrine/doctrine-fixtures-bundle
 
+.. tip::
+
+    If you are using flex you just need to do:
+    ``composer req orm-fixtures``
+    
 If you're *not* using Symfony Flex (i.e. Symfony 3 and lower), you will
 also need to enable the bundle in your ``AppKernel`` class:
 

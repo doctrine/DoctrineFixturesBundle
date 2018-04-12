@@ -53,7 +53,7 @@ class IntegrationTest extends TestCase
         $this->assertInstanceOf(WithDependenciesFixtures::class, $actualFixtures[1]);
     }
 
-    public function testFixturesLoaderWhenFixtureHasDepdencenyThatIsNotYetLoaded()
+    public function testFixturesLoaderWhenFixtureHasDependencyThatIsNotYetLoaded()
     {
         // See https://github.com/doctrine/DoctrineFixturesBundle/issues/215
 

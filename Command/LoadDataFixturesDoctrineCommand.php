@@ -5,7 +5,9 @@ namespace Doctrine\Bundle\FixturesBundle\Command;
 
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\DBAL\Sharding\PoolingShardConnection;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,6 +41,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
+            ->addOption('class', null, InputOption::VALUE_REQUIRED, 'Load data fixtures from one class')
             ->setHelp(<<<EOT
 The <info>%command.name%</info> command loads data fixtures from your application:
 
@@ -88,6 +91,20 @@ EOT
 
             return 1;
         }
+
+        if ($input->getOption('class')) {
+            $fixture = $this->fixturesLoader->getFixture($input->getOption('class'));
+
+            if ($fixture instanceof DependentFixtureInterface || $fixture instanceof OrderedFixtureInterface) {
+                throw new \LogicException(sprintf(
+                   'Class "%s" has dependencies or is ordered.',
+                    $input->getOption('class')
+                ));
+            }
+
+            $fixtures = [$fixture];
+        }
+
         $purger = new ORMPurger($em);
         $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);

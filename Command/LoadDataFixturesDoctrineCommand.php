@@ -4,15 +4,14 @@
 namespace Doctrine\Bundle\FixturesBundle\Command;
 
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
+use Doctrine\Bundle\FixturesBundle\Exception\NoFixtureServicesFoundException;
 use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
-use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Bundle\FixturesBundle\Service\DoctrineFixtureService;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\DBAL\Sharding\PoolingShardConnection;
-use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
@@ -37,10 +36,12 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
         $this
             ->setName('doctrine:fixtures:load')
             ->setDescription('Load data fixtures to your database')
-            ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
+            ->addOption('append', null, InputOption::VALUE_NONE,
+                'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
-            ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
+            ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE,
+                'Purge data by using a database-level TRUNCATE statement')
             ->setHelp(<<<EOT
 The <info>%command.name%</info> command loads data fixtures from your application:
 
@@ -58,12 +59,15 @@ If you want to use a TRUNCATE statement instead you can use the <comment>--purge
   <info>php %command.full_name%</info> <comment>--purge-with-truncate</comment>
 
 EOT
-        );
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $ui = new SymfonyStyle($input, $output);
+        $logger = function ($message) use ($ui) {
+            $ui->text(sprintf('  <comment>></comment> <info>%s</info>', $message));
+        };
 
         /** @var $doctrine \Doctrine\Common\Persistence\ManagerRegistry */
         $doctrine = $this->getContainer()->get('doctrine');
@@ -84,18 +88,15 @@ EOT
             $em->getConnection()->connect($input->getOption('shard'));
         }
 
-        $fixtures = $this->fixturesLoader->getFixtures();
-        if (!$fixtures) {
+        $doctrineFixtureService = new DoctrineFixtureService($this->fixturesLoader, $em);
+        $doctrineFixtureService->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
+        $doctrineFixtureService->setAppend($input->getOption('append'));
+        try {
+            $doctrineFixtureService->load($logger);
+        } catch (NoFixtureServicesFoundException $e) {
             $ui->error('Could not find any fixture services to load.');
 
             return 1;
         }
-        $purger = new ORMPurger($em);
-        $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
-        $executor = new ORMExecutor($em, $purger);
-        $executor->setLogger(function ($message) use ($ui) {
-            $ui->text(sprintf('  <comment>></comment> <info>%s</info>', $message));
-        });
-        $executor->execute($fixtures, $input->getOption('append'));
     }
 }

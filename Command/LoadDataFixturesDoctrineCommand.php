@@ -38,7 +38,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
         $this
             ->setName('doctrine:fixtures:load')
             ->setDescription('Load data fixtures to your database')
-            ->addOption('fixtures', null, InputOption::VALUE_IS_ARRAY, 'The directory to load data fixtures from.')
+            ->addOption('fixtures', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'The directory to load data fixtures from.')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
@@ -93,26 +93,25 @@ EOT
         $dirOrFile = $input->getOption('fixtures');
         if ($dirOrFile) {
             $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
-        } else {
-            /** @var $kernel \Symfony\Component\HttpKernel\KernelInterface */
-            $kernel = $this->getApplication()->getKernel();
-            $paths = array($kernel->getRootDir().'/DataFixtures');
-            foreach ($kernel->getBundles() as $bundle) {
-                $paths[] = $bundle->getPath().'/DataFixtures';
+            $loader = new DataFixturesLoader($this->getContainer());
+            foreach ($paths as $path) {
+                if (is_dir($path)) {
+                    $loader->loadFromDirectory($path);
+                } elseif (is_file($path)) {
+                    $loader->loadFromFile($path);
+                }
             }
+            $fixtures = $loader->getFixtures();
+        } else {
+            $fixtures = $this->fixturesLoader->getFixtures();
         }
 
-        $loader = new DataFixturesLoader($this->getContainer());
-        foreach ($paths as $path) {
-            if (is_dir($path)) {
-                $loader->loadFromDirectory($path);
-            } elseif (is_file($path)) {
-                $loader->loadFromFile($path);
-            }
-        }
-        $fixtures = $loader->getFixtures();
         if (!$fixtures) {
-            $ui->error(sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths)));
+            if (null !== $paths) {
+                $ui->error(sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths)));
+            } else {
+                $ui->error('Could not find any fixture services to load.');
+            }
 
             return 1;
         }

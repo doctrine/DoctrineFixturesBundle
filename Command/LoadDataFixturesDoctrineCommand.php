@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as DataFixturesLoader;
 
 /**
  * Load data fixtures from bundles.
@@ -37,6 +38,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
         $this
             ->setName('doctrine:fixtures:load')
             ->setDescription('Load data fixtures to your database')
+            ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The directory to load data fixtures from.')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
@@ -45,6 +47,10 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
 The <info>%command.name%</info> command loads data fixtures from your application:
 
   <info>php %command.full_name%</info>
+
+You can also optionally specify the path to fixtures with the <info>--fixtures</info> option:
+
+  <info>php %command.full_name% --fixtures=/path/to/fixtures1 --fixtures=/path/to/fixtures2</info>
 
 Fixtures are services that are tagged with <comment>doctrine.fixture.orm</comment>.
 
@@ -58,7 +64,7 @@ If you want to use a TRUNCATE statement instead you can use the <comment>--purge
   <info>php %command.full_name%</info> <comment>--purge-with-truncate</comment>
 
 EOT
-        );
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -84,9 +90,29 @@ EOT
             $em->getConnection()->connect($input->getOption('shard'));
         }
 
-        $fixtures = $this->fixturesLoader->getFixtures();
+        $dirOrFile = $input->getOption('fixtures');
+        if ($dirOrFile) {
+            $paths = is_array($dirOrFile) ? $dirOrFile : array($dirOrFile);
+        } else {
+            /** @var $kernel \Symfony\Component\HttpKernel\KernelInterface */
+            $kernel = $this->getApplication()->getKernel();
+            $paths = array($kernel->getRootDir().'/DataFixtures');
+            foreach ($kernel->getBundles() as $bundle) {
+                $paths[] = $bundle->getPath().'/DataFixtures';
+            }
+        }
+
+        $loader = new DataFixturesLoader($this->getContainer());
+        foreach ($paths as $path) {
+            if (is_dir($path)) {
+                $loader->loadFromDirectory($path);
+            } elseif (is_file($path)) {
+                $loader->loadFromFile($path);
+            }
+        }
+        $fixtures = $loader->getFixtures();
         if (!$fixtures) {
-            $ui->error('Could not find any fixture services to load.');
+            $ui->error(sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths)));
 
             return 1;
         }

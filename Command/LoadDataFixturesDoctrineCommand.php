@@ -8,7 +8,6 @@ use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\DBAL\Sharding\PoolingShardConnection;
-use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -107,7 +106,7 @@ EOT
         }
 
         if (!$fixtures) {
-            if (null !== $paths) {
+            if ($dirOrFile) {
                 $ui->error(sprintf('Could not find any fixtures to load in: %s', "\n\n- ".implode("\n- ", $paths)));
             } else {
                 $ui->error('Could not find any fixture services to load.');

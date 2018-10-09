@@ -115,7 +115,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     {
         foreach ($services as $service => $tags) {
             foreach ($tags as $attributes) {
-                if (key_exists('set', $attributes)) {
+                if (array_key_exists('set', $attributes)) {
                     $this->fixtureTagMapping[$service] = $attributes['set'];
                 }
             }

@@ -145,6 +145,36 @@ class IntegrationTest extends TestCase
 
         $loader->getFixtures();
     }
+
+    public function testFixturesLoaderWithSetOption()
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(function(ContainerBuilder $c) {
+            $c->autowire(OtherFixtures::class)
+              ->addTag(FixturesCompilerPass::FIXTURE_TAG, ['set' => 'staging']);
+
+            $c->autowire(WithDependenciesFixtures::class)
+              ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->setAlias('test.doctrine.fixtures.loader', new Alias('doctrine.fixtures.loader', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        /** @var ContainerAwareLoader $loader */
+        $loader = $container->get('test.doctrine.fixtures.loader');
+
+        $actualFixtures = $loader->getFixtures('staging');
+        $this->assertCount(1, $actualFixtures);
+        $actualFixtureClasses = array_map(function($fixture) {
+            return get_class($fixture);
+        }, $actualFixtures);
+
+        $this->assertSame([
+            OtherFixtures::class,
+        ], $actualFixtureClasses);
+        $this->assertInstanceOf(OtherFixtures::class, $actualFixtures[0]);
+    }
 }
 
 class IntegrationTestKernel extends Kernel

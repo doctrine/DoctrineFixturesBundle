@@ -38,6 +38,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->setName('doctrine:fixtures:load')
             ->setDescription('Load data fixtures to your database')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
+            ->addOption('set', null, InputOption::VALUE_OPTIONAL, 'Only fixtures with this set attribute to the doctrine.fixtures.loader tag will be loaded')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
@@ -86,7 +87,7 @@ EOT
             $em->getConnection()->connect($input->getOption('shard'));
         }
 
-        $fixtures = $this->fixturesLoader->getFixtures();
+        $fixtures = $this->fixturesLoader->getFixtures($input->getOption('set'));
         if (!$fixtures) {
             $ui->error('Could not find any fixture services to load.');
 

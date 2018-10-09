@@ -21,6 +21,8 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
 {
     private $loadedFixtures = [];
 
+    private $setsFixtureMapping = [];
+
     /**
      * @internal
      */
@@ -28,7 +30,9 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     {
         // Store all loaded fixtures so that we can resolve the dependencies correctly.
         foreach ($fixtures as $fixture) {
-            $this->loadedFixtures[get_class($fixture)] = $fixture;
+            $class = get_class($fixture['fixture']);
+            $this->loadedFixtures[$class] = $fixture['fixture'];
+            $this->addSetsFixtureMapping($class, $fixture['tags']);
         }
 
         // Now load all the fixtures
@@ -37,6 +41,9 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function addFixture(FixtureInterface $fixture)
     {
         $class = get_class($fixture);
@@ -70,6 +77,47 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         }
 
         return $this->loadedFixtures[$class];
+    }
+
+    /**
+     * Returns the array of data fixtures to execute.
+     *
+     * @param string $set
+     *
+     * @return array $fixtures
+     */
+    public function getFixtures($set = null)
+    {
+        $fixtures = parent::getFixtures();
+
+        if ($set) {
+            $filteredFixtures = [];
+            foreach ($fixtures as $key => $fixture) {
+                if (isset($this->setsFixtureMapping[$set][get_class($fixture)])) {
+                    $filteredFixtures[$key] = $fixture;
+                }
+            }
+            $fixtures = $filteredFixtures;
+        }
+
+        return $fixtures;
+    }
+
+    /**
+     * Creates an array of the sets and there fixtures
+     *
+     * @param string $className
+     * @param array $tags
+     *
+     * @return void
+     */
+    public function addSetsFixtureMapping($className, array $tags)
+    {
+        foreach ($tags as $attributes) {
+            if (array_key_exists('set', $attributes)) {
+                $this->setsFixtureMapping[$attributes['set']][$className] = true;
+            }
+        }
     }
 
     /**

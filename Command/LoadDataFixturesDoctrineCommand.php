@@ -84,6 +84,10 @@ EOT
             $em->getConnection()->connect($input->getOption('shard'));
         }
 
+        if ($input->getOption('tag')) {
+            $this->fixturesLoader->setTag($input->getOption('tag'));
+        }
+
         $fixtures = $this->fixturesLoader->getFixtures();
         if (!$fixtures) {
             $ui->error('Could not find any fixture services to load.');

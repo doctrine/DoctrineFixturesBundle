@@ -21,6 +21,10 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
 {
     private $loadedFixtures = [];
 
+    private $fixtureTagMapping = [];
+
+    private $tag = null;
+
     /**
      * @internal
      */
@@ -37,6 +41,9 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function addFixture(FixtureInterface $fixture)
     {
         $class = get_class($fixture);
@@ -70,6 +77,61 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         }
 
         return $this->loadedFixtures[$class];
+    }
+
+
+    /**
+     * Returns the array of data fixtures to execute.
+     *
+     * @return array $fixtures
+     */
+    public function getFixtures()
+    {
+        $fixtures = parent::getFixtures();
+
+        if ($this->tag) {
+            $mapping = $this->fixtureTagMapping;
+            $tag = $this->tag;
+            $fixtures = array_filter(
+                $fixtures,
+                function ($fixture) use ($mapping, $tag) {
+                    return isset($mapping[$fixture]) && $mapping[$fixture] === $tag;
+                },
+                ARRAY_FILTER_USE_KEY
+            );
+        }
+
+        return $fixtures;
+    }
+
+    /**
+     * Creates an array of the fixtures and there tags
+     *
+     * @param array $services
+     *
+     * @return void
+     */
+    public function addFixtureTagMapping(array $services)
+    {
+        foreach ($services as $service => $tags) {
+            foreach ($tags as $attributes) {
+                if (key_exists('set', $attributes)) {
+                    $this->fixtureTagMapping[$service] = $attributes['set'];
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the fixturesByTag to the tag passed by the command
+     *
+     * @param string $tag
+     *
+     * @return void
+     */
+    public function setTag($tag)
+    {
+        $this->tag = $tag;
     }
 
     /**

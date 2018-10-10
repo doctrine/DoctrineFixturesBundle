@@ -93,9 +93,8 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
             $fixtures = array_filter(
                 $fixtures,
                 function ($fixture) use ($mapping, $set) {
-                    return isset($mapping[$set]) && in_array($fixture, $mapping[$set]);
-                },
-                ARRAY_FILTER_USE_KEY
+                    return isset($mapping[$set]) && in_array(get_class($fixture), $mapping[$set]);
+                }
             );
         }
 

@@ -89,7 +89,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         $fixtures = parent::getFixtures();
 
         if ($set) {
-            $mapping = $this->setMapping;
+            $mapping = $this->setsFixtureMapping;
             $fixtures = array_filter(
                 $fixtures,
                 function ($fixture) use ($mapping, $set) {
@@ -113,7 +113,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     {
         foreach ($services as $service => $tags) {
             foreach ($tags as $attributes) {
-                if (key_exists('set', $attributes)) {
+                if (array_key_exists('set', $attributes)) {
                     $this->setsFixtureMapping[$attributes['set']][] = $service;
                 }
             }

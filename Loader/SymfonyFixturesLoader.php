@@ -26,7 +26,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     /**
      * @internal
      */
-    public function addFixtures(array $fixtures)
+    public function addFixtures(array $fixtures, array $taggedServices)
     {
         // Store all loaded fixtures so that we can resolve the dependencies correctly.
         foreach ($fixtures as $fixture) {
@@ -38,7 +38,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
             $this->addFixture($fixture);
         }
 
-        $this->addSetsFixtureMapping();
+        $this->addSetsFixtureMapping($taggedServices);
     }
 
     /**

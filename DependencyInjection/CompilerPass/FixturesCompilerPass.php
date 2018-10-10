@@ -24,8 +24,6 @@ final class FixturesCompilerPass implements CompilerPassInterface
             $fixtures[] = new Reference($serviceId);
         }
 
-        $definition->addMethodCall('addFixtures', [$fixtures]);
-
-        $definition->addMethodCall('addFixtureTagMapping', [$taggedServices]);
+        $definition->addMethodCall('addFixtures', [$fixtures, $taggedServices]);
     }
 }

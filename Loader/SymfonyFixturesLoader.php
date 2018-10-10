@@ -21,9 +21,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
 {
     private $loadedFixtures = [];
 
-    private $fixtureTagMapping = [];
-
-    private $tag = null;
+    private $setsFixtureMapping = [];
 
     /**
      * @internal
@@ -39,6 +37,8 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         foreach ($this->loadedFixtures as $fixture) {
             $this->addFixture($fixture);
         }
+
+        $this->addSetsFixtureMapping();
     }
 
     /**
@@ -79,23 +79,21 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         return $this->loadedFixtures[$class];
     }
 
-
     /**
      * Returns the array of data fixtures to execute.
      *
      * @return array $fixtures
      */
-    public function getFixtures()
+    public function getFixtures($set = null)
     {
         $fixtures = parent::getFixtures();
 
-        if ($this->tag) {
-            $mapping = $this->fixtureTagMapping;
-            $tag = $this->tag;
+        if ($set) {
+            $mapping = $this->setMapping;
             $fixtures = array_filter(
                 $fixtures,
-                function ($fixture) use ($mapping, $tag) {
-                    return isset($mapping[$fixture]) && $mapping[$fixture] === $tag;
+                function ($fixture) use ($mapping, $set) {
+                    return isset($mapping[$set]) && in_array($fixture, $mapping[$set]);
                 },
                 ARRAY_FILTER_USE_KEY
             );
@@ -105,33 +103,21 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     }
 
     /**
-     * Creates an array of the fixtures and there tags
+     * Creates an array of the sets and there fixtures
      *
      * @param array $services
      *
      * @return void
      */
-    public function addFixtureTagMapping(array $services)
+    public function addSetsFixtureMapping(array $services)
     {
         foreach ($services as $service => $tags) {
             foreach ($tags as $attributes) {
-                if (array_key_exists('set', $attributes)) {
-                    $this->fixtureTagMapping[$service] = $attributes['set'];
+                if (key_exists('set', $attributes)) {
+                    $this->setsFixtureMapping[$attributes['set']][] = $service;
                 }
             }
         }
-    }
-
-    /**
-     * Set the fixturesByTag to the tag passed by the command
-     *
-     * @param string $tag
-     *
-     * @return void
-     */
-    public function setTag($tag)
-    {
-        $this->tag = $tag;
     }
 
     /**

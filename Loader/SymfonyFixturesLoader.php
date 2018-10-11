@@ -26,19 +26,18 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     /**
      * @internal
      */
-    public function addFixtures(array $fixtures, array $taggedServices)
+    public function addFixtures(array $fixtures)
     {
         // Store all loaded fixtures so that we can resolve the dependencies correctly.
         foreach ($fixtures as $fixture) {
             $this->loadedFixtures[get_class($fixture)] = $fixture;
+            $this->addSetsFixtureMapping(get_class($fixture['fixture']), $fixture['tags']);
         }
 
         // Now load all the fixtures
         foreach ($this->loadedFixtures as $fixture) {
             $this->addFixture($fixture);
         }
-
-        $this->addSetsFixtureMapping($taggedServices);
     }
 
     /**
@@ -82,6 +81,8 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     /**
      * Returns the array of data fixtures to execute.
      *
+     * @param string $set
+     *
      * @return array $fixtures
      */
     public function getFixtures($set = null)
@@ -93,7 +94,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
             $fixtures = array_filter(
                 $fixtures,
                 function ($fixture) use ($mapping, $set) {
-                    return isset($mapping[$set]) && in_array(get_class($fixture), $mapping[$set]);
+                    return isset($mapping[$set][get_class($fixture)]) && $mapping[$set][get_class($fixture)];
                 }
             );
         }
@@ -104,17 +105,16 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     /**
      * Creates an array of the sets and there fixtures
      *
+     * @param string $className
      * @param array $services
      *
      * @return void
      */
-    public function addSetsFixtureMapping(array $services)
+    public function addSetsFixtureMapping($className, array $tags)
     {
-        foreach ($services as $service => $tags) {
-            foreach ($tags as $attributes) {
-                if (array_key_exists('set', $attributes)) {
-                    $this->setsFixtureMapping[$attributes['set']][] = $service;
-                }
+        foreach ($tags as $attributes) {
+            if (array_key_exists('set', $attributes)) {
+                $this->setsFixtureMapping[$attributes['set']][$className] = true;
             }
         }
     }

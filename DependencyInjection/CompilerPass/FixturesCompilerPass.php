@@ -21,9 +21,12 @@ final class FixturesCompilerPass implements CompilerPassInterface
 
         $fixtures = [];
         foreach ($taggedServices as $serviceId => $tags) {
-            $fixtures[] = new Reference($serviceId);
+            $fixtures[] = [
+                'fixture' => new Reference($serviceId),
+                'tags' => $tags
+            ];
         }
 
-        $definition->addMethodCall('addFixtures', [$fixtures, $taggedServices]);
+        $definition->addMethodCall('addFixtures', [$fixtures]);
     }
 }

@@ -3,6 +3,7 @@
 
 namespace Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass;
 
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -23,10 +24,27 @@ final class FixturesCompilerPass implements CompilerPassInterface
         foreach ($taggedServices as $serviceId => $tags) {
             $fixtures[] = [
                 'fixture' => new Reference($serviceId),
-                'tags' => $tags
+                'groups' => $this->getFixtureGroups($serviceId, $container)
             ];
+
         }
 
         $definition->addMethodCall('addFixtures', [$fixtures]);
+    }
+
+    private function getFixtureGroups($service, ContainerBuilder $container) {
+        $def = $container->getDefinition($service);
+        $class = $def->getClass();
+
+        if (!$r = $container->getReflectionClass($class)) {
+            throw new InvalidArgumentException(sprintf('Class "%s" used for service "%s" cannot be found.', $class, $service));
+        }
+
+        $groups = [];
+        if ($r->implementsInterface(FixtureGroupInterface::class)) {
+            $groups = $class::getGroups();
+        }
+
+        return $groups;
     }
 }

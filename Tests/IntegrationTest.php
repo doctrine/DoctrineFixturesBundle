@@ -146,12 +146,12 @@ class IntegrationTest extends TestCase
         $loader->getFixtures();
     }
 
-    public function testFixturesLoaderWithSetOption()
+    public function testFixturesLoaderWithGroupsOption()
     {
         $kernel = new IntegrationTestKernel('dev', true);
         $kernel->addServices(function(ContainerBuilder $c) {
             $c->autowire(OtherFixtures::class)
-              ->addTag(FixturesCompilerPass::FIXTURE_TAG, ['set' => 'staging']);
+              ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
             $c->autowire(WithDependenciesFixtures::class)
               ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -164,7 +164,7 @@ class IntegrationTest extends TestCase
         /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine.fixtures.loader');
 
-        $actualFixtures = $loader->getFixtures('staging');
+        $actualFixtures = $loader->getFixtures(['staging']);
         $this->assertCount(1, $actualFixtures);
         $actualFixtureClasses = array_map(function($fixture) {
             return get_class($fixture);

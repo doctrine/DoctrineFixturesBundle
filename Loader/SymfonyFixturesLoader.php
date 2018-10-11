@@ -21,7 +21,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
 {
     private $loadedFixtures = [];
 
-    private $setsFixtureMapping = [];
+    private $groupsFixtureMapping = [];
 
     /**
      * @internal
@@ -32,7 +32,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         foreach ($fixtures as $fixture) {
             $class = get_class($fixture['fixture']);
             $this->loadedFixtures[$class] = $fixture['fixture'];
-            $this->addSetsFixtureMapping($class, $fixture['tags']);
+            $this->addGroupsFixtureMapping($class, $fixture['groups']);
         }
 
         // Now load all the fixtures
@@ -82,19 +82,21 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     /**
      * Returns the array of data fixtures to execute.
      *
-     * @param string $set
+     * @param array $groups
      *
      * @return array $fixtures
      */
-    public function getFixtures($set = null)
+    public function getFixtures(array $groups = [])
     {
         $fixtures = parent::getFixtures();
 
-        if ($set) {
+        if (!empty($groups)) {
             $filteredFixtures = [];
             foreach ($fixtures as $key => $fixture) {
-                if (isset($this->setsFixtureMapping[$set][get_class($fixture)])) {
-                    $filteredFixtures[$key] = $fixture;
+                foreach ($groups as $group) {
+                    if (isset($this->groupsFixtureMapping[$group][get_class($fixture)])) {
+                        $filteredFixtures[$key] = $fixture;
+                    }
                 }
             }
             $fixtures = $filteredFixtures;
@@ -104,19 +106,17 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     }
 
     /**
-     * Creates an array of the sets and there fixtures
+     * Generates an array of the groups and their fixtures
      *
      * @param string $className
-     * @param array $tags
+     * @param array $groups
      *
      * @return void
      */
-    public function addSetsFixtureMapping($className, array $tags)
+    public function addGroupsFixtureMapping($className, array $groups)
     {
-        foreach ($tags as $attributes) {
-            if (array_key_exists('set', $attributes)) {
-                $this->setsFixtureMapping[$attributes['set']][$className] = true;
-            }
+        foreach ($groups as $group) {
+            $this->groupsFixtureMapping[$group][$className] = true;
         }
     }
 

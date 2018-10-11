@@ -32,7 +32,8 @@ final class FixturesCompilerPass implements CompilerPassInterface
         $definition->addMethodCall('addFixtures', [$fixtures]);
     }
 
-    private function getFixtureGroups($service, ContainerBuilder $container) {
+    private function getFixtureGroups($service, ContainerBuilder $container)
+    {
         $def = $container->getDefinition($service);
         $class = $def->getClass();
 

@@ -93,7 +93,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         if ($set) {
             $filteredFixtures = [];
             foreach ($fixtures as $class => $fixture) {
-                if (isset($this->setsFixtureMapping[$set][$class])) {
+                if (isset($this->setsFixtureMapping[$set][get_class($fixture)])) {
                     $filteredFixtures[$class] = $fixture;
                 }
             }
@@ -107,7 +107,7 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
      * Creates an array of the sets and there fixtures
      *
      * @param string $className
-     * @param array $services
+     * @param array $tags
      *
      * @return void
      */

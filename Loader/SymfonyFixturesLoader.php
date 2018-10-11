@@ -95,7 +95,6 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
             foreach ($fixtures as $class => $fixture) {
                 if (isset($this->setsFixtureMapping[$set][$class])) {
                     $filteredFixtures[$class] = $fixture;
-                    continue;
                 }
             }
             $fixtures = $filteredFixtures;

@@ -30,8 +30,9 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     {
         // Store all loaded fixtures so that we can resolve the dependencies correctly.
         foreach ($fixtures as $fixture) {
-            $this->loadedFixtures[get_class($fixture['fixture'])] = $fixture['fixture'];
-            $this->addSetsFixtureMapping(get_class($fixture['fixture']), $fixture['tags']);
+            $class = get_class($fixture['fixture']);
+            $this->loadedFixtures[$class] = $fixture['fixture'];
+            $this->addSetsFixtureMapping($class, $fixture['tags']);
         }
 
         // Now load all the fixtures
@@ -90,13 +91,14 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         $fixtures = parent::getFixtures();
 
         if ($set) {
-            $mapping = $this->setsFixtureMapping;
-            $fixtures = array_filter(
-                $fixtures,
-                function ($fixture) use ($mapping, $set) {
-                    return isset($mapping[$set][get_class($fixture)]) && $mapping[$set][get_class($fixture)];
+            $filteredFixtures = [];
+            foreach ($fixtures as $class => $fixture) {
+                if (isset($this->setsFixtureMapping[$set][get_class($fixture)])) {
+                    $filteredFixtures[$class] = $fixture;
+                    continue;
                 }
-            );
+            }
+            $fixtures = $filteredFixtures;
         }
 
         return $fixtures;

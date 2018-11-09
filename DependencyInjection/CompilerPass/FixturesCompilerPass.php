@@ -22,11 +22,17 @@ final class FixturesCompilerPass implements CompilerPassInterface
 
         $fixtures = [];
         foreach ($taggedServices as $serviceId => $tags) {
+            $groups = $this->getFixtureGroups($serviceId, $container);
+            foreach ($tags as $tagData) {
+                if (isset($tagData['group'])) {
+                    $groups[] = $tagData['group'];
+                }
+            }
+
             $fixtures[] = [
                 'fixture' => new Reference($serviceId),
-                'groups' => $this->getFixtureGroups($serviceId, $container)
+                'groups' => $groups,
             ];
-
         }
 
         $definition->addMethodCall('addFixtures', [$fixtures]);
@@ -38,14 +44,13 @@ final class FixturesCompilerPass implements CompilerPassInterface
         $class = $def->getClass();
 
         if (!$r = $container->getReflectionClass($class)) {
-            throw new InvalidArgumentException(sprintf('Class "%s" used for service "%s" cannot be found.', $class, $service));
+            throw new \InvalidArgumentException(sprintf('Class "%s" used for service "%s" cannot be found.', $class, $service));
         }
 
-        $groups = [];
-        if ($r->implementsInterface(FixtureGroupInterface::class)) {
-            $groups = $class::getGroups();
+        if (!$r->implementsInterface(FixtureGroupInterface::class)) {
+            return [];
         }
 
-        return $groups;
+        return $class::getGroups();
     }
 }

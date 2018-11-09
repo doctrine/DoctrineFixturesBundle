@@ -146,13 +146,15 @@ class IntegrationTest extends TestCase
         $loader->getFixtures();
     }
 
-    public function testFixturesLoaderWithGroupsOption()
+    public function testFixturesLoaderWithGroupsOptionViaInterface()
     {
         $kernel = new IntegrationTestKernel('dev', true);
         $kernel->addServices(function(ContainerBuilder $c) {
+            // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
               ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
+            // no getGroups() method
             $c->autowire(WithDependenciesFixtures::class)
               ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
@@ -174,6 +176,39 @@ class IntegrationTest extends TestCase
             OtherFixtures::class,
         ], $actualFixtureClasses);
         $this->assertInstanceOf(OtherFixtures::class, $actualFixtures[0]);
+    }
+
+    public function testFixturesLoaderWithGroupsOptionViaTag()
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(function(ContainerBuilder $c) {
+            // has a "staging" group via the getGroups() method
+            $c->autowire(OtherFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG, [
+                    'group' => 'group1',
+                ])
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG, [
+                    'group' => 'group2',
+                ]);
+
+            // no getGroups() method
+            $c->autowire(WithDependenciesFixtures::class)
+              ->addTag(FixturesCompilerPass::FIXTURE_TAG, [
+                  'group' => 'group2',
+              ]);
+
+            $c->setAlias('test.doctrine.fixtures.loader', new Alias('doctrine.fixtures.loader', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        /** @var ContainerAwareLoader $loader */
+        $loader = $container->get('test.doctrine.fixtures.loader');
+
+        $this->assertCount(1, $loader->getFixtures(['staging']));
+        $this->assertCount(1, $loader->getFixtures(['group1']));
+        $this->assertCount(2, $loader->getFixtures(['group2']));
+        $this->assertCount(0, $loader->getFixtures(['group3']));
     }
 }
 

@@ -9,6 +9,7 @@
 namespace Doctrine\Bundle\FixturesBundle\Loader;
 
 use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\DataFixtures\Loader;
@@ -28,14 +29,16 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
      */
     public function addFixtures(array $fixtures)
     {
-        // Store all loaded fixtures so that we can resolve the dependencies correctly.
+        // Because parent::addFixture may call $this->createFixture
+        // we cannot call $this->addFixture in this loop
         foreach ($fixtures as $fixture) {
             $class = get_class($fixture['fixture']);
             $this->loadedFixtures[$class] = $fixture['fixture'];
             $this->addGroupsFixtureMapping($class, $fixture['groups']);
         }
 
-        // Now load all the fixtures
+        // Now that all fixtures are in the $this->loadedFixtures array,
+        // it is safe to call $this->addFixture in this loop
         foreach ($this->loadedFixtures as $fixture) {
             $this->addFixture($fixture);
         }
@@ -47,8 +50,10 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     public function addFixture(FixtureInterface $fixture)
     {
         $class = get_class($fixture);
-        if (!isset($this->loadedFixtures[$class])) {
-            $this->loadedFixtures[$class] = $fixture;
+        $this->loadedFixtures[$class] = $fixture;
+
+        if ($fixture instanceof FixtureGroupInterface) {
+            $this->addGroupsFixtureMapping($class, $fixture::getGroups());
         }
 
         parent::addFixture($fixture);

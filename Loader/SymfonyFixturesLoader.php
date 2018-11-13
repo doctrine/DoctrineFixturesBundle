@@ -81,34 +81,35 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     /**
      * Returns the array of data fixtures to execute.
      *
-     * @param array $groups
+     * @param string[] $groups
      *
-     * @return array $fixtures
+     * @return FixtureInterface[]
      */
     public function getFixtures(array $groups = [])
     {
         $fixtures = parent::getFixtures();
 
-        if (!empty($groups)) {
-            $filteredFixtures = [];
-            foreach ($fixtures as $key => $fixture) {
-                foreach ($groups as $group) {
-                    if (isset($this->groupsFixtureMapping[$group][get_class($fixture)])) {
-                        $filteredFixtures[$key] = $fixture;
-                    }
-                }
-            }
-            $fixtures = $filteredFixtures;
+        if (empty($groups)) {
+            return $fixtures;
         }
 
-        return $fixtures;
+        $filteredFixtures = [];
+        foreach ($fixtures as $key => $fixture) {
+            foreach ($groups as $group) {
+                if (isset($this->groupsFixtureMapping[$group][get_class($fixture)])) {
+                    $filteredFixtures[$key] = $fixture;
+                }
+            }
+        }
+
+        return $filteredFixtures;
     }
 
     /**
      * Generates an array of the groups and their fixtures
      *
      * @param string $className
-     * @param array $groups
+     * @param string[] $groups
      *
      * @return void
      */

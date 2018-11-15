@@ -236,6 +236,6 @@ an array of the fixture classes that must be loaded before this one:
         }
     }
 
-.. _`ORM`: http://symfony.com/doc/current/doctrine.html
+.. _`ORM`: https://symfony.com/doc/current/doctrine.html
 .. _`installation chapter`: https://getcomposer.org/doc/00-intro.md
 .. _`default service configuration`: https://symfony.com/doc/current/service_container.html#service-container-services-load-example

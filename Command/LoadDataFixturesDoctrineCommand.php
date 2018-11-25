@@ -70,7 +70,9 @@ EOT
         $em = $doctrine->getManager($input->getOption('em'));
 
         if (!$input->getOption('append')) {
-            $ui->ask('Careful, database will be purged. Do you want to continue y/N ?', false);
+            if (!$ui->confirm('Careful, database will be purged. Do you want to continue?', false)) {
+                return;
+            }
         }
 
         if ($input->getOption('shard')) {

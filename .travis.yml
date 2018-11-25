@@ -37,4 +37,4 @@ install:
     - travis_retry composer update ${COMPOSER_FLAGS} --prefer-dist --no-interaction
 
 script:
-    - ./vendor/bin/simple-phpunit
+    - ./vendor/bin/phpunit

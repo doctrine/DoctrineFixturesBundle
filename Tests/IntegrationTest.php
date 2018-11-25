@@ -162,9 +162,9 @@ class IntegrationTestKernel extends Kernel
         parent::__construct($environment, $debug);
     }
 
-    public function getName()
+    protected function getContainerClass()
     {
-        return parent::getName().$this->randomKey;
+        return 'test'.$this->randomKey.parent::getContainerClass();
     }
 
     public function registerBundles()

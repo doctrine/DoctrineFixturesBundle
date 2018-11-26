@@ -70,7 +70,7 @@ EOT
         $em = $doctrine->getManager($input->getOption('em'));
 
         if (!$input->getOption('append')) {
-            if (!$ui->confirm('Careful, database will be purged. Do you want to continue?', false)) {
+            if (!$ui->confirm('Careful, database will be purged. Do you want to continue?', !$input->isInteractive())) {
                 return;
             }
         }

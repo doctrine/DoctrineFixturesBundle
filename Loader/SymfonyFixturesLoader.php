@@ -44,12 +44,6 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
             $this->loadedFixtures[$class] = $fixture;
         }
 
-        // see https://github.com/doctrine/data-fixtures/pull/274
-        // this is to give a clear error if you do not have this version
-        if (!method_exists(Loader::class, 'createFixture')) {
-            $this->checkForNonInstantiableFixtures($fixture);
-        }
-
         parent::addFixture($fixture);
     }
 
@@ -70,37 +64,5 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         }
 
         return $this->loadedFixtures[$class];
-    }
-
-    /**
-     * For doctrine/data-fixtures 1.2 or lower, this detects an unsupported
-     * feature with DependentFixtureInterface so that we can throw a
-     * clear exception.
-     *
-     * @param FixtureInterface $fixture
-     * @throws \Exception
-     */
-    private function checkForNonInstantiableFixtures(FixtureInterface $fixture)
-    {
-        if (!$fixture instanceof DependentFixtureInterface) {
-            return;
-        }
-
-        foreach ($fixture->getDependencies() as $dependency) {
-            if (!class_exists($dependency)) {
-                continue;
-            }
-
-            if (!method_exists($dependency, '__construct')) {
-                continue;
-            }
-
-            $reflMethod = new \ReflectionMethod($dependency, '__construct');
-            foreach ($reflMethod->getParameters() as $param) {
-                if (!$param->isOptional()) {
-                    throw new \LogicException(sprintf('The getDependencies() method returned a class (%s) that has required constructor arguments. Upgrade to "doctrine/data-fixtures" version 1.3 or higher to support this.', $dependency));
-                }
-            }
-        }
     }
 }

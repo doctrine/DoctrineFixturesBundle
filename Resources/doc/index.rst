@@ -280,6 +280,15 @@ Alternatively, instead of implementing the ``FixtureGroupInterface``,
 you can also tag your service with ``doctrine.fixture.orm`` and add
 an extra ``group`` option set to a group your fixture should belong to.
 
+Regardless of groups defined in the fixture or the service definition, the
+fixture loader always adds the short name of the class as a separate group so
+you can load a single fixture at a time. In the example above, you can load the
+fixture using the ``UserFixtures`` group:
+
+.. code-block:: bash
+
+    $ php bin/console doctrine:fixtures:load --group=UserFixtures
+
 .. _`ORM`: https://symfony.com/doc/current/doctrine.html
 .. _`installation chapter`: https://getcomposer.org/doc/00-intro.md
 .. _`default service configuration`: https://symfony.com/doc/current/service_container.html#service-container-services-load-example

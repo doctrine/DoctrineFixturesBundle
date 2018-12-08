@@ -12,6 +12,7 @@ use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesComp
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\FixtureInterface;
+use ReflectionClass;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use function array_key_exists;
@@ -53,6 +54,9 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     {
         $class = get_class($fixture);
         $this->loadedFixtures[$class] = $fixture;
+
+        $reflection = new ReflectionClass($fixture);
+        $this->addGroupsFixtureMapping($class, [$reflection->getShortName()]);
 
         if ($fixture instanceof FixtureGroupInterface) {
             $this->addGroupsFixtureMapping($class, $fixture::getGroups());

@@ -12,8 +12,10 @@ use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesComp
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Common\DataFixtures\Loader;
+use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
+use function array_key_exists;
+use function array_values;
 
 /**
  * @author Ryan Weaver <ryan@knpuniversity.com>
@@ -94,15 +96,21 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         }
 
         $filteredFixtures = [];
-        foreach ($fixtures as $key => $fixture) {
+        foreach ($fixtures as $fixture) {
             foreach ($groups as $group) {
-                if (isset($this->groupsFixtureMapping[$group][get_class($fixture)])) {
-                    $filteredFixtures[$key] = $fixture;
+                $fixtureClass = get_class($fixture);
+                if (isset($this->groupsFixtureMapping[$group][$fixtureClass])) {
+                    $filteredFixtures[$fixtureClass] = $fixture;
+                    continue 2;
                 }
             }
         }
 
-        return $filteredFixtures;
+        foreach ($filteredFixtures as $fixture) {
+            $this->validateDependencies($filteredFixtures, $fixture);
+        }
+
+        return array_values($filteredFixtures);
     }
 
     /**
@@ -117,6 +125,26 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     {
         foreach ($groups as $group) {
             $this->groupsFixtureMapping[$group][$className] = true;
+        }
+    }
+
+    /**
+     * @param string[] $fixtures An array of fixtures with class names as keys
+     *
+     * @throws RuntimeException
+     */
+    private function validateDependencies(array $fixtures, FixtureInterface $fixture): void
+    {
+        if (! $fixture instanceof DependentFixtureInterface) {
+            return;
+        }
+
+        $dependenciesClasses = $fixture->getDependencies();
+
+        foreach ($dependenciesClasses as $class) {
+            if (! array_key_exists($class, $fixtures)) {
+                throw new RuntimeException(sprintf('Fixture "%s" was declared as a dependency for fixture "%s", but it was not included in any of the loaded fixture groups.', $class, get_class($fixture)));
+            }
         }
     }
 }

@@ -21,7 +21,7 @@ class WithDependenciesFixtures implements ORMFixtureInterface, DependentFixtureI
         ];
     }
 
-    public static function getGroups()
+    public static function getGroups(): array
     {
         return ['missingDependencyGroup', 'fulfilledDependencyGroup'];
     }

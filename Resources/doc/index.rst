@@ -260,7 +260,7 @@ make your fixture implement ``FixtureGroupInterface``::
     {
         // ...
 
-    +     public static function getGroups()
+    +     public static function getGroups(): array
     +     {
     +         return ['group1', 'group2'];
     +     }

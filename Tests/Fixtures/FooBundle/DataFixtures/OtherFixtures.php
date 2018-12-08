@@ -13,7 +13,7 @@ class OtherFixtures implements ORMFixtureInterface, FixtureGroupInterface
         // ...
     }
 
-    public static function getGroups()
+    public static function getGroups(): array
     {
         return ['staging', 'fulfilledDependencyGroup'];
     }

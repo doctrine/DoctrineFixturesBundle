@@ -120,12 +120,9 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
     /**
      * Generates an array of the groups and their fixtures
      *
-     * @param string $className
      * @param string[] $groups
-     *
-     * @return void
      */
-    public function addGroupsFixtureMapping($className, array $groups)
+    private function addGroupsFixtureMapping(string $className, array $groups): void
     {
         foreach ($groups as $group) {
             $this->groupsFixtureMapping[$group][$className] = true;

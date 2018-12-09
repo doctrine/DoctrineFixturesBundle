@@ -11,6 +11,7 @@ use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDep
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\FooBundle;
 use Doctrine\Common\DataFixtures\Loader;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -144,6 +145,162 @@ class IntegrationTest extends TestCase
         $loader = $container->get('test.doctrine.fixtures.loader');
 
         $loader->getFixtures();
+    }
+
+    public function testFixturesLoaderWithGroupsOptionViaInterface()
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(function(ContainerBuilder $c) {
+            // has a "staging" group via the getGroups() method
+            $c->autowire(OtherFixtures::class)
+              ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            // no getGroups() method
+            $c->autowire(WithDependenciesFixtures::class)
+              ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->setAlias('test.doctrine.fixtures.loader', new Alias('doctrine.fixtures.loader', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        /** @var ContainerAwareLoader $loader */
+        $loader = $container->get('test.doctrine.fixtures.loader');
+
+        $actualFixtures = $loader->getFixtures(['staging']);
+        $this->assertCount(1, $actualFixtures);
+        $actualFixtureClasses = array_map(function($fixture) {
+            return get_class($fixture);
+        }, $actualFixtures);
+
+        $this->assertSame([
+            OtherFixtures::class,
+        ], $actualFixtureClasses);
+        $this->assertInstanceOf(OtherFixtures::class, $actualFixtures[0]);
+    }
+
+    public function testFixturesLoaderWithGroupsOptionViaTag()
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(function(ContainerBuilder $c) {
+            // has a "staging" group via the getGroups() method
+            $c->autowire(OtherFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG, [
+                    'group' => 'group1',
+                ])
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG, [
+                    'group' => 'group2',
+                ]);
+
+            // no getGroups() method
+            $c->autowire(WithDependenciesFixtures::class)
+              ->addTag(FixturesCompilerPass::FIXTURE_TAG, [
+                  'group' => 'group2',
+              ]);
+
+            $c->setAlias('test.doctrine.fixtures.loader', new Alias('doctrine.fixtures.loader', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        /** @var ContainerAwareLoader $loader */
+        $loader = $container->get('test.doctrine.fixtures.loader');
+
+        $this->assertCount(1, $loader->getFixtures(['staging']));
+        $this->assertCount(1, $loader->getFixtures(['group1']));
+        $this->assertCount(2, $loader->getFixtures(['group2']));
+        $this->assertCount(0, $loader->getFixtures(['group3']));
+    }
+
+    public function testLoadFixturesViaGroupWithMissingDependency()
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(function(ContainerBuilder $c) {
+            // has a "staging" group via the getGroups() method
+            $c->autowire(OtherFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            // no getGroups() method
+            $c->autowire(WithDependenciesFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->setAlias('test.doctrine.fixtures.loader', new Alias('doctrine.fixtures.loader', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        /** @var ContainerAwareLoader $loader */
+        $loader = $container->get('test.doctrine.fixtures.loader');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Fixture "Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures" was declared as a dependency for fixture "Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures", but it was not included in any of the loaded fixture groups.');
+
+        $loader->getFixtures(['missingDependencyGroup']);
+    }
+
+    public function testLoadFixturesViaGroupWithFulfilledDependency()
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(function(ContainerBuilder $c) {
+            // has a "staging" group via the getGroups() method
+            $c->autowire(OtherFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            // no getGroups() method
+            $c->autowire(WithDependenciesFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->setAlias('test.doctrine.fixtures.loader', new Alias('doctrine.fixtures.loader', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        /** @var ContainerAwareLoader $loader */
+        $loader = $container->get('test.doctrine.fixtures.loader');
+
+        $actualFixtures = $loader->getFixtures(['fulfilledDependencyGroup']);
+
+        $this->assertCount(2, $actualFixtures);
+        $actualFixtureClasses = array_map(function($fixture) {
+            return get_class($fixture);
+        }, $actualFixtures);
+
+        $this->assertSame([
+            OtherFixtures::class,
+            WithDependenciesFixtures::class,
+        ], $actualFixtureClasses);
+    }
+
+    public function testLoadFixturesByShortName()
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(function(ContainerBuilder $c) {
+            // has a "staging" group via the getGroups() method
+            $c->autowire(OtherFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            // no getGroups() method
+            $c->autowire(WithDependenciesFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->setAlias('test.doctrine.fixtures.loader', new Alias('doctrine.fixtures.loader', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        /** @var ContainerAwareLoader $loader */
+        $loader = $container->get('test.doctrine.fixtures.loader');
+
+        $actualFixtures = $loader->getFixtures(['OtherFixtures']);
+
+        $this->assertCount(1, $actualFixtures);
+        $actualFixtureClasses = array_map(function($fixture) {
+            return get_class($fixture);
+        }, $actualFixtures);
+
+        $this->assertSame([
+            OtherFixtures::class,
+        ], $actualFixtureClasses);
     }
 }
 

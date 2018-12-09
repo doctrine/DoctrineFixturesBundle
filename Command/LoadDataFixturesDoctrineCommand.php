@@ -38,6 +38,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->setName('doctrine:fixtures:load')
             ->setDescription('Load data fixtures to your database')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
+            ->addOption('group', null, InputOption::VALUE_IS_ARRAY|InputOption::VALUE_REQUIRED, 'Only load fixtures that belong to this group')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
@@ -56,6 +57,10 @@ By default Doctrine Data Fixtures uses DELETE statements to drop the existing ro
 If you want to use a TRUNCATE statement instead you can use the <comment>--purge-with-truncate</comment> flag:
 
   <info>php %command.full_name%</info> <comment>--purge-with-truncate</comment>
+
+To execute only fixtures that live in a certain group, use:
+
+  <info>php %command.full_name%</info> <comment>--group=group1</comment>
 
 EOT
         );
@@ -86,9 +91,16 @@ EOT
             $em->getConnection()->connect($input->getOption('shard'));
         }
 
-        $fixtures = $this->fixturesLoader->getFixtures();
+        $groups = $input->getOption('group');
+        $fixtures = $this->fixturesLoader->getFixtures($groups);
         if (!$fixtures) {
-            $ui->error('Could not find any fixture services to load.');
+            $message = 'Could not find any fixture services to load';
+
+            if (!empty($groups)) {
+                $message .= sprintf(' in the groups (%s)', implode(', ', $groups));
+            }
+
+            $ui->error($message . '.');
 
             return 1;
         }

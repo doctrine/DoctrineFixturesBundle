@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\FixturesBundle;
 
 /**
@@ -13,5 +15,5 @@ interface FixtureGroupInterface
      *
      * @return string[]
      */
-    public static function getGroups(): array;
+    public static function getGroups() : array;
 }

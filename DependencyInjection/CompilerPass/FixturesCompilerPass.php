@@ -1,30 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
-/**
- * @author Ryan Weaver <ryan@knpuniversity.com>
- */
 final class FixturesCompilerPass implements CompilerPassInterface
 {
-    const FIXTURE_TAG = 'doctrine.fixture.orm';
+    public const FIXTURE_TAG = 'doctrine.fixture.orm';
 
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container) : void
     {
-        $definition = $container->getDefinition('doctrine.fixtures.loader');
+        $definition     = $container->getDefinition('doctrine.fixtures.loader');
         $taggedServices = $container->findTaggedServiceIds(self::FIXTURE_TAG);
 
         $fixtures = [];
         foreach ($taggedServices as $serviceId => $tags) {
             $groups = [];
             foreach ($tags as $tagData) {
-                if (isset($tagData['group'])) {
-                    $groups[] = $tagData['group'];
+                if (! isset($tagData['group'])) {
+                    continue;
                 }
+
+                $groups[] = $tagData['group'];
             }
 
             $fixtures[] = [

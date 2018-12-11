@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\FixturesBundle;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;

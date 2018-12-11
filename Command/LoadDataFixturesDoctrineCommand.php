@@ -78,7 +78,7 @@ EOT
         $em       = $doctrine->getManager($input->getOption('em'));
 
         if (! $input->getOption('append')) {
-            if (! $ui->confirm('Careful, database will be purged. Do you want to continue?', ! $input->isInteractive())) {
+            if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), ! $input->isInteractive())) {
                 return;
             }
         }

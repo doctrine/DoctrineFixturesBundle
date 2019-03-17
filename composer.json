@@ -27,7 +27,7 @@
         "symfony/framework-bundle": "^3.4|^4.1"
     },
     "require-dev": {
-        "doctrine/coding-standard": "^5.0",
+        "doctrine/coding-standard": "^6.0",
         "phpunit/phpunit": "^7.4",
         "symfony/phpunit-bridge": "^4.1"
     },

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\FixturesBundle\Command;
 
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
-use Doctrine\Bundle\FixturesBundle\Exception\NoFixtureServicesFoundException;
+use Doctrine\Bundle\FixturesBundle\Exception\NoFixtureServicesFound;
 use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Bundle\FixturesBundle\Service\DoctrineFixtureService;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
@@ -71,23 +71,23 @@ EOT
     // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $ui = new SymfonyStyle($input, $output);
-        $logger = function ($message) use ($ui) {
+        $ui     = new SymfonyStyle($input, $output);
+        $logger = static function ($message) use ($ui) : void {
             $ui->text(sprintf('  <comment>></comment> <info>%s</info>', $message));
         };
 
         /** @var ManagerRegistry $doctrine */
         $doctrine = $this->getContainer()->get('doctrine');
-        $em = $doctrine->getManager($input->getOption('em'));
+        $em       = $doctrine->getManager($input->getOption('em'));
 
-        if (!$input->getOption('append')) {
-            if (!$ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), !$input->isInteractive())) {
+        if (! $input->getOption('append')) {
+            if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), ! $input->isInteractive())) {
                 return;
             }
         }
 
         if ($input->getOption('shard')) {
-            if (!$em->getConnection() instanceof PoolingShardConnection) {
+            if (! $em->getConnection() instanceof PoolingShardConnection) {
                 throw new LogicException(sprintf(
                     'Connection of EntityManager "%s" must implement shards configuration.',
                     $input->getOption('em')
@@ -102,7 +102,7 @@ EOT
         $doctrineFixtureService->setAppend($input->getOption('append'));
         try {
             $doctrineFixtureService->load($logger);
-        } catch (NoFixtureServicesFoundException $e) {
+        } catch (NoFixtureServicesFound $e) {
             $ui->error('Could not find any fixture services to load.');
 
             return 1;

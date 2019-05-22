@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\FixturesBundle\Exception;
 
 use Exception;
 
-class NoFixtureServicesFoundException extends Exception {
-
+class NoFixtureServicesFound extends Exception
+{
 }

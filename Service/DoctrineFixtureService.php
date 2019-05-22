@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Bundle\FixturesBundle\Service;
 
-use Doctrine\Bundle\FixturesBundle\Exception\NoFixtureServicesFoundException;
+use Doctrine\Bundle\FixturesBundle\Exception\NoFixtureServicesFound;
 use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
@@ -10,44 +12,30 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class DoctrineFixtureService
 {
-    /**
-     * @var ObjectManager
-     */
+    /** @var ObjectManager */
     private $em;
-    /**
-     * @var SymfonyFixturesLoader
-     */
+    /** @var SymfonyFixturesLoader */
     private $fixturesLoader;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $purgeMode = ORMPurger::PURGE_MODE_DELETE;
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $append = false;
 
-    /**
-     * DoctrineFixtureService constructor.
-     * @param SymfonyFixturesLoader $fixturesLoader
-     * @param ObjectManager $em
-     */
     public function __construct(SymfonyFixturesLoader $fixturesLoader, ObjectManager $em)
     {
         $this->fixturesLoader = $fixturesLoader;
-        $this->em = $em;
+        $this->em             = $em;
     }
 
     /**
-     * @param $logger
-     * @throws NoFixtureServicesFoundException
+     * @throws NoFixtureServicesFound
      */
-    public function load($logger)
+    public function load(callable $logger) : void
     {
         $fixtures = $this->fixturesLoader->getFixtures();
-        if (!$fixtures) {
-            throw new NoFixtureServicesFoundException('Could not find any fixture services to load.');
+        if (! $fixtures) {
+            throw new NoFixtureServicesFound('Could not find any fixture services to load.');
         }
         $purger = new ORMPurger($this->em);
         $purger->setPurgeMode($this->getPurgeMode());
@@ -56,38 +44,24 @@ class DoctrineFixtureService
         $executor->execute($fixtures, $this->isAppend());
     }
 
-    /**
-     * @return int
-     */
-    public function getPurgeMode()
+    public function getPurgeMode() : int
     {
         return $this->purgeMode;
     }
 
-    /**
-     * @param int $purgeMode
-     * @return DoctrineFixtureService
-     */
-    public function setPurgeMode($purgeMode)
+    public function setPurgeMode(int $purgeMode) : DoctrineFixtureService
     {
         $this->purgeMode = $purgeMode;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isAppend()
+    public function isAppend() : bool
     {
         return $this->append;
     }
 
-    /**
-     * @param bool $append
-     * @return DoctrineFixtureService
-     */
-    public function setAppend($append)
+    public function setAppend(bool $append) : DoctrineFixtureService
     {
         $this->append = $append;
 

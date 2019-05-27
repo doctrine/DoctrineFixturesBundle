@@ -12,6 +12,7 @@ use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\Require
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\FooBundle;
 use Doctrine\Common\DataFixtures\Loader;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
@@ -348,6 +349,7 @@ class IntegrationTestKernel extends Kernel
     protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader) : void
     {
         $c->setParameter('kernel.secret', 'foo');
+        $c->register('doctrine', ManagerRegistry::class);
         $callback = $this->servicesCallback;
         $callback($c);
     }

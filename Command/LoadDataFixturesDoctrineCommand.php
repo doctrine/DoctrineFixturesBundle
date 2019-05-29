@@ -15,8 +15,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use const E_USER_DEPRECATED;
 use function implode;
 use function sprintf;
+use function trigger_error;
 
 /**
  * Load data fixtures from bundles.
@@ -26,9 +28,17 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
     /** @var SymfonyFixturesLoader */
     private $fixturesLoader;
 
-    public function __construct(SymfonyFixturesLoader $fixturesLoader)
+    public function __construct(SymfonyFixturesLoader $fixturesLoader, ?ManagerRegistry $doctrine = null)
     {
-        parent::__construct();
+        if ($doctrine === null) {
+            @trigger_error(sprintf(
+                'The "%s" constructor expects a "%s" instance as second argument, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.',
+                static::class,
+                ManagerRegistry::class
+            ), E_USER_DEPRECATED);
+        }
+
+        parent::__construct($doctrine);
 
         $this->fixturesLoader = $fixturesLoader;
     }

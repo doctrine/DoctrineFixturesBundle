@@ -7,6 +7,7 @@
         <!-- commands -->
         <service id="doctrine.fixtures_load_command" class="Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand">
             <argument type="service" id="doctrine.fixtures.loader" />
+            <argument type="service" id="doctrine" />
             <tag name="console.command" command="doctrine:fixtures:load" />
         </service>
 

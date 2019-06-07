@@ -83,9 +83,7 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        /** @var ManagerRegistry $doctrine */
-        $doctrine = $this->getContainer()->get('doctrine');
-        $em       = $doctrine->getManager($input->getOption('em'));
+        $em = $this->getDoctrine()->getManager($input->getOption('em'));
 
         if (! $input->getOption('append')) {
             if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), ! $input->isInteractive())) {

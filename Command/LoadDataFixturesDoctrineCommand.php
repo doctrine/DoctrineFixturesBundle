@@ -17,6 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use const E_USER_DEPRECATED;
 use function implode;
+use function method_exists;
 use function sprintf;
 use function trigger_error;
 
@@ -38,7 +39,8 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ), E_USER_DEPRECATED);
         }
 
-        parent::__construct($doctrine);
+        // @todo The method_exists call can be removed once the DoctrineBundle dependency has been bumped to at least 1.10
+        parent::__construct(method_exists($this, 'getDoctrine') ? $doctrine : null);
 
         $this->fixturesLoader = $fixturesLoader;
     }
@@ -83,9 +85,15 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        /** @var ManagerRegistry $doctrine */
-        $doctrine = $this->getContainer()->get('doctrine');
-        $em       = $doctrine->getManager($input->getOption('em'));
+        // @todo The method_exists call can be removed once the DoctrineBundle dependency has been bumped to at least 1.10
+        if (method_exists($this, 'getDotrine')) {
+            $doctrine = $this->getDoctrine();
+        } else {
+            /** @var ManagerRegistry $doctrine */
+            $doctrine = $this->getContainer()->get('doctrine');
+        }
+
+        $em = $doctrine->getManager($input->getOption('em'));
 
         if (! $input->getOption('append')) {
             if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), ! $input->isInteractive())) {

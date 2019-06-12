@@ -86,7 +86,7 @@ EOT
         $ui = new SymfonyStyle($input, $output);
 
         // @todo The method_exists call can be removed once the DoctrineBundle dependency has been bumped to at least 1.10
-        if (method_exists($this, 'getDotrine')) {
+        if (method_exists($this, 'getDoctrine')) {
             $doctrine = $this->getDoctrine();
         } else {
             /** @var ManagerRegistry $doctrine */

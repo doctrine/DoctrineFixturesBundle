@@ -85,9 +85,15 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        /** @var ManagerRegistry $doctrine */
-        $doctrine = $this->getContainer()->get('doctrine');
-        $em       = $doctrine->getManager($input->getOption('em'));
+        // @todo The method_exists call can be removed once the DoctrineBundle dependency has been bumped to at least 1.10
+        if (method_exists($this, 'getDotrine')) {
+            $doctrine = $this->getDoctrine();
+        } else {
+            /** @var ManagerRegistry $doctrine */
+            $doctrine = $this->getContainer()->get('doctrine');
+        }
+
+        $em = $doctrine->getManager($input->getOption('em'));
 
         if (! $input->getOption('append')) {
             if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), ! $input->isInteractive())) {

@@ -54,6 +54,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
+            ->addOption('exclude-table', null, InputOption::VALUE_IS_ARRAY|InputOption::VALUE_OPTIONAL, 'Do not purge the database table with this name')
             ->setHelp(<<<EOT
 The <info>%command.name%</info> command loads data fixtures from your application:
 
@@ -104,6 +105,7 @@ EOT
 
         $groups   = $input->getOption('group');
         $fixtures = $this->fixturesLoader->getFixtures($groups);
+        $excluded = $input->getOption('exclude-table');
         if (! $fixtures) {
             $message = 'Could not find any fixture services to load';
 
@@ -115,7 +117,7 @@ EOT
 
             return 1;
         }
-        $purger = new ORMPurger($em);
+        $purger = new ORMPurger($em, $excluded);
         $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);
         $executor->setLogger(static function ($message) use ($ui) : void {

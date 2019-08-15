@@ -71,6 +71,10 @@ If you want to use a TRUNCATE statement instead you can use the <comment>--purge
 
   <info>php %command.full_name%</info> <comment>--purge-with-truncate</comment>
 
+To ignore certain tables from deletion/truncation, use:
+
+  <info>php %command.full_name%</info> <comment>--exclude-table=tablename</comment>
+
 To execute only fixtures that live in a certain group, use:
 
   <info>php %command.full_name%</info> <comment>--group=group1</comment>

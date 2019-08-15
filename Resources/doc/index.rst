@@ -293,6 +293,20 @@ fixture using the ``UserFixtures`` group:
 
     $ php bin/console doctrine:fixtures:load --group=UserFixtures
 
+Excluding tables: Not purging certain tables
+--------------------------------------------
+
+By default, *all* database tables are purged/truncated. If you want to exclude
+certain tables from this behaviour, you can exclude them with the
+``--exclude-table`` option:
+
+.. code-block:: terminal
+
+    $ php bin/console doctrine:fixtures:load --exclude-table=table1
+
+    # or to exclude multiple tables
+    $ php bin/console doctrine:fixtures:load --exclude-table=table1 --exclude-table=table2
+
 .. _`ORM`: https://symfony.com/doc/current/doctrine.html
 .. _`installation chapter`: https://getcomposer.org/doc/00-intro.md
 .. _`Symfony Flex`: https://symfony.com/doc/current/setup/flex.html

@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\FixturesBundle\Tests\IntegrationTest;
 use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\DependentOnRequiredConstructorArgsFixtures;
+use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\NoGroupFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures;
@@ -302,6 +303,38 @@ class IntegrationTest extends TestCase
 
         $this->assertSame([
             OtherFixtures::class,
+        ], $actualFixtureClasses);
+    }
+
+    public function testLoadFixturesInDefaultGroup() : void
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(static function (ContainerBuilder $c) : void {
+            // has a "staging" group via the getGroups() method
+            $c->autowire(OtherFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            // no getGroups() method
+            $c->autowire(NoGroupFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->setAlias('test.doctrine.fixtures.loader', new Alias('doctrine.fixtures.loader', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        /** @var ContainerAwareLoader $loader */
+        $loader = $container->get('test.doctrine.fixtures.loader');
+
+        $actualFixtures = $loader->getFixtures(['Default']);
+
+        $this->assertCount(1, $actualFixtures);
+        $actualFixtureClasses = array_map(static function ($fixture) {
+            return get_class($fixture);
+        }, $actualFixtures);
+
+        $this->assertSame([
+            NoGroupFixtures::class,
         ], $actualFixtureClasses);
     }
 }

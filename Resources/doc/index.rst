@@ -16,7 +16,9 @@ console, enter your project directory and run the following command:
 
     $ composer require --dev orm-fixtures
 
-That's all! You can skip to the next section and start writing fixtures.
+Starting from Symfony 4.0, Flex should be used by default and register the
+bundle for you, and in that case you can skip to the next section and start
+writing fixtures.
 
 In Symfony 3 applications (or when not using Symfony Flex), run this other
 command instead:
@@ -36,14 +38,6 @@ update the ``AppKernel`` class::
         // ...
         $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
     }
-
-In Symfony 4 applications, update the ``config/bundles.php`` file::
-
-    // config/bundles.php
-    return [
-        // ...
-        Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
-    ];
 
 Writing Fixtures
 ----------------

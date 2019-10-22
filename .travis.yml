@@ -24,7 +24,7 @@ jobs:
 
         - stage: test
           php: 7.3
-          env: DEPENDENCIES="beta"
+          env: DEPENDENCIES="dev"
 
         # Run phpcs
         - stage: Code Quality
@@ -35,7 +35,7 @@ jobs:
 
 before_install:
     - if [ "$DEPENDENCIES" = "minimum" ]; then COMPOSER_FLAGS="--prefer-stable --prefer-lowest"; fi;
-    - if [ "$DEPENDENCIES" = "beta" ]; then composer config minimum-stability beta; fi;
+    - if [ "$DEPENDENCIES" = "dev" ]; then composer config minimum-stability dev; fi;
     - if [[ $DEPENDENCIES == *"/"* ]]; then composer require --no-update $DEPENDENCIES; fi;
 
 install:

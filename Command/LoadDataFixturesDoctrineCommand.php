@@ -78,6 +78,9 @@ EOT
         );
     }
 
+    /**
+     * @return int
+     */
     // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -87,7 +90,7 @@ EOT
 
         if (! $input->getOption('append')) {
             if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), ! $input->isInteractive())) {
-                return;
+                return 0;
             }
         }
 
@@ -122,5 +125,7 @@ EOT
             $ui->text(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));
+
+        return 0;
     }
 }

@@ -9,6 +9,7 @@ use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Container;
+use TypeError;
 
 class LoadDataFixturesDoctrineCommandTest extends TestCase
 {
@@ -20,7 +21,13 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
     {
         $loader = new SymfonyFixturesLoader(new Container());
 
-        new LoadDataFixturesDoctrineCommand($loader);
+        try {
+            new LoadDataFixturesDoctrineCommand($loader);
+        } catch (TypeError $e) {
+            $this->expectExceptionMessage('Argument 1 passed to Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand::__construct() must be an instance of Doctrine\Common\Persistence\ManagerRegistry, null given');
+
+            throw $e;
+        }
     }
 
     /**

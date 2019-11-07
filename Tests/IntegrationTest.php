@@ -16,13 +16,10 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
-use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
-use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Routing\RouteCollectionBuilder;
 use function array_map;
 use function get_class;
 use function method_exists;
@@ -308,8 +305,6 @@ class IntegrationTest extends TestCase
 
 class IntegrationTestKernel extends Kernel
 {
-    use MicroKernelTrait;
-
     /** @var callable */
     private $servicesCallback;
 
@@ -331,7 +326,6 @@ class IntegrationTestKernel extends Kernel
     public function registerBundles() : array
     {
         return [
-            new FrameworkBundle(),
             new DoctrineFixturesBundle(),
             new FooBundle(),
         ];
@@ -342,16 +336,22 @@ class IntegrationTestKernel extends Kernel
         $this->servicesCallback = $callback;
     }
 
-    protected function configureRoutes(RouteCollectionBuilder $routes) : void
+    public function registerContainerConfiguration(LoaderInterface $loader) : void
     {
-    }
+        $loader->load(function (ContainerBuilder $c) : void {
+            if (! $c->hasDefinition('kernel')) {
+                $c->register('kernel', static::class)
+                  ->setSynthetic(true)
+                  ->setPublic(true);
+            }
 
-    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader) : void
-    {
-        $c->setParameter('kernel.secret', 'foo');
-        $c->register('doctrine', ManagerRegistry::class);
-        $callback = $this->servicesCallback;
-        $callback($c);
+            $c->register('doctrine', ManagerRegistry::class);
+
+            $callback = $this->servicesCallback;
+            $callback($c);
+
+            $c->addObjectResource($this);
+        });
     }
 
     public function getCacheDir() : string

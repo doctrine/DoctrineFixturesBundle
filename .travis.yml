@@ -43,6 +43,3 @@ install:
 
 script:
     - vendor/bin/phpunit
-
-allow_failures:
-    - php: 7.4snapshot

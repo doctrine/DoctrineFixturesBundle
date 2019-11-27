@@ -111,25 +111,27 @@ injection::
     // src/DataFixtures/AppFixtures.php
     use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-    // ...
-    private $encoder;
-
-    public function __construct(UserPasswordEncoderInterface $encoder)
+    class AppFixtures extends Fixture
     {
-        $this->encoder = $encoder;
-    }
+        private $encoder;
 
-    // ...
-    public function load(ObjectManager $manager)
-    {
-        $user = new User();
-        $user->setUsername('admin');
+        public function __construct(UserPasswordEncoderInterface $encoder)
+        {
+            $this->encoder = $encoder;
+        }
 
-        $password = $this->encoder->encodePassword($user, 'pass_1234');
-        $user->setPassword($password);
+        // ...
+        public function load(ObjectManager $manager)
+        {
+            $user = new User();
+            $user->setUsername('admin');
 
-        $manager->persist($user);
-        $manager->flush();
+            $password = $this->encoder->encodePassword($user, 'pass_1234');
+            $user->setPassword($password);
+
+            $manager->persist($user);
+            $manager->flush();
+        }
     }
 
 You can also access the container via the ``$this->container`` property.

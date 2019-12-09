@@ -55,6 +55,8 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
 
         if ($fixture instanceof FixtureGroupInterface) {
             $this->addGroupsFixtureMapping($class, $fixture::getGroups());
+        } else {
+            $this->addGroupsFixtureMapping($class, ['Default']);
         }
 
         parent::addFixture($fixture);

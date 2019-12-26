@@ -105,7 +105,7 @@ EOT
             $em->getConnection()->connect($input->getOption('shard'));
         }
 
-        $groups   = $input->getOption('group');
+        $groups   = (array) $input->getOption('group');
         $fixtures = $this->fixturesLoader->getFixtures($groups);
         if (! $fixtures) {
             $message = 'Could not find any fixture services to load';

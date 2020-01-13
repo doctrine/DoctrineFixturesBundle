@@ -9,6 +9,10 @@ php:
     - 7.3
     - 7.4
 
+env:
+    global:
+        - SYMFONY_DEPRECATIONS_HELPER="max[self]=0&max[direct]=0"
+
 jobs:
     include:
           # Minimum supported PHP and Symfony version

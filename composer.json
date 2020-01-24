@@ -24,10 +24,11 @@
         "doctrine/data-fixtures": "^1.3",
         "doctrine/doctrine-bundle": "^1.11|^2.0",
         "doctrine/orm": "^2.6.0",
-        "symfony/doctrine-bridge": "^3.4|^4.1|^5.0",
+        "doctrine/persistence": "^1.3",
         "symfony/config": "^3.4|^4.3|^5.0",
         "symfony/console": "^3.4|^4.3|^5.0",
         "symfony/dependency-injection": "^3.4|^4.3|^5.0",
+        "symfony/doctrine-bridge": "^3.4|^4.1|^5.0",
         "symfony/http-kernel": "^3.4|^4.3|^5.0"
     },
     "require-dev": {

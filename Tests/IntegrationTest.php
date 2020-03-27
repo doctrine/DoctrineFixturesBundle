@@ -4,20 +4,29 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\FixturesBundle\Tests;
 
+use Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand;
 use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass;
+use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\PurgerFactoryCompilerPass;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
+use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\DependentOnRequiredConstructorArgsFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\FooBundle;
 use Doctrine\Common\DataFixtures\Loader;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\HttpKernel\Kernel;
 use function array_map;
 use function get_class;
@@ -300,6 +309,197 @@ class IntegrationTest extends TestCase
         $this->assertSame([
             OtherFixtures::class,
         ], $actualFixtureClasses);
+    }
+
+    public function testRunCommandWithDefaultPurger() : void
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(static function (ContainerBuilder $c) : void {
+            // has a "staging" group via the getGroups() method
+            $c->autowire(OtherFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            // no getGroups() method
+            $c->autowire(WithDependenciesFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->getDefinition('doctrine')
+                ->setPublic(true)
+                ->setSynthetic(true);
+
+            $c->setAlias('test.doctrine.fixtures.purger.orm_purger_factory', new Alias('doctrine.fixtures.purger.orm_purger_factory', true));
+
+            $c->setAlias('test.doctrine.fixtures_load_command', new Alias('doctrine.fixtures_load_command', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $registry = $this->createMock(DeprecationUtil::getManagerRegistryClass());
+        $registry
+            ->expects(self::once())
+            ->method('getManager')
+            ->with(null)
+            ->willReturn($em);
+        $container->set('doctrine', $registry);
+
+        $purgerFactory = $this->createMock(PurgerFactory::class);
+        $purger        = $this->createMock(ORMPurger::class);
+        $purgerFactory
+            ->expects(self::once())
+            ->method('createForEntityManager')
+            ->with(null, $em, [])
+            ->willReturn($purger);
+        $container->set('test.doctrine.fixtures.purger.orm_purger_factory', $purgerFactory);
+
+        /** @var LoadDataFixturesDoctrineCommand $command */
+        $command = $container->get('test.doctrine.fixtures_load_command');
+        $tester  = new CommandTester($command);
+        $tester->execute([], ['interactive' => false]);
+    }
+
+    public function testRunCommandWithPurgeExclusions() : void
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(static function (ContainerBuilder $c) : void {
+            // has a "staging" group via the getGroups() method
+            $c->autowire(OtherFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            // no getGroups() method
+            $c->autowire(WithDependenciesFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->getDefinition('doctrine')
+                ->setPublic(true)
+                ->setSynthetic(true);
+
+            $c->setAlias('test.doctrine.fixtures.purger.orm_purger_factory', new Alias('doctrine.fixtures.purger.orm_purger_factory', true));
+
+            $c->setAlias('test.doctrine.fixtures_load_command', new Alias('doctrine.fixtures_load_command', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $registry = $this->createMock(DeprecationUtil::getManagerRegistryClass());
+        $registry
+            ->expects(self::once())
+            ->method('getManager')
+            ->with(null)
+            ->willReturn($em);
+        $container->set('doctrine', $registry);
+
+        $purgerFactory = $this->createMock(PurgerFactory::class);
+        $purger        = $this->createMock(ORMPurger::class);
+        $purgerFactory
+            ->expects(self::once())
+            ->method('createForEntityManager')
+            ->with(null, $em, ['excluded_table'])
+            ->willReturn($purger);
+        $container->set('test.doctrine.fixtures.purger.orm_purger_factory', $purgerFactory);
+
+        /** @var LoadDataFixturesDoctrineCommand $command */
+        $command = $container->get('test.doctrine.fixtures_load_command');
+        $tester  = new CommandTester($command);
+        $tester->execute(['--purge-exclusions' => ['excluded_table']], ['interactive' => false]);
+    }
+
+    public function testRunCommandWithCustomPurgerAndCustomEntityManager() : void
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(static function (ContainerBuilder $c) : void {
+            // has a "staging" group via the getGroups() method
+            $c->autowire(OtherFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            // no getGroups() method
+            $c->autowire(WithDependenciesFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->getDefinition('doctrine')
+                ->setPublic(true)
+                ->setSynthetic(true);
+
+            $c->setDefinition('test.doctrine.fixtures.purger.test_factory', (new Definition())
+                ->setPublic(true)
+                ->setSynthetic(true)
+                ->addTag(PurgerFactoryCompilerPass::PURGER_FACTORY_TAG, ['alias' => 'test']));
+
+            $c->setAlias('test.doctrine.fixtures_load_command', new Alias('doctrine.fixtures_load_command', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $registry = $this->createMock(DeprecationUtil::getManagerRegistryClass());
+        $registry
+            ->expects(self::once())
+            ->method('getManager')
+            ->with('alternative')
+            ->willReturn($em);
+        $container->set('doctrine', $registry);
+
+        $purgerFactory = $this->createMock(PurgerFactory::class);
+        $purger        = $this->createMock(ORMPurger::class);
+        $purgerFactory
+            ->expects(self::once())
+            ->method('createForEntityManager')
+            ->with('alternative', $em, [])
+            ->willReturn($purger);
+        $container->set('test.doctrine.fixtures.purger.test_factory', $purgerFactory);
+
+        /** @var LoadDataFixturesDoctrineCommand $command */
+        $command = $container->get('test.doctrine.fixtures_load_command');
+        $tester  = new CommandTester($command);
+        $tester->execute(['--purger' => 'test', '--em' => 'alternative'], ['interactive' => false]);
+    }
+
+    public function testRunCommandWithPurgeMode() : void
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(static function (ContainerBuilder $c) : void {
+            // has a "staging" group via the getGroups() method
+            $c->autowire(OtherFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            // no getGroups() method
+            $c->autowire(WithDependenciesFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->getDefinition('doctrine')
+                ->setPublic(true)
+                ->setSynthetic(true);
+
+            $c->setAlias('test.doctrine.fixtures.purger.orm_purger_factory', new Alias('doctrine.fixtures.purger.orm_purger_factory', true));
+
+            $c->setAlias('test.doctrine.fixtures_load_command', new Alias('doctrine.fixtures_load_command', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $registry = $this->createMock(DeprecationUtil::getManagerRegistryClass());
+        $registry
+            ->expects(self::once())
+            ->method('getManager')
+            ->with(null)
+            ->willReturn($em);
+        $container->set('doctrine', $registry);
+
+        $purgerFactory = $this->createMock(PurgerFactory::class);
+        $purger        = $this->createMock(ORMPurger::class);
+        $purgerFactory
+            ->expects(self::once())
+            ->method('createForEntityManager')
+            ->with(null, $em, [], true)
+            ->willReturn($purger);
+        $container->set('test.doctrine.fixtures.purger.orm_purger_factory', $purgerFactory);
+
+        /** @var LoadDataFixturesDoctrineCommand $command */
+        $command = $container->get('test.doctrine.fixtures_load_command');
+        $tester  = new CommandTester($command);
+        $tester->execute(['--purge-with-truncate' => true], ['interactive' => false]);
     }
 }
 

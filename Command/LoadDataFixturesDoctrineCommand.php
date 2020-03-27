@@ -8,13 +8,15 @@ use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Common\Persistence\ManagerRegistry as DeprecatedManagerRegistry;
 use Doctrine\DBAL\Sharding\PoolingShardConnection;
+use Doctrine\Persistence\ManagerRegistry;
 use LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use TypeError;
 use const E_USER_DEPRECATED;
 use function implode;
 use function sprintf;
@@ -28,14 +30,23 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
     /** @var SymfonyFixturesLoader */
     private $fixturesLoader;
 
-    public function __construct(SymfonyFixturesLoader $fixturesLoader, ?ManagerRegistry $doctrine = null)
+    /** @param ManagerRegistry|DeprecatedManagerRegistry|null $doctrine */
+    public function __construct(SymfonyFixturesLoader $fixturesLoader, $doctrine = null)
     {
         if ($doctrine === null) {
             @trigger_error(sprintf(
-                'The "%s" constructor expects a "%s" instance as second argument, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.',
-                static::class,
+                'Argument 2 of %s() expects an instance of %s or preferably %s, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.',
+                __METHOD__,
+                DeprecatedManagerRegistry::class,
                 ManagerRegistry::class
             ), E_USER_DEPRECATED);
+        } elseif (! $doctrine instanceof ManagerRegistry && ! $doctrine instanceof DeprecatedManagerRegistry) {
+            throw new TypeError(sprintf(
+                'Argument 2 passed to %s() must implement interface %s or preferably %s',
+                __METHOD__,
+                DeprecatedManagerRegistry::class,
+                ManagerRegistry::class
+            ));
         }
 
         parent::__construct($doctrine);

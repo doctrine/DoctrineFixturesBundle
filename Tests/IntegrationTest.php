@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Bundle\FixturesBundle\Tests\IntegrationTest;
+namespace Doctrine\Bundle\FixturesBundle\Tests;
 
 use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
@@ -12,7 +12,6 @@ use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\Require
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\FooBundle;
 use Doctrine\Common\DataFixtures\Loader;
-use Doctrine\Common\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
@@ -345,7 +344,7 @@ class IntegrationTestKernel extends Kernel
                   ->setPublic(true);
             }
 
-            $c->register('doctrine', ManagerRegistry::class);
+            $c->register('doctrine', DeprecationUtil::getManagerRegistryClass());
 
             $callback = $this->servicesCallback;
             $callback($c);

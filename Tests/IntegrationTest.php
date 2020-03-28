@@ -21,8 +21,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 use function array_map;
 use function get_class;
+use function hash;
 use function method_exists;
-use function rand;
+use function spl_object_hash;
 use function sys_get_temp_dir;
 
 class IntegrationTest extends TestCase
@@ -304,6 +305,9 @@ class IntegrationTest extends TestCase
 
 class IntegrationTestKernel extends Kernel
 {
+    /** @var int */
+    private static $invocations = 0;
+
     /** @var callable */
     private $servicesCallback;
 
@@ -312,7 +316,7 @@ class IntegrationTestKernel extends Kernel
 
     public function __construct(string $environment, bool $debug)
     {
-        $this->randomKey = rand(100, 999);
+        $this->randomKey = hash('sha3-384', spl_object_hash($this) . self::$invocations++);
 
         parent::__construct($environment, $debug);
     }

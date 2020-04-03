@@ -14,5 +14,9 @@
         <service id="doctrine.fixtures.loader" class="Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader" public="false">
             <argument type="service" id="service_container" />
         </service>
+
+        <service id="doctrine.fixtures.purger.orm_purger_factory" class="Doctrine\Bundle\FixturesBundle\Purger\ORMPurgerFactory" public="false">
+            <tag name="doctrine.fixtures.purger_factory" alias="default"/>
+        </service>
     </services>
 </container>

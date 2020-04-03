@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace Doctrine\Bundle\FixturesBundle\Command;
 
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
+use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\PurgerFactoryCompilerPass;
 use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
+use Doctrine\Bundle\FixturesBundle\Purger\ORMPurgerFactory;
+use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
-use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Common\Persistence\ManagerRegistry as DeprecatedManagerRegistry;
 use Doctrine\DBAL\Sharding\PoolingShardConnection;
+use Doctrine\Persistence\ManagerRegistry;
 use LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use TypeError;
 use const E_USER_DEPRECATED;
 use function implode;
 use function sprintf;
@@ -28,19 +32,35 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
     /** @var SymfonyFixturesLoader */
     private $fixturesLoader;
 
-    public function __construct(SymfonyFixturesLoader $fixturesLoader, ?ManagerRegistry $doctrine = null)
+    /** @var PurgerFactory[] */
+    private $purgerFactories;
+
+    /**
+     * @param ManagerRegistry|DeprecatedManagerRegistry|null $doctrine
+     * @param PurgerFactory[]                                $purgerFactories
+     */
+    public function __construct(SymfonyFixturesLoader $fixturesLoader, $doctrine = null, array $purgerFactories = [])
     {
         if ($doctrine === null) {
             @trigger_error(sprintf(
-                'The "%s" constructor expects a "%s" instance as second argument, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.',
-                static::class,
+                'Argument 2 of %s() expects an instance of %s or preferably %s, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.',
+                __METHOD__,
+                DeprecatedManagerRegistry::class,
                 ManagerRegistry::class
             ), E_USER_DEPRECATED);
+        } elseif (! $doctrine instanceof ManagerRegistry && ! $doctrine instanceof DeprecatedManagerRegistry) {
+            throw new TypeError(sprintf(
+                'Argument 2 passed to %s() must implement interface %s or preferably %s',
+                __METHOD__,
+                DeprecatedManagerRegistry::class,
+                ManagerRegistry::class
+            ));
         }
 
         parent::__construct($doctrine);
 
-        $this->fixturesLoader = $fixturesLoader;
+        $this->fixturesLoader  = $fixturesLoader;
+        $this->purgerFactories = $purgerFactories;
     }
 
     // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
@@ -52,6 +72,8 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
             ->addOption('group', null, InputOption::VALUE_IS_ARRAY|InputOption::VALUE_REQUIRED, 'Only load fixtures that belong to this group')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
+            ->addOption('purger', null, InputOption::VALUE_REQUIRED, 'The purger to use for this command', 'default')
+            ->addOption('purge-exclusions', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'List of database tables to ignore while purging')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
             ->setHelp(<<<EOT
@@ -118,8 +140,25 @@ EOT
 
             return 1;
         }
-        $purger = new ORMPurger($em);
-        $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
+
+        if (! isset($this->purgerFactories[$input->getOption('purger')])) {
+            $ui->warning(sprintf(
+                'Could not find purger factory with alias "%1$s", using default purger. Did you forget to register the %2$s implementation with tag "%3$s" and alias "%1$s"?',
+                $input->getOption('purger'),
+                PurgerFactory::class,
+                PurgerFactoryCompilerPass::PURGER_FACTORY_TAG
+            ));
+            $factory = new ORMPurgerFactory();
+        } else {
+            $factory = $this->purgerFactories[$input->getOption('purger')];
+        }
+
+        $purger   = $factory->createForEntityManager(
+            $input->getOption('em'),
+            $em,
+            $input->getOption('purge-exclusions'),
+            $input->getOption('purge-with-truncate')
+        );
         $executor = new ORMExecutor($em, $purger);
         $executor->setLogger(static function ($message) use ($ui) : void {
             $ui->text(sprintf('  <comment>></comment> <info>%s</info>', $message));

@@ -6,16 +6,17 @@ namespace Doctrine\Bundle\FixturesBundle\Tests\Command;
 
 use Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand;
 use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Bundle\FixturesBundle\Tests\DeprecationUtil;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Container;
 use TypeError;
+use function sprintf;
 
 class LoadDataFixturesDoctrineCommandTest extends TestCase
 {
     /**
      * @group legacy
-     * @expectedDeprecation The "Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand" constructor expects a "Doctrine\Common\Persistence\ManagerRegistry" instance as second argument, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.
+     * @expectedDeprecation Argument 2 of Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand::__construct() expects an instance of Doctrine\Common\Persistence\ManagerRegistry or preferably Doctrine\Persistence\ManagerRegistry, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.
      */
     public function testInstantiatingWithoutManagerRegistry() : void
     {
@@ -24,7 +25,7 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
         try {
             new LoadDataFixturesDoctrineCommand($loader);
         } catch (TypeError $e) {
-            $this->expectExceptionMessage('Argument 1 passed to Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand::__construct() must be an instance of Doctrine\Common\Persistence\ManagerRegistry, null given');
+            $this->expectExceptionMessage(sprintf('Argument 1 passed to Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand::__construct() must be an instance of %s, null given', DeprecationUtil::getManagerRegistryClass()));
 
             throw $e;
         }
@@ -35,7 +36,7 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
      */
     public function testInstantiatingWithManagerRegistry() : void
     {
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createMock(DeprecationUtil::getManagerRegistryClass());
         $loader   = new SymfonyFixturesLoader(new Container());
 
         new LoadDataFixturesDoctrineCommand($loader, $registry);

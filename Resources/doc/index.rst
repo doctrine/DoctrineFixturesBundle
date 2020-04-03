@@ -293,3 +293,93 @@ fixture using the ``UserFixtures`` group:
 .. _`installation chapter`: https://getcomposer.org/doc/00-intro.md
 .. _`Symfony Flex`: https://symfony.com/doc/current/setup/flex.html
 .. _`default service configuration`: https://symfony.com/doc/current/service_container.html#service-container-services-load-example
+
+
+Specifying purging behavior
+---------------------------
+
+By default all previously existing data is purged using ``DELETE FROM table`` statements. If you prefer to use
+``TRUNCATE table`` statements for purging, use ``--purge-with-truncate``.
+
+If you want to exclude a set of tables from being purged, e.g. because your schema comes with pre-populated,
+semi-static data, pass the option ``--purge-exclusions``. Specify ``--purge-exclusions`` multiple times to exclude
+multiple tables.
+
+You can also customize purging behavior significantly more and implement a custom purger plus a custom purger factory.
+
+
+    // src/Purger/CustomPurger.php
+    namespace App\Purger;
+
+    use Doctrine\Common\DataFixtures\Purger\PurgerInterface;
+
+    // ...
+    class CustomPurger implements PurgerInterface
+    {
+        public function purge() : void
+        {
+            // ...
+        }
+    }
+
+    // src/Purger/CustomPurgerFactory.php
+    namespace App\Purger;
+    // ...
+    use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
+
+    class CustomPurgerFactory implements PurgerFactory
+    {
+        public function createForEntityManager(?string $emName, EntityManagerInterface $em, array $excluded = [], bool $purgeWithTruncate = false) : PurgerInterface;
+        {
+            return new CustomPurger($em);
+        }
+    }
+
+The next step is to register our custom purger factory and specify its alias.
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        # config/services.yaml
+        services:
+            App\Purger\CustomPurgerFactory:
+                tags:
+                    - { name: 'doctrine.fixtures.purger_factory', alias: 'my_purger' }
+
+    .. code-block:: xml
+
+        <!-- config/services.xml -->
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <container xmlns="http://symfony.com/schema/dic/services"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                https://symfony.com/schema/dic/services/services-1.0.xsd">
+
+            <services>
+                <service id="App\Purger\CustomPurgerFactory">
+                    <tag name="doctrine.fixtures.purger_factory" alias="my_purger"/>
+                </service>
+            </services>
+        </container>
+
+    .. code-block:: php
+
+        // config/services.php
+        namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
+        use App\Purger\CustomerPurgerFactory;
+
+        return function(ContainerConfigurator $configurator) : void {
+            $services = $configurator->services();
+
+            $services->set(CustomerPurgerFactory::class)
+                ->tag('doctrine.fixtures.purger_factory', ['alias' => 'my_purger'])
+            ;
+        };
+
+With the ``--purger`` option we can now specify to use ``my_purger`` instead of the ``default`` purger.
+
+.. code-block:: terminal
+
+    $ php bin/console doctrine:fixtures:load --purger=my_purger

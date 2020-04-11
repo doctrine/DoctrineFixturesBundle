@@ -16,7 +16,7 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
 {
     /**
      * @group legacy
-     * @expectedDeprecation Argument 2 of Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand::__construct() expects an instance of Doctrine\Common\Persistence\ManagerRegistry or preferably Doctrine\Persistence\ManagerRegistry, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.
+     * @expectedDeprecation Argument 2 of Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand::__construct() expects an instance of Doctrine\Persistence\ManagerRegistry, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.
      */
     public function testInstantiatingWithoutManagerRegistry() : void
     {

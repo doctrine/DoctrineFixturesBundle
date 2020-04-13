@@ -19,6 +19,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
@@ -335,7 +336,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
-        $registry = $this->createMock(DeprecationUtil::getManagerRegistryClass());
+        $registry = $this->createMock(ManagerRegistry::class);
         $registry
             ->expects(self::once())
             ->method('getManager')
@@ -382,7 +383,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
-        $registry = $this->createMock(DeprecationUtil::getManagerRegistryClass());
+        $registry = $this->createMock(ManagerRegistry::class);
         $registry
             ->expects(self::once())
             ->method('getManager')
@@ -432,7 +433,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
-        $registry = $this->createMock(DeprecationUtil::getManagerRegistryClass());
+        $registry = $this->createMock(ManagerRegistry::class);
         $registry
             ->expects(self::once())
             ->method('getManager')
@@ -479,7 +480,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
-        $registry = $this->createMock(DeprecationUtil::getManagerRegistryClass());
+        $registry = $this->createMock(ManagerRegistry::class);
         $registry
             ->expects(self::once())
             ->method('getManager')
@@ -548,7 +549,7 @@ class IntegrationTestKernel extends Kernel
                   ->setPublic(true);
             }
 
-            $c->register('doctrine', DeprecationUtil::getManagerRegistryClass());
+            $c->register('doctrine', ManagerRegistry::class);
 
             $callback = $this->servicesCallback;
             $callback($c);

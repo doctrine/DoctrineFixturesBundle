@@ -53,7 +53,7 @@ Create a fixtures class and start adding products::
 
     use App\Entity\Product;
     use Doctrine\Bundle\FixturesBundle\Fixture;
-    use Doctrine\Common\Persistence\ObjectManager;
+    use Doctrine\Persistence\ObjectManager;
 
     class AppFixtures extends Fixture
     {

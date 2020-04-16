@@ -10,7 +10,6 @@ use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Bundle\FixturesBundle\Purger\ORMPurgerFactory;
 use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
-use Doctrine\Common\Persistence\ManagerRegistry as DeprecatedManagerRegistry;
 use Doctrine\DBAL\Sharding\PoolingShardConnection;
 use Doctrine\Persistence\ManagerRegistry;
 use LogicException;
@@ -18,7 +17,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TypeError;
 use const E_USER_DEPRECATED;
 use function implode;
 use function sprintf;
@@ -36,25 +34,16 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
     private $purgerFactories;
 
     /**
-     * @param ManagerRegistry|DeprecatedManagerRegistry|null $doctrine
-     * @param PurgerFactory[]                                $purgerFactories
+     * @param PurgerFactory[] $purgerFactories
      */
-    public function __construct(SymfonyFixturesLoader $fixturesLoader, $doctrine = null, array $purgerFactories = [])
+    public function __construct(SymfonyFixturesLoader $fixturesLoader, ?ManagerRegistry $doctrine = null, array $purgerFactories = [])
     {
         if ($doctrine === null) {
             @trigger_error(sprintf(
-                'Argument 2 of %s() expects an instance of %s or preferably %s, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.',
+                'Argument 2 of %s() expects an instance of %s, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.',
                 __METHOD__,
-                DeprecatedManagerRegistry::class,
                 ManagerRegistry::class
             ), E_USER_DEPRECATED);
-        } elseif (! $doctrine instanceof ManagerRegistry && ! $doctrine instanceof DeprecatedManagerRegistry) {
-            throw new TypeError(sprintf(
-                'Argument 2 passed to %s() must implement interface %s or preferably %s',
-                __METHOD__,
-                DeprecatedManagerRegistry::class,
-                ManagerRegistry::class
-            ));
         }
 
         parent::__construct($doctrine);

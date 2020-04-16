@@ -13,6 +13,9 @@ use ReflectionClass;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use function array_key_exists;
+use function array_map;
+use function array_merge;
+use function array_reduce;
 use function array_values;
 use function get_class;
 use function sprintf;
@@ -114,6 +117,50 @@ final class SymfonyFixturesLoader extends ContainerAwareLoader
         }
 
         return array_values($filteredFixtures);
+    }
+
+    /**
+     * @param (FixtureInterface|string)[] $fixtures
+     */
+    public function getFixturesDependencyTree(array $fixtures) : array
+    {
+        $fixtures = array_map(function ($fixture) {
+            if ($fixture instanceof FixtureInterface) {
+                return $fixture;
+            }
+
+            return $this->createFixture($fixture);
+        }, $fixtures);
+
+        $tree = $this->resolveFixturesDependencyTree($fixtures);
+
+        return array_values($tree);
+    }
+
+    /**
+     * @param FixtureInterface[] $fixtures
+     */
+    private function resolveFixturesDependencyTree(array $fixtures) : array
+    {
+        return array_reduce($fixtures, function (array $tree, FixtureInterface $fixture) {
+            $class = get_class($fixture);
+            if (isset($tree[$class])) {
+                return $tree;
+            }
+
+            $tree[$class] = $fixture;
+            if (! $fixture instanceof DependentFixtureInterface) {
+                return $tree;
+            }
+
+            $dependencies = array_map(function (string $dependency) {
+                return $this->createFixture($dependency);
+            }, $fixture->getDependencies());
+
+            $subTree = $this->getFixturesDependencyTree($dependencies);
+
+            return array_merge($subTree, $tree);
+        }, []);
     }
 
     /**

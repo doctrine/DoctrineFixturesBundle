@@ -305,8 +305,7 @@ If you want to exclude a set of tables from being purged, e.g. because your sche
 semi-static data, pass the option ``--purge-exclusions``. Specify ``--purge-exclusions`` multiple times to exclude
 multiple tables.
 
-You can also customize purging behavior significantly more and implement a custom purger plus a custom purger factory.
-
+You can also customize purging behavior significantly more and implement a custom purger plus a custom purger factory::
 
     // src/Purger/CustomPurger.php
     namespace App\Purger;

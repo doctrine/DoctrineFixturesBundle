@@ -6,8 +6,8 @@ be used for testing or to help give you some interesting data while you're
 developing your application.
 
 This bundle is compatible with any database supported by `Doctrine ORM`_
-(MySQL, PostgreSQL, SQLite, etc.). If your database is MongoDB, you must use
-instead the `DoctrineMongoDBBundle`_.
+(MySQL, PostgreSQL, SQLite, etc.). If you are using MongoDB, you must use
+`DoctrineMongoDBBundle`_ instead.
 
 Installation
 ------------

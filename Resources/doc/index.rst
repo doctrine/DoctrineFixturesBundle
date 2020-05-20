@@ -3,8 +3,11 @@ DoctrineFixturesBundle
 
 Fixtures are used to load a "fake" set of data into a database that can then
 be used for testing or to help give you some interesting data while you're
-developing your application. This bundle makes creating fixtures *easy*, and
-supports the `ORM`_ (MySQL, PostgreSQL, SQLite, etc.).
+developing your application.
+
+This bundle is compatible with any database supported by `Doctrine ORM`_
+(MySQL, PostgreSQL, SQLite, etc.). If your database is MongoDB, you must use
+instead the `DoctrineMongoDBBundle`_.
 
 Installation
 ------------
@@ -382,3 +385,6 @@ With the ``--purger`` option we can now specify to use ``my_purger`` instead of 
 .. code-block:: terminal
 
     $ php bin/console doctrine:fixtures:load --purger=my_purger
+
+.. _`Doctrine ORM`: https://symfony.com/doc/current/doctrine.html
+.. _`DoctrineMongoDBBundle`: https://github.com/doctrine/DoctrineMongoDBBundle

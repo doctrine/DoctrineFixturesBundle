@@ -42,7 +42,7 @@ Data fixtures are PHP classes where you create objects and persist them to the
 database.
 
 Imagine that you want to add some ``Product`` objects to your database. No problem!
-Just create a fixtures class and start adding products!
+Just create a fixtures class and start adding products.
 
 .. code-block:: php
 
@@ -51,7 +51,7 @@ Just create a fixtures class and start adding products!
 
     use App\Entity\Product;
     use Doctrine\Bundle\FixturesBundle\Fixture;
-    use Doctrine\Common\Persistence\ObjectManager;
+    use Doctrine\Persistence\ObjectManager;
 
     class AppFixtures extends Fixture
     {

@@ -1,5 +1,4 @@
 language: php
-sudo: false
 cache:
     directories:
         - $HOME/.composer/cache/files
@@ -8,7 +7,11 @@ php:
     - 7.1
     - 7.2
     - 7.3
-    - 7.4snapshot
+    - 7.4
+
+env:
+    global:
+        - SYMFONY_DEPRECATIONS_HELPER="max[self]=0&max[direct]=0"
 
 jobs:
     include:

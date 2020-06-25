@@ -137,10 +137,6 @@ injection::
         }
     }
 
-You can also access the container via the ``$this->container`` property.
-But remember that not *all* services (i.e. private services) can be accessed
-directly via the container.
-
 .. _multiple-files:
 
 Splitting Fixtures into Separate Files

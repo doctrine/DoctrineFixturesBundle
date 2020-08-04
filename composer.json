@@ -33,7 +33,7 @@
     },
     "require-dev": {
         "doctrine/coding-standard": "^6.0",
-        "phpunit/phpunit": "^7.4",
+        "phpunit/phpunit": "^7.4 || ^9.2",
         "symfony/phpunit-bridge": "^4.1|^5.0"
     },
     "autoload": {

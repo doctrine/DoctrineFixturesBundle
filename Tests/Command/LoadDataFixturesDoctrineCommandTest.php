@@ -10,6 +10,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Container;
 use TypeError;
+use const PHP_VERSION_ID;
 
 class LoadDataFixturesDoctrineCommandTest extends TestCase
 {
@@ -24,6 +25,14 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
         try {
             new LoadDataFixturesDoctrineCommand($loader);
         } catch (TypeError $e) {
+            if (PHP_VERSION_ID >= 80000) {
+                $this->expectExceptionMessage(
+                    <<<'MESSAGE'
+Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand::__construct(): Argument #1 ($doctrine) must be of type Doctrine\Persistence\ManagerRegistry, null given, called in /home/travis/build/doctrine/DoctrineFixturesBundle/Command/LoadDataFixturesDoctrineCommand.php on line 41
+MESSAGE
+                );
+                throw $e;
+            }
             $this->expectExceptionMessage('Argument 1 passed to Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand::__construct() must be an instance of Doctrine\Persistence\ManagerRegistry, null given');
 
             throw $e;

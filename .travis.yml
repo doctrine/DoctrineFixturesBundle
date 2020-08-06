@@ -29,6 +29,12 @@ jobs:
           php: 7.3
           env: DEPENDENCIES="dev"
 
+        - stage: test
+          php: nightly
+          before_install:
+              - composer config platform.php 7.4.99
+              - composer config minimum-stability dev
+
         # Run phpcs
         - stage: Code Quality
           php: 7.2

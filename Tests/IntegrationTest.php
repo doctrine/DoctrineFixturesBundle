@@ -10,6 +10,7 @@ use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFi
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures;
 use Doctrine\Common\DataFixtures\Loader;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
@@ -85,10 +86,6 @@ class IntegrationTest extends TestCase
         $this->assertInstanceOf(WithDependenciesFixtures::class, $actualFixtures[1]);
     }
 
-    /**
-     * @expectedException \LogicException
-     * @expectedExceptionMessage The getDependencies() method returned a class (Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures) that has required constructor arguments. Upgrade to "doctrine/data-fixtures" version 1.3 or higher to support this.
-     */
     public function testExceptionWithDependenciesWithRequiredArguments() : void
     {
         // see https://github.com/doctrine/data-fixtures/pull/274
@@ -112,16 +109,15 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('The getDependencies() method returned a class (Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures) that has required constructor arguments. Upgrade to "doctrine/data-fixtures" version 1.3 or higher to support this.');
+
         /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine.fixtures.loader');
 
         $loader->getFixtures();
     }
 
-    /**
-     * @expectedException \LogicException
-     * @expectedExceptionMessage The "Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures" fixture class is trying to be loaded, but is not available. Make sure this class is defined as a service and tagged with "doctrine.fixture.orm".
-     */
     public function testExceptionIfDependentFixtureNotWired() : void
     {
         // only runs on newer versions of doctrine/data-fixtures
@@ -138,6 +134,9 @@ class IntegrationTest extends TestCase
         });
         $kernel->boot();
         $container = $kernel->getContainer();
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('The "Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures" fixture class is trying to be loaded, but is not available. Make sure this class is defined as a service and tagged with "doctrine.fixture.orm".');
 
         /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine.fixtures.loader');

@@ -54,6 +54,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
+            ->addOption('purge-excluded', null, InputOption::VALUE_IS_ARRAY|InputOption::VALUE_OPTIONAL, 'Array of table/view names to be excluded from purge')
             ->setHelp(<<<EOT
 The <info>%command.name%</info> command loads data fixtures from your application:
 
@@ -118,7 +119,8 @@ EOT
 
             return 1;
         }
-        $purger = new ORMPurger($em);
+        $excluded = $input->getOption('purge-excluded');
+        $purger   = new ORMPurger($em, $excluded);
         $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
         $executor = new ORMExecutor($em, $purger);
         $executor->setLogger(static function ($message) use ($ui) : void {

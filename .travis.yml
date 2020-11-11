@@ -35,13 +35,6 @@ jobs:
               - composer config platform.php 7.4.99
               - composer config minimum-stability dev
 
-        # Run phpcs
-        - stage: Code Quality
-          php: 7.2
-          env: CODING_STANDARDS
-          script:
-              - vendor/bin/phpcs
-
 before_install:
     - if [ "$DEPENDENCIES" = "minimum" ]; then COMPOSER_FLAGS="--prefer-stable --prefer-lowest"; fi;
     - if [ "$DEPENDENCIES" = "dev" ]; then composer config minimum-stability dev; fi;

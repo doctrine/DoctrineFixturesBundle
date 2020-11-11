@@ -28,7 +28,7 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
             if (PHP_VERSION_ID >= 80000) {
                 $this->expectExceptionMessage(
                     <<<'MESSAGE'
-Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand::__construct(): Argument #1 ($doctrine) must be of type Doctrine\Persistence\ManagerRegistry, null given, called in /home/travis/build/doctrine/DoctrineFixturesBundle/Command/LoadDataFixturesDoctrineCommand.php on line 41
+Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand::__construct(): Argument #1 ($doctrine) must be of type Doctrine\Persistence\ManagerRegistry, null given, called in /home/runner/work/DoctrineFixturesBundle/DoctrineFixturesBundle/Command/LoadDataFixturesDoctrineCommand.php on line 41
 MESSAGE
                 );
                 throw $e;

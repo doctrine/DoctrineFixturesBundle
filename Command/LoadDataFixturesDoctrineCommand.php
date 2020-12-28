@@ -65,6 +65,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('purge-exclusions', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'List of database tables to ignore while purging')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
+            ->addOption('allow-no-fixture', null, InputOption::VALUE_NONE, 'Do not throw an exception if no fixture is available.')
             ->setHelp(<<<EOT
 The <info>%command.name%</info> command loads data fixtures from your application:
 
@@ -125,8 +126,14 @@ EOT
                 $message .= sprintf(' in the groups (%s)', implode(', ', $groups));
             }
 
-            $ui->error($message . '.');
+            $message .= '.';
 
+            if ($input->getOption('allow-no-fixture')) {
+                $ui->warning($message);
+                return 0;
+            }
+            
+            $ui->error($message);
             return 1;
         }
 

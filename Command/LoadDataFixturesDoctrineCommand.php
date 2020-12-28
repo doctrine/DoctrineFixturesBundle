@@ -130,10 +130,12 @@ EOT
 
             if ($input->getOption('allow-no-fixture')) {
                 $ui->warning($message);
+
                 return 0;
             }
-            
+
             $ui->error($message);
+
             return 1;
         }
 

@@ -74,10 +74,6 @@ Create a fixtures class and start adding products::
         }
     }
 
-.. tip::
-
-    You can also create multiple fixtures classes. See :ref:`multiple-files`.
-
 Loading Fixtures
 ----------------
 

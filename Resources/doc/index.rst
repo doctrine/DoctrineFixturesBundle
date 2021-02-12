@@ -228,9 +228,9 @@ an array of the fixture classes that must be loaded before this one::
 
         public function getDependencies()
         {
-            return array(
+            return [
                 UserFixtures::class,
-            );
+            ];
         }
     }
 

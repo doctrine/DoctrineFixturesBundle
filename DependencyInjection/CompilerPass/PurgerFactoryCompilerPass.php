@@ -8,13 +8,14 @@ use LogicException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+
 use function sprintf;
 
 final class PurgerFactoryCompilerPass implements CompilerPassInterface
 {
     public const PURGER_FACTORY_TAG = 'doctrine.fixtures.purger_factory';
 
-    public function process(ContainerBuilder $container) : void
+    public function process(ContainerBuilder $container): void
     {
         $definition     = $container->getDefinition('doctrine.fixtures_load_command');
         $taggedServices = $container->findTaggedServiceIds(self::PURGER_FACTORY_TAG);

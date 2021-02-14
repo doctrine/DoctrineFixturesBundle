@@ -10,12 +10,15 @@ use Doctrine\Persistence\ObjectManager;
 
 class DependentOnRequiredConstructorArgsFixtures implements ORMFixtureInterface, DependentFixtureInterface
 {
-    public function load(ObjectManager $manager) : void
+    public function load(ObjectManager $manager): void
     {
         // ...
     }
 
-    public function getDependencies() : array
+    /**
+     * {@inheritDoc}
+     */
+    public function getDependencies(): array
     {
         return [RequiredConstructorArgsFixtures::class];
     }

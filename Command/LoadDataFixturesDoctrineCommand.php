@@ -17,10 +17,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use const E_USER_DEPRECATED;
+
 use function implode;
 use function sprintf;
 use function trigger_error;
+
+use const E_USER_DEPRECATED;
 
 /**
  * Load data fixtures from bundles.
@@ -52,14 +54,13 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
         $this->purgerFactories = $purgerFactories;
     }
 
-    // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
     protected function configure()
     {
         $this
             ->setName('doctrine:fixtures:load')
             ->setDescription('Load data fixtures to your database')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
-            ->addOption('group', null, InputOption::VALUE_IS_ARRAY|InputOption::VALUE_REQUIRED, 'Only load fixtures that belong to this group')
+            ->addOption('group', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Only load fixtures that belong to this group')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('purger', null, InputOption::VALUE_REQUIRED, 'The purger to use for this command', 'default')
             ->addOption('purge-exclusions', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'List of database tables to ignore while purging')
@@ -92,7 +93,6 @@ EOT
     /**
      * @return int
      */
-    // phpcs:ignore SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $ui = new SymfonyStyle($input, $output);
@@ -149,7 +149,7 @@ EOT
             $input->getOption('purge-with-truncate')
         );
         $executor = new ORMExecutor($em, $purger);
-        $executor->setLogger(static function ($message) use ($ui) : void {
+        $executor->setLogger(static function ($message) use ($ui): void {
             $ui->text(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });
         $executor->execute($fixtures, $input->getOption('append'));

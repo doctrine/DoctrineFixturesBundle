@@ -12,7 +12,7 @@ final class FixturesCompilerPass implements CompilerPassInterface
 {
     public const FIXTURE_TAG = 'doctrine.fixture.orm';
 
-    public function process(ContainerBuilder $container) : void
+    public function process(ContainerBuilder $container): void
     {
         $definition     = $container->getDefinition('doctrine.fixtures.loader');
         $taggedServices = $container->findTaggedServiceIds(self::FIXTURE_TAG);

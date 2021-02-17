@@ -10,6 +10,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+use function assert;
+
 class ORMPurgerFactoryTest extends TestCase
 {
     /** @var ORMPurgerFactory */
@@ -18,16 +20,16 @@ class ORMPurgerFactoryTest extends TestCase
     /** @var EntityManagerInterface|MockObject */
     private $em;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->factory = new ORMPurgerFactory();
         $this->em      = $this->createMock(EntityManagerInterface::class);
     }
 
-    public function testCreateDefault() : void
+    public function testCreateDefault(): void
     {
-        /** @var ORMPurger $purger */
         $purger = $this->factory->createForEntityManager(null, $this->em);
+        assert($purger instanceof ORMPurger);
 
         self::assertInstanceOf(ORMPurger::class, $purger);
         self::assertSame(ORMPurger::PURGE_MODE_DELETE, $purger->getPurgeMode());
@@ -36,10 +38,10 @@ class ORMPurgerFactoryTest extends TestCase
         })->call($purger));
     }
 
-    public function testCreateWithExclusions() : void
+    public function testCreateWithExclusions(): void
     {
-        /** @var ORMPurger $purger */
         $purger = $this->factory->createForEntityManager(null, $this->em, ['tableName']);
+        assert($purger instanceof ORMPurger);
 
         self::assertInstanceOf(ORMPurger::class, $purger);
         self::assertSame(ORMPurger::PURGE_MODE_DELETE, $purger->getPurgeMode());
@@ -48,10 +50,10 @@ class ORMPurgerFactoryTest extends TestCase
         })->call($purger));
     }
 
-    public function testCreateWithTruncate() : void
+    public function testCreateWithTruncate(): void
     {
-        /** @var ORMPurger $purger */
         $purger = $this->factory->createForEntityManager(null, $this->em, [], true);
+        assert($purger instanceof ORMPurger);
 
         self::assertInstanceOf(ORMPurger::class, $purger);
         self::assertSame(ORMPurger::PURGE_MODE_TRUNCATE, $purger->getPurgeMode());

@@ -13,7 +13,7 @@ class RequiredConstructorArgsFixtures implements ORMFixtureInterface
     {
     }
 
-    public function load(ObjectManager $manager) : void
+    public function load(ObjectManager $manager): void
     {
         // ...
     }

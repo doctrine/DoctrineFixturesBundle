@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\FixturesBundle\Tests\Command;
 
+use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand;
 use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Persistence\ManagerRegistry;
@@ -28,18 +29,11 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
         try {
             new LoadDataFixturesDoctrineCommand($loader);
         } catch (TypeError $e) {
-            if (PHP_VERSION_ID >= 80000) {
-                $this->expectExceptionMessage(
-                    <<<'MESSAGE'
-Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand::__construct(): Argument #1 ($doctrine) must be of type Doctrine\Persistence\ManagerRegistry, null given, called in /home/runner/work/DoctrineFixturesBundle/DoctrineFixturesBundle/Command/LoadDataFixturesDoctrineCommand.php on line 51
-MESSAGE
-                );
-
-                throw $e;
-            }
-
             $this->expectExceptionMessage(sprintf(
-                'Argument 1 passed to Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand::__construct() must be an instance of %s, null given',
+                PHP_VERSION_ID >= 80000 ?
+                    '%s::__construct(): Argument #1 ($doctrine) must be of type %s, null given' :
+                    'Argument 1 passed to %s::__construct() must be an instance of %s, null given',
+                DoctrineCommand::class,
                 ManagerRegistry::class
             ));
 

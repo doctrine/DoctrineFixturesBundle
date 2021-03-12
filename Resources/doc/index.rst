@@ -323,7 +323,7 @@ You can also customize purging behavior significantly more and implement a custo
 
     class CustomPurgerFactory implements PurgerFactory
     {
-        public function createForEntityManager(?string $emName, EntityManagerInterface $em, array $excluded = [], bool $purgeWithTruncate = false) : PurgerInterface;
+        public function createForEntityManager(?string $emName, EntityManagerInterface $em, array $excluded = [], bool $purgeWithTruncate = false) : PurgerInterface
         {
             return new CustomPurger($em);
         }

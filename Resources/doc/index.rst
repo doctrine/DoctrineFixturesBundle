@@ -41,7 +41,20 @@ update the ``AppKernel`` class::
         // ...
         $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
     }
+    
+You will also need to enable the bundle. In Symfony 5.2.7 or higher applications,
+update the ``bundles.php`` 
 
+    // config/bundles.php
+
+    // ...
+    //in the  add  this line array  
+    return [...,
+    Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
+    ]
+    
+    
+   
 Writing Fixtures
 ----------------
 

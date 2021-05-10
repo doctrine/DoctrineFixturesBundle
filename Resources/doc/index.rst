@@ -42,8 +42,7 @@ update the ``AppKernel`` class::
         $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
     }
     
-You will also need to enable the bundle. In Symfony 5.2.7 or higher applications,
-update the ``bundles.php`` 
+In Symfony 4 or higher, you need to update ``bundles.php`` instead.
 
     // config/bundles.php
 

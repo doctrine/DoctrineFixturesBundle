@@ -47,7 +47,6 @@ In Symfony 4 or higher, you need to update ``bundles.php`` instead.
     // config/bundles.php
 
     // ...
-    //in the  add  this line array  
     return [...,
         Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
     ]

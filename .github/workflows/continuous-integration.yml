@@ -25,7 +25,7 @@ jobs:
         php-version:
           - "7.1"
           - "7.2"
-          - "7.3.29"
+          - "7.3"
           - "7.4"
           - "8.0"
         dependencies:
@@ -39,10 +39,13 @@ jobs:
             php-version: "7.1"
           - dependencies: "highest"
             extra_constraint: "symfony/lts:v3"
-            php-version: "7.3.29"
+            php-version: "7.3"
           - dependencies: "highest"
             stability: "dev"
-            php-version: "7.3.29"
+            php-version: "7.3"
+          - dependencies: "highest"
+            stability: "dev"
+            php-version: "8.0"
 
     steps:
       - name: "Checkout"

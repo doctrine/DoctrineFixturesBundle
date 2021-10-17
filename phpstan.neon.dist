@@ -1,0 +1,10 @@
+parameters:
+    phpVersion: 70100
+    level: 3
+    paths:
+        - .
+    excludes_analyse:
+        - vendor
+
+includes:
+    - phpstan-baseline.neon

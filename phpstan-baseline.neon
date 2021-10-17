@@ -1,0 +1,22 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to method connect\\(\\) on an unknown class Doctrine\\\\DBAL\\\\Sharding\\\\PoolingShardConnection\\.$#"
+			count: 1
+			path: Command/LoadDataFixturesDoctrineCommand.php
+
+		-
+			message: "#^Class Doctrine\\\\DBAL\\\\Sharding\\\\PoolingShardConnection not found\\.$#"
+			count: 1
+			path: Command/LoadDataFixturesDoctrineCommand.php
+
+		-
+			message: "#^Constructor of class Doctrine\\\\Bundle\\\\FixturesBundle\\\\Tests\\\\Fixtures\\\\FooBundle\\\\DataFixtures\\\\RequiredConstructorArgsFixtures has an unused parameter \\$fooRequiredArg\\.$#"
+			count: 1
+			path: Tests/Fixtures/FooBundle/DataFixtures/RequiredConstructorArgsFixtures.php
+
+		-
+			message: "#^Method Doctrine\\\\Common\\\\DataFixtures\\\\Loader\\:\\:getFixtures\\(\\) invoked with 1 parameter, 0 required\\.$#"
+			count: 8
+			path: Tests/IntegrationTest.php
+

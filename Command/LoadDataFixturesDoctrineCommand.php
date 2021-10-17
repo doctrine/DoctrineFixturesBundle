@@ -11,6 +11,7 @@ use Doctrine\Bundle\FixturesBundle\Purger\ORMPurgerFactory;
 use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\DBAL\Sharding\PoolingShardConnection;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use LogicException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,6 +19,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function assert;
 use function implode;
 use function sprintf;
 use function trigger_error;
@@ -98,6 +100,7 @@ EOT
         $ui = new SymfonyStyle($input, $output);
 
         $em = $this->getDoctrine()->getManager($input->getOption('em'));
+        assert($em instanceof EntityManagerInterface);
 
         if (! $input->getOption('append')) {
             if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), ! $input->isInteractive())) {

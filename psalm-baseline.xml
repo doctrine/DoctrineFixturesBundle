@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.10.0@916b098b008f6de4543892b1e0651c1c3b92cbfa">
+  <file src="Command/LoadDataFixturesDoctrineCommand.php">
+    <UndefinedClass occurrences="1">
+      <code>PoolingShardConnection</code>
+    </UndefinedClass>
+  </file>
+</files>

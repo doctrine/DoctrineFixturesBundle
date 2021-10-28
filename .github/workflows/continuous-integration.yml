@@ -43,6 +43,9 @@ jobs:
           - dependencies: "highest"
             stability: "dev"
             php-version: "7.3"
+          - dependencies: "highest"
+            stability: "dev"
+            php-version: "8.0"
 
     steps:
       - name: "Checkout"

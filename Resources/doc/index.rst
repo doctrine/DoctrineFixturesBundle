@@ -154,6 +154,8 @@ files thanks to the **object references**. Use the ``addReference()`` method to
 give a name to any object and then, use the ``getReference()`` method to get the
 exact same object via its name::
 
+.. code-block:: php
+
     // src/DataFixtures/UserFixtures.php
     // ...
     class UserFixtures extends Fixture
@@ -170,6 +172,8 @@ exact same object via its name::
             $this->addReference(self::ADMIN_USER_REFERENCE, $userAdmin);
         }
     }
+
+.. code-block:: php
 
     // src/DataFixtures/GroupFixtures.php
     // ...

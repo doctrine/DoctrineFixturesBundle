@@ -10,6 +10,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
+
 use function rand;
 use function sys_get_temp_dir;
 
@@ -28,12 +29,15 @@ class IntegrationTestKernel extends Kernel
         parent::__construct($environment, $debug);
     }
 
-    protected function getContainerClass() : string
+    protected function getContainerClass(): string
     {
         return 'test' . $this->randomKey . parent::getContainerClass();
     }
 
-    public function registerBundles() : array
+    /**
+     * {@inheritDoc}
+     */
+    public function registerBundles(): array
     {
         return [
             new DoctrineFixturesBundle(),
@@ -41,14 +45,14 @@ class IntegrationTestKernel extends Kernel
         ];
     }
 
-    public function addServices(callable $callback) : void
+    public function addServices(callable $callback): void
     {
         $this->servicesCallback = $callback;
     }
 
-    public function registerContainerConfiguration(LoaderInterface $loader) : void
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
-        $loader->load(function (ContainerBuilder $c) : void {
+        $loader->load(function (ContainerBuilder $c): void {
             if (! $c->hasDefinition('kernel')) {
                 $c->register('kernel', static::class)
                   ->setSynthetic(true)
@@ -64,12 +68,12 @@ class IntegrationTestKernel extends Kernel
         });
     }
 
-    public function getCacheDir() : string
+    public function getCacheDir(): string
     {
         return sys_get_temp_dir() . '/doctrine_fixtures_bundle' . $this->randomKey;
     }
 
-    public function getLogDir() : string
+    public function getLogDir(): string
     {
         return sys_get_temp_dir();
     }

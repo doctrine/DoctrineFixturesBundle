@@ -26,16 +26,18 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+
 use function array_map;
+use function assert;
 use function get_class;
 use function method_exists;
 
 class IntegrationTest extends TestCase
 {
-    public function testFixturesLoader() : void
+    public function testFixturesLoader(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
@@ -47,8 +49,8 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
@@ -63,12 +65,12 @@ class IntegrationTest extends TestCase
         $this->assertInstanceOf(WithDependenciesFixtures::class, $actualFixtures[1]);
     }
 
-    public function testFixturesLoaderWhenFixtureHasDepdencenyThatIsNotYetLoaded() : void
+    public function testFixturesLoaderWhenFixtureHasDepdencenyThatIsNotYetLoaded(): void
     {
         // See https://github.com/doctrine/DoctrineFixturesBundle/issues/215
 
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             $c->autowire(WithDependenciesFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
@@ -80,8 +82,8 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
@@ -96,7 +98,7 @@ class IntegrationTest extends TestCase
         $this->assertInstanceOf(WithDependenciesFixtures::class, $actualFixtures[1]);
     }
 
-    public function testExceptionWithDependenciesWithRequiredArguments() : void
+    public function testExceptionWithDependenciesWithRequiredArguments(): void
     {
         // see https://github.com/doctrine/data-fixtures/pull/274
         // When that is merged, this test will only run when using
@@ -106,7 +108,7 @@ class IntegrationTest extends TestCase
         }
 
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             $c->autowire(DependentOnRequiredConstructorArgsFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
@@ -122,13 +124,13 @@ class IntegrationTest extends TestCase
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage('The getDependencies() method returned a class (Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures) that has required constructor arguments. Upgrade to "doctrine/data-fixtures" version 1.3 or higher to support this.');
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $loader->getFixtures();
     }
 
-    public function testExceptionIfDependentFixtureNotWired() : void
+    public function testExceptionIfDependentFixtureNotWired(): void
     {
         // only runs on newer versions of doctrine/data-fixtures
         if (! method_exists(Loader::class, 'createFixture')) {
@@ -136,7 +138,7 @@ class IntegrationTest extends TestCase
         }
 
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             $c->autowire(DependentOnRequiredConstructorArgsFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
@@ -148,16 +150,16 @@ class IntegrationTest extends TestCase
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage('The "Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures" fixture class is trying to be loaded, but is not available. Make sure this class is defined as a service and tagged with "doctrine.fixture.orm".');
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $loader->getFixtures();
     }
 
-    public function testFixturesLoaderWithGroupsOptionViaInterface() : void
+    public function testFixturesLoaderWithGroupsOptionViaInterface(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
               ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -171,8 +173,8 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $actualFixtures = $loader->getFixtures(['staging']);
         $this->assertCount(1, $actualFixtures);
@@ -186,10 +188,10 @@ class IntegrationTest extends TestCase
         $this->assertInstanceOf(OtherFixtures::class, $actualFixtures[0]);
     }
 
-    public function testFixturesLoaderWithGroupsOptionViaTag() : void
+    public function testFixturesLoaderWithGroupsOptionViaTag(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG, ['group' => 'group1'])
@@ -204,8 +206,8 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $this->assertCount(1, $loader->getFixtures(['staging']));
         $this->assertCount(1, $loader->getFixtures(['group1']));
@@ -213,10 +215,10 @@ class IntegrationTest extends TestCase
         $this->assertCount(0, $loader->getFixtures(['group3']));
     }
 
-    public function testLoadFixturesViaGroupWithMissingDependency() : void
+    public function testLoadFixturesViaGroupWithMissingDependency(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -230,8 +232,8 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Fixture "Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures" was declared as a dependency for fixture "Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures", but it was not included in any of the loaded fixture groups.');
@@ -239,10 +241,10 @@ class IntegrationTest extends TestCase
         $loader->getFixtures(['missingDependencyGroup']);
     }
 
-    public function testLoadFixturesViaGroupWithFulfilledDependency() : void
+    public function testLoadFixturesViaGroupWithFulfilledDependency(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -256,8 +258,8 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $actualFixtures = $loader->getFixtures(['fulfilledDependencyGroup']);
 
@@ -272,10 +274,10 @@ class IntegrationTest extends TestCase
         ], $actualFixtureClasses);
     }
 
-    public function testLoadFixturesByShortName() : void
+    public function testLoadFixturesByShortName(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -289,8 +291,8 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        /** @var ContainerAwareLoader $loader */
         $loader = $container->get('test.doctrine.fixtures.loader');
+        assert($loader instanceof ContainerAwareLoader);
 
         $actualFixtures = $loader->getFixtures(['OtherFixtures']);
 
@@ -304,10 +306,10 @@ class IntegrationTest extends TestCase
         ], $actualFixtureClasses);
     }
 
-    public function testRunCommandWithDefaultPurger() : void
+    public function testRunCommandWithDefaultPurger(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -345,16 +347,16 @@ class IntegrationTest extends TestCase
             ->willReturn($purger);
         $container->set('test.doctrine.fixtures.purger.orm_purger_factory', $purgerFactory);
 
-        /** @var LoadDataFixturesDoctrineCommand $command */
         $command = $container->get('test.doctrine.fixtures_load_command');
-        $tester  = new CommandTester($command);
+        assert($command instanceof LoadDataFixturesDoctrineCommand);
+        $tester = new CommandTester($command);
         $tester->execute([], ['interactive' => false]);
     }
 
-    public function testRunCommandWithPurgeExclusions() : void
+    public function testRunCommandWithPurgeExclusions(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -392,16 +394,16 @@ class IntegrationTest extends TestCase
             ->willReturn($purger);
         $container->set('test.doctrine.fixtures.purger.orm_purger_factory', $purgerFactory);
 
-        /** @var LoadDataFixturesDoctrineCommand $command */
         $command = $container->get('test.doctrine.fixtures_load_command');
-        $tester  = new CommandTester($command);
+        assert($command instanceof LoadDataFixturesDoctrineCommand);
+        $tester = new CommandTester($command);
         $tester->execute(['--purge-exclusions' => ['excluded_table']], ['interactive' => false]);
     }
 
-    public function testRunCommandWithCustomPurgerAndCustomEntityManager() : void
+    public function testRunCommandWithCustomPurgerAndCustomEntityManager(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -442,16 +444,16 @@ class IntegrationTest extends TestCase
             ->willReturn($purger);
         $container->set('test.doctrine.fixtures.purger.test_factory', $purgerFactory);
 
-        /** @var LoadDataFixturesDoctrineCommand $command */
         $command = $container->get('test.doctrine.fixtures_load_command');
-        $tester  = new CommandTester($command);
+        assert($command instanceof LoadDataFixturesDoctrineCommand);
+        $tester = new CommandTester($command);
         $tester->execute(['--purger' => 'test', '--em' => 'alternative'], ['interactive' => false]);
     }
 
-    public function testRunCommandWithPurgeMode() : void
+    public function testRunCommandWithPurgeMode(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c) : void {
+        $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
@@ -489,9 +491,9 @@ class IntegrationTest extends TestCase
             ->willReturn($purger);
         $container->set('test.doctrine.fixtures.purger.orm_purger_factory', $purgerFactory);
 
-        /** @var LoadDataFixturesDoctrineCommand $command */
         $command = $container->get('test.doctrine.fixtures_load_command');
-        $tester  = new CommandTester($command);
+        assert($command instanceof LoadDataFixturesDoctrineCommand);
+        $tester = new CommandTester($command);
         $tester->execute(['--purge-with-truncate' => true], ['interactive' => false]);
     }
 }

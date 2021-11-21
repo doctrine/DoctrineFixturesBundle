@@ -15,5 +15,5 @@ interface FixtureGroupInterface
      *
      * @return string[]
      */
-    public static function getGroups() : array;
+    public static function getGroups(): array;
 }

@@ -74,10 +74,6 @@ Create a fixtures class and start adding products::
         }
     }
 
-.. tip::
-
-    You can also create multiple fixtures classes. See :ref:`multiple-files`.
-
 Loading Fixtures
 ----------------
 
@@ -232,9 +228,9 @@ an array of the fixture classes that must be loaded before this one::
 
         public function getDependencies()
         {
-            return array(
+            return [
                 UserFixtures::class,
-            );
+            ];
         }
     }
 
@@ -327,7 +323,7 @@ You can also customize purging behavior significantly more and implement a custo
 
     class CustomPurgerFactory implements PurgerFactory
     {
-        public function createForEntityManager(?string $emName, EntityManagerInterface $em, array $excluded = [], bool $purgeWithTruncate = false) : PurgerInterface;
+        public function createForEntityManager(?string $emName, EntityManagerInterface $em, array $excluded = [], bool $purgeWithTruncate = false) : PurgerInterface
         {
             return new CustomPurger($em);
         }

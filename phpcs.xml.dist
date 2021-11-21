@@ -6,6 +6,8 @@
     <arg name="cache" value=".phpcs-cache"/>
     <arg name="colors"/>
 
+    <config name="php_version" value="70100"/>
+
      <!-- Ignore warnings and show progress of the run -->
     <arg value="np"/>
 
@@ -13,18 +15,14 @@
     <exclude-pattern>/vendor</exclude-pattern>
 
     <rule ref="Doctrine">
-        <!-- Traversable type hints often end up as mixed[], so we skip them for now -->
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversablePropertyTypeHintSpecification"/>
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableParameterTypeHintSpecification"/>
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint"/>
     </rule>
+
 
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming.SuperfluousSuffix">
         <exclude-pattern>FixtureGroupInterface.php</exclude-pattern>
         <exclude-pattern>ORMFixtureInterface.php</exclude-pattern>
-    </rule>
-    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint">
-        <exclude-pattern>Loader/SymfonyFixturesLoader.php</exclude-pattern>
     </rule>
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
         <exclude-pattern>Tests/IntegrationTest.php</exclude-pattern>

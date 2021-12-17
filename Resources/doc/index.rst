@@ -108,15 +108,15 @@ class. No problem! Your fixtures class is a service, so you can use normal depen
 injection::
 
     // src/DataFixtures/AppFixtures.php
-    use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+    use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
     class AppFixtures extends Fixture
     {
-        private $encoder;
+        private UserPasswordHasherInterface $hasher;
 
-        public function __construct(UserPasswordEncoderInterface $encoder)
+        public function __construct(UserPasswordHasherInterface $hasher)
         {
-            $this->encoder = $encoder;
+            $this->hasher = $hasher;
         }
 
         // ...
@@ -125,7 +125,7 @@ injection::
             $user = new User();
             $user->setUsername('admin');
 
-            $password = $this->encoder->encodePassword($user, 'pass_1234');
+            $password = $this->hasher->hashPassword($user, 'pass_1234');
             $user->setPassword($password);
 
             $manager->persist($user);

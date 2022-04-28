@@ -306,6 +306,9 @@ class IntegrationTest extends TestCase
         ], $actualFixtureClasses);
     }
 
+    /**
+     * @requires PHPUnit 8.3.0
+     */
     public function testRunCommandWithDefaultPurger(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
@@ -358,6 +361,9 @@ class IntegrationTest extends TestCase
         $tester->execute([], ['interactive' => false]);
     }
 
+    /**
+     * @requires PHPUnit 8.3.0
+     */
     public function testRunCommandWithPurgeExclusions(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
@@ -410,6 +416,9 @@ class IntegrationTest extends TestCase
         $tester->execute(['--purge-exclusions' => ['excluded_table']], ['interactive' => false]);
     }
 
+    /**
+     * @requires PHPUnit 8.3.0
+     */
     public function testRunCommandWithCustomPurgerAndCustomEntityManager(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
@@ -465,6 +474,9 @@ class IntegrationTest extends TestCase
         $tester->execute(['--purger' => 'test', '--em' => 'alternative'], ['interactive' => false]);
     }
 
+    /**
+     * @requires PHPUnit 8.3.0
+     */
     public function testRunCommandWithPurgeMode(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);

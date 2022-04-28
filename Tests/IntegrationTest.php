@@ -329,7 +329,12 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $em       = $this->getMockBuilder(EntityManagerInterface::class)
+            ->addMethods(['wrapInTransaction'])
+            ->getMockForAbstractClass();
+        $em->method('getConnection')->willReturn($this->createMock(Connection::class));
+        $em->method('getEventManager')->willReturn($this->createMock(EventManager::class));
+        $em->method('wrapInTransaction')->willReturn(null);
         $registry = $this->createMock(ManagerRegistry::class);
         $registry
             ->expects(self::once())
@@ -376,7 +381,12 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $em      = $this->getMockBuilder(EntityManagerInterface::class)
+            ->addMethods(['wrapInTransaction'])
+            ->getMockForAbstractClass();
+        $em->method('getConnection')->willReturn($this->createMock(Connection::class));
+        $em->method('getEventManager')->willReturn($this->createMock(EventManager::class));
+        $em->method('wrapInTransaction')->willReturn(null);
         $registry = $this->createMock(ManagerRegistry::class);
         $registry
             ->expects(self::once())
@@ -426,7 +436,12 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $em      = $this->getMockBuilder(EntityManagerInterface::class)
+            ->addMethods(['wrapInTransaction'])
+            ->getMockForAbstractClass();
+        $em->method('getConnection')->willReturn($this->createMock(Connection::class));
+        $em->method('getEventManager')->willReturn($this->createMock(EventManager::class));
+        $em->method('wrapInTransaction')->willReturn(null);
         $registry = $this->createMock(ManagerRegistry::class);
         $registry
             ->expects(self::once())
@@ -473,7 +488,12 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $em      = $this->getMockBuilder(EntityManagerInterface::class)
+            ->addMethods(['wrapInTransaction'])
+            ->getMockForAbstractClass();
+        $em->method('getConnection')->willReturn($this->createMock(Connection::class));
+        $em->method('getEventManager')->willReturn($this->createMock(EventManager::class));
+        $em->method('wrapInTransaction')->willReturn(null);
         $registry = $this->createMock(ManagerRegistry::class);
         $registry
             ->expects(self::once())

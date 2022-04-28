@@ -59,7 +59,7 @@ class IntegrationTestKernel extends Kernel
                   ->setPublic(true);
             }
 
-            $c->register('doctrine', ManagerRegistry::class);
+            $c->register('doctrine', ManagerRegistry::class)->setPublic(true);
 
             $callback = $this->servicesCallback;
             $callback($c);

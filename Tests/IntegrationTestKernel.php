@@ -8,6 +8,7 @@ use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\FooBundle;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -76,5 +77,15 @@ class IntegrationTestKernel extends Kernel
     public function getLogDir(): string
     {
         return sys_get_temp_dir();
+    }
+
+    protected function build(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new class implements CompilerPassInterface {
+            public function process(ContainerBuilder $container): void
+            {
+                $container->findDefinition('doctrine')->setPublic(true);
+            }
+        });
     }
 }

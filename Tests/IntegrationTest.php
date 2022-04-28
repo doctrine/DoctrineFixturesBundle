@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\FixturesBundle\Tests;
 use Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand;
 use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesCompilerPass;
 use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\PurgerFactoryCompilerPass;
+use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\DependentOnRequiredConstructorArgsFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures;
@@ -121,11 +122,11 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('The getDependencies() method returned a class (Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures) that has required constructor arguments. Upgrade to "doctrine/data-fixtures" version 1.3 or higher to support this.');
-
         $loader = $container->get('test.doctrine.fixtures.loader');
         assert($loader instanceof ContainerAwareLoader);
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('The getDependencies() method returned a class (Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures) that has required constructor arguments. Upgrade to "doctrine/data-fixtures" version 1.3 or higher to support this.');
 
         $loader->getFixtures();
     }
@@ -150,10 +151,7 @@ class IntegrationTest extends TestCase
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage('The "Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures" fixture class is trying to be loaded, but is not available. Make sure this class is defined as a service and tagged with "doctrine.fixture.orm".');
 
-        $loader = $container->get('test.doctrine.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
-
-        $loader->getFixtures();
+        $container->get('test.doctrine.fixtures.loader');
     }
 
     public function testFixturesLoaderWithGroupsOptionViaInterface(): void
@@ -174,7 +172,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        $this->assertInstanceOf(SymfonyFixturesLoader::class, $loader);
 
         $actualFixtures = $loader->getFixtures(['staging']);
         $this->assertCount(1, $actualFixtures);
@@ -194,6 +192,7 @@ class IntegrationTest extends TestCase
         $kernel->addServices(static function (ContainerBuilder $c): void {
             // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
+                ->setAutoconfigured(true)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG, ['group' => 'group1'])
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG, ['group' => 'group2']);
 
@@ -207,7 +206,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        $this->assertInstanceOf(SymfonyFixturesLoader::class, $loader);
 
         $this->assertCount(1, $loader->getFixtures(['staging']));
         $this->assertCount(1, $loader->getFixtures(['group1']));
@@ -233,7 +232,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        $this->assertInstanceOf(SymfonyFixturesLoader::class, $loader);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Fixture "Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures" was declared as a dependency for fixture "Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures", but it was not included in any of the loaded fixture groups.');
@@ -259,7 +258,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        $this->assertInstanceOf(SymfonyFixturesLoader::class, $loader);
 
         $actualFixtures = $loader->getFixtures(['fulfilledDependencyGroup']);
 
@@ -292,7 +291,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        $this->assertInstanceOf(SymfonyFixturesLoader::class, $loader);
 
         $actualFixtures = $loader->getFixtures(['OtherFixtures']);
 
@@ -329,7 +328,7 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $em       = $this->createConfiguredMock(ForwardCompatibleEntityManager::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
         $registry = $this->createMock(ManagerRegistry::class);
         $registry
             ->expects(self::once())
@@ -376,7 +375,7 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $em       = $this->createConfiguredMock(ForwardCompatibleEntityManager::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
         $registry = $this->createMock(ManagerRegistry::class);
         $registry
             ->expects(self::once())
@@ -426,7 +425,7 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $em       = $this->createConfiguredMock(ForwardCompatibleEntityManager::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
         $registry = $this->createMock(ManagerRegistry::class);
         $registry
             ->expects(self::once())
@@ -473,7 +472,7 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $em       = $this->createConfiguredMock(EntityManagerInterface::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $em       = $this->createConfiguredMock(ForwardCompatibleEntityManager::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
         $registry = $this->createMock(ManagerRegistry::class);
         $registry
             ->expects(self::once())
@@ -496,4 +495,12 @@ class IntegrationTest extends TestCase
         $tester = new CommandTester($command);
         $tester->execute(['--purge-with-truncate' => true], ['interactive' => false]);
     }
+}
+
+interface ForwardCompatibleEntityManager extends EntityManagerInterface
+{
+    /**
+     * @return mixed
+     */
+    public function wrapInTransaction(callable $func);
 }

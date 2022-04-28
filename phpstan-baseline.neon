@@ -15,8 +15,3 @@ parameters:
 			count: 1
 			path: Tests/Fixtures/FooBundle/DataFixtures/RequiredConstructorArgsFixtures.php
 
-		-
-			message: "#^Method Doctrine\\\\Common\\\\DataFixtures\\\\Loader\\:\\:getFixtures\\(\\) invoked with 1 parameter, 0 required\\.$#"
-			count: 8
-			path: Tests/IntegrationTest.php
-

@@ -329,7 +329,7 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $em       = $this->getMockBuilder(EntityManagerInterface::class)
+        $em = $this->getMockBuilder(EntityManagerInterface::class)
             ->addMethods(['wrapInTransaction'])
             ->getMockForAbstractClass();
         $em->method('getConnection')->willReturn($this->createMock(Connection::class));
@@ -381,7 +381,7 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $em      = $this->getMockBuilder(EntityManagerInterface::class)
+        $em = $this->getMockBuilder(EntityManagerInterface::class)
             ->addMethods(['wrapInTransaction'])
             ->getMockForAbstractClass();
         $em->method('getConnection')->willReturn($this->createMock(Connection::class));
@@ -436,7 +436,7 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $em      = $this->getMockBuilder(EntityManagerInterface::class)
+        $em = $this->getMockBuilder(EntityManagerInterface::class)
             ->addMethods(['wrapInTransaction'])
             ->getMockForAbstractClass();
         $em->method('getConnection')->willReturn($this->createMock(Connection::class));
@@ -488,7 +488,7 @@ class IntegrationTest extends TestCase
         $kernel->boot();
         $container = $kernel->getContainer();
 
-        $em      = $this->getMockBuilder(EntityManagerInterface::class)
+        $em = $this->getMockBuilder(EntityManagerInterface::class)
             ->addMethods(['wrapInTransaction'])
             ->getMockForAbstractClass();
         $em->method('getConnection')->willReturn($this->createMock(Connection::class));

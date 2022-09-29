@@ -409,7 +409,7 @@ Then, enable Dependency Injection for the ``/fixtures`` directory:
     // config/services.php
     namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-    return function(ContainerConfigurator $configurator) : void {
+    return function(ContainerConfigurator $container) : void {
         $services = $container->services()
             ->defaults()
                 ->autowire()

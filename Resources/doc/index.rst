@@ -389,7 +389,7 @@ With the ``--purger`` option we can now specify to use ``my_purger`` instead of 
 How to load Fixtures from a different Directory
 -----------------------------------------------
 By default, fixtures are loaded from the ``src/DataFixtures`` directory.
-In this example, we are going to load our DataFixtures from a new ``/fixtures`` directory.
+In this example, we are going to load our DataFixtures from a new ``fixtures`` directory.
 
 First, add a new ``PSR-4`` autoload-entry in the ``composer.json`` with the new ``/fixtures`` directory:
 

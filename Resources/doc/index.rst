@@ -402,7 +402,7 @@ First, add a new ``PSR-4`` autoload-entry in the ``composer.json`` with the new 
         }
     },
 
-Then, enable Dependency Injection for the ``/fixtures`` directory:
+Then, enable Dependency Injection for the ``fixtures`` directory:
 
 .. code-block:: php
 

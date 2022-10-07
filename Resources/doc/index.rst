@@ -386,8 +386,8 @@ With the ``--purger`` option we can now specify to use ``my_purger`` instead of 
 .. _`DoctrineMongoDBBundle`: https://github.com/doctrine/DoctrineMongoDBBundle
 
 
-How to load Fixtures from a different Directoy
----------------------------
+How to load Fixtures from a different Directory
+-----------------------------------------------
 By default, fixtures are loaded from the ``/src/DataFixtures``-directory.
 In this example, we are going to load our DataFixtures from a new ``/fixtures`` directory.
 

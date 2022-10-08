@@ -384,3 +384,43 @@ With the ``--purger`` option we can now specify to use ``my_purger`` instead of 
 
 .. _`Doctrine ORM`: https://symfony.com/doc/current/doctrine.html
 .. _`DoctrineMongoDBBundle`: https://github.com/doctrine/DoctrineMongoDBBundle
+
+
+How to load Fixtures from a different Directory
+-----------------------------------------------
+By default, fixtures are loaded from the ``src/DataFixtures`` directory.
+In this example, we are going to load our DataFixtures from a new ``fixtures`` directory.
+
+First, add a new ``PSR-4`` autoload-entry in the ``composer.json`` with the new ``fixtures`` directory:
+
+.. code-block:: json
+
+    "autoload-dev": {
+        "psr-4": {
+            "...": "...",
+            "DataFixtures\\": "fixtures"
+        }
+    },
+
+Then, enable Dependency Injection for the ``fixtures`` directory:
+
+.. code-block:: php
+
+    // config/services.php
+    namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
+    return function(ContainerConfigurator $container) : void {
+        $services = $container->services()
+            ->defaults()
+                ->autowire()
+                ->autoconfigure();
+
+        $services->load('DataFixtures\\', '../fixtures');
+    };
+
+.. caution::
+
+    This will not override the default ``src/DataFixtures`` directory when creating fixtures with the
+    `Symfony MakerBundle` (``make:fixtures``).
+
+.. _`Symfony MakerBundle`: https://symfony.com/bundles/SymfonyMakerBundle/current/index.html

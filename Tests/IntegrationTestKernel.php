@@ -25,7 +25,7 @@ class IntegrationTestKernel extends Kernel
 
     public function __construct(string $environment, bool $debug)
     {
-        $this->randomKey = rand(100, 999);
+        $this->randomKey = rand(10000000000, 99999999999);
 
         parent::__construct($environment, $debug);
     }

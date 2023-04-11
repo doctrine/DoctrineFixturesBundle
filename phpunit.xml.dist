@@ -2,7 +2,7 @@
 
 <phpunit colors="true" bootstrap="vendor/autoload.php">
     <testsuites>
-        <testsuite name="DoctrineBundle for the Symfony Framework">
+        <testsuite name="DoctrineFixturesBundle for the Symfony Framework">
             <directory>./Tests</directory>
         </testsuite>
     </testsuites>

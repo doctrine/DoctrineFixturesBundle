@@ -18,7 +18,7 @@ env:
 jobs:
   phpunit:
     name: "PHPUnit"
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
 
     strategy:
       matrix:
@@ -29,6 +29,7 @@ jobs:
           - "7.4"
           - "8.0"
           - "8.1"
+          - "8.2"
         dependencies:
           - "highest"
         stability:
@@ -46,11 +47,11 @@ jobs:
             php-version: "7.3"
           - dependencies: "highest"
             stability: "dev"
-            php-version: "8.1"
+            php-version: "8.2"
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
         with:
           fetch-depth: 2
 
@@ -79,7 +80,7 @@ jobs:
         if: "${{ contains(matrix.extra_constraint, '/') }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v1"
+        uses: "ramsey/composer-install@v2"
         with:
           dependency-versions: "${{ matrix.dependencies }}"
           composer-options: "--prefer-dist"
@@ -92,14 +93,14 @@ jobs:
         run: "vendor/bin/phpunit --coverage-clover=coverage.xml"
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v2"
+        uses: "actions/upload-artifact@v3"
         if: "${{ ! contains(matrix.extra_constraint, '/') }}"
         with:
           name: "phpunit-${{ matrix.dependencies }}-${{ matrix.stability }}-${{ matrix.php-version }}.coverage"
           path: "coverage.xml"
 
       - name: "Upload coverage file, sanitize the name"
-        uses: "actions/upload-artifact@v2"
+        uses: "actions/upload-artifact@v3"
         if: "${{ contains(matrix.extra_constraint, '/') }}"
         with:
           name: "phpunit-symfony-lts-${{ matrix.php-version }}.coverage"
@@ -107,13 +108,13 @@ jobs:
 
   upload_coverage:
     name: "Upload coverage to Codecov"
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
     needs:
       - "phpunit"
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
         with:
           fetch-depth: 2
 
@@ -123,6 +124,6 @@ jobs:
           path: "reports"
 
       - name: "Upload to Codecov"
-        uses: "codecov/codecov-action@v1"
+        uses: "codecov/codecov-action@v3"
         with:
           directory: reports

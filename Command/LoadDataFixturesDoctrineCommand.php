@@ -56,6 +56,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
         $this->purgerFactories = $purgerFactories;
     }
 
+    /** @return void */
     protected function configure()
     {
         $this

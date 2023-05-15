@@ -306,7 +306,7 @@ multiple tables:
 
 .. code-block:: terminal
 
-    $ php bin/console doctrine:fixtures:load --exclude-table=post_category --exclude-table=comment_type
+    $ php bin/console doctrine:fixtures:load --purge-exclusions=post_category --purge-exclusions=comment_type
 
 You can also customize purging behavior significantly more and implement a custom purger plus a custom purger factory::
 

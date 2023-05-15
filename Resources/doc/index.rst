@@ -302,7 +302,11 @@ By default all previously existing data is purged using ``DELETE FROM table`` st
 
 If you want to exclude a set of tables from being purged, e.g. because your schema comes with pre-populated,
 semi-static data, pass the option ``--purge-exclusions``. Specify ``--purge-exclusions`` multiple times to exclude
-multiple tables.
+multiple tables:
+
+.. code-block:: terminal
+
+    $ php bin/console doctrine:fixtures:load --exclude-table=post_category --exclude-table=comment_type
 
 You can also customize purging behavior significantly more and implement a custom purger plus a custom purger factory::
 

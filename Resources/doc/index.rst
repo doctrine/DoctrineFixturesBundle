@@ -152,7 +152,11 @@ Sharing Objects between Fixtures
 When using multiple fixtures files, you can reuse PHP objects across different
 files thanks to the **object references**. Use the ``addReference()`` method to
 give a name to any object and then, use the ``getReference()`` method to get the
-exact same object via its name:
+exact same object via its name.
+
+.. note::
+
+    Adding object references only works for ORM entities or ODM documents.
 
 .. code-block:: php
 

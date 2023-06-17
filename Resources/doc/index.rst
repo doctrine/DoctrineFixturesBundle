@@ -429,6 +429,6 @@ Then, enable Dependency Injection for the ``fixtures`` directory:
 .. caution::
 
     This will not override the default ``src/DataFixtures`` directory when creating fixtures with the
-    `Symfony MakerBundle` (``make:fixtures``).
+    `Symfony MakerBundle`_ (``make:fixtures``).
 
 .. _`Symfony MakerBundle`: https://symfony.com/bundles/SymfonyMakerBundle/current/index.html

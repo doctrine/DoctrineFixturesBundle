@@ -406,11 +406,22 @@ First, add a new ``PSR-4`` autoload-entry in the ``composer.json`` with the new 
     "autoload-dev": {
         "psr-4": {
             "...": "...",
-            "DataFixtures\\": "fixtures"
+            "DataFixtures\\": "fixtures\"
         }
     },
 
+.. note::
+
+    You need to dump the autoloader with composer dump-autoloader
+
 Then, enable Dependency Injection for the ``fixtures`` directory:
+
+.. code-block:: yaml
+
+    # config/services.yaml
+    services:
+        DataFixtures\:
+            resource: '../fixtures'
 
 .. code-block:: php
 

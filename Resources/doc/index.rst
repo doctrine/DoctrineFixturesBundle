@@ -406,36 +406,38 @@ First, add a new ``PSR-4`` autoload-entry in the ``composer.json`` with the new 
     "autoload-dev": {
         "psr-4": {
             "...": "...",
-            "DataFixtures\\": "fixtures\"
+            "DataFixtures\\": "fixtures/"
         }
     },
 
 .. note::
 
-    You need to dump the autoloader with composer dump-autoloader
+    You need to dump the autoloader with ``composer dump-autoloader``
 
 Then, enable Dependency Injection for the ``fixtures`` directory:
 
-.. code-block:: yaml
+.. configuration-block::
 
-    # config/services.yaml
-    services:
-        DataFixtures\:
-            resource: '../fixtures'
-
-.. code-block:: php
-
-    // config/services.php
-    namespace Symfony\Component\DependencyInjection\Loader\Configurator;
-
-    return function(ContainerConfigurator $container) : void {
-        $services = $container->services()
-            ->defaults()
-                ->autowire()
-                ->autoconfigure();
-
-        $services->load('DataFixtures\\', '../fixtures');
-    };
+    .. code-block:: yaml
+    
+        # config/services.yaml
+        services:
+            DataFixtures\:
+                resource: '../fixtures'
+    
+    .. code-block:: php
+    
+        // config/services.php
+        namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+    
+        return function(ContainerConfigurator $container) : void {
+            $services = $container->services()
+                ->defaults()
+                    ->autowire()
+                    ->autoconfigure();
+    
+            $services->load('DataFixtures\\', '../fixtures');
+        };
 
 .. caution::
 

@@ -22,7 +22,6 @@ use Doctrine\Persistence\ManagerRegistry;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -51,7 +50,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        assert($loader instanceof Loader);
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
@@ -84,7 +83,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        assert($loader instanceof Loader);
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
@@ -123,7 +122,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine.fixtures.loader');
-        assert($loader instanceof ContainerAwareLoader);
+        assert($loader instanceof Loader);
 
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage('The getDependencies() method returned a class (Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures) that has required constructor arguments. Upgrade to "doctrine/data-fixtures" version 1.3 or higher to support this.');

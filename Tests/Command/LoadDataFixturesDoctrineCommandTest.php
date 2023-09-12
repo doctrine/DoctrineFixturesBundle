@@ -9,7 +9,6 @@ use Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand;
 use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\Container;
 use TypeError;
 
 use function sprintf;
@@ -24,7 +23,7 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
      */
     public function testInstantiatingWithoutManagerRegistry(): void
     {
-        $loader = new SymfonyFixturesLoader(new Container());
+        $loader = new SymfonyFixturesLoader();
 
         try {
             new LoadDataFixturesDoctrineCommand($loader);
@@ -47,7 +46,7 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
     public function testInstantiatingWithManagerRegistry(): void
     {
         $registry = $this->createMock(ManagerRegistry::class);
-        $loader   = new SymfonyFixturesLoader(new Container());
+        $loader   = new SymfonyFixturesLoader();
 
         new LoadDataFixturesDoctrineCommand($loader, $registry);
     }

@@ -8,17 +8,17 @@ use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\FixturesComp
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\DataFixtures\Loader;
 use LogicException;
 use ReflectionClass;
 use RuntimeException;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 
 use function array_key_exists;
 use function array_values;
 use function get_class;
 use function sprintf;
 
-final class SymfonyFixturesLoader extends ContainerAwareLoader
+final class SymfonyFixturesLoader extends Loader
 {
     /** @var FixtureInterface[] */
     private $loadedFixtures = [];

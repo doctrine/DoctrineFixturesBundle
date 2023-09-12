@@ -79,8 +79,7 @@ class IntegrationTestKernel extends Kernel
         return sys_get_temp_dir();
     }
 
-    /** @return void */
-    protected function build(ContainerBuilder $container)
+    protected function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new class implements CompilerPassInterface {
             public function process(ContainerBuilder $container): void

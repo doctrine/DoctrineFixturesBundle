@@ -57,7 +57,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
     }
 
     /** @return void */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('doctrine:fixtures:load')
@@ -96,7 +96,7 @@ EOT
     /**
      * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

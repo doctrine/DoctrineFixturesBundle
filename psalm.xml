@@ -6,7 +6,7 @@
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
     errorBaseline="psalm-baseline.xml"
-    phpVersion="8.1"
+    phpVersion="8.2"
 >
     <projectFiles>
         <directory name="Command" />
@@ -22,4 +22,12 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+
+    <issueHandlers>
+        <DuplicateClass>
+            <errorLevel type="suppress">
+                <file name="Command/CommandCompatibility.php"/>
+            </errorLevel>
+        </DuplicateClass>
+    </issueHandlers>
 </psalm>

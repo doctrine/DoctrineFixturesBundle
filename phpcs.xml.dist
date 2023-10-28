@@ -9,7 +9,7 @@
     <config name="php_version" value="70100"/>
 
      <!-- Ignore warnings and show progress of the run -->
-    <arg value="np"/>
+    <arg value="nps"/>
 
     <file>.</file>
     <exclude-pattern>/vendor</exclude-pattern>
@@ -25,6 +25,8 @@
         <exclude-pattern>ORMFixtureInterface.php</exclude-pattern>
     </rule>
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+        <exclude-pattern>Loader/SymfonyBridgeLoader.php</exclude-pattern>
+        <exclude-pattern>Command/CommandCompatibility.php</exclude-pattern>
         <exclude-pattern>Tests/IntegrationTest.php</exclude-pattern>
     </rule>
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">

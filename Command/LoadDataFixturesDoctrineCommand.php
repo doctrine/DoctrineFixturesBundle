@@ -31,6 +31,8 @@ use const E_USER_DEPRECATED;
  */
 class LoadDataFixturesDoctrineCommand extends DoctrineCommand
 {
+    use CommandCompatibility;
+
     /** @var SymfonyFixturesLoader */
     private $fixturesLoader;
 
@@ -93,10 +95,7 @@ EOT
         );
     }
 
-    /**
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

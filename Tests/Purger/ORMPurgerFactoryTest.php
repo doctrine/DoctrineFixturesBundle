@@ -14,11 +14,10 @@ use function assert;
 
 class ORMPurgerFactoryTest extends TestCase
 {
-    /** @var ORMPurgerFactory */
-    private $factory;
+    private ORMPurgerFactory $factory;
 
-    /** @var EntityManagerInterface|MockObject */
-    private $em;
+    /** @var EntityManagerInterface&MockObject */
+    private EntityManagerInterface $em;
 
     protected function setUp(): void
     {

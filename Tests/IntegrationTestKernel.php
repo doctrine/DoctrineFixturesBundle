@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Bundle\FixturesBundle\Tests;
 
+use Closure;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\FooBundle;
 use Doctrine\Persistence\ManagerRegistry;
@@ -17,11 +18,8 @@ use function sys_get_temp_dir;
 
 class IntegrationTestKernel extends Kernel
 {
-    /** @var callable */
-    private $servicesCallback;
-
-    /** @var int */
-    private $randomKey;
+    private ?Closure $servicesCallback = null;
+    private int $randomKey;
 
     public function __construct(string $environment, bool $debug)
     {
@@ -46,7 +44,7 @@ class IntegrationTestKernel extends Kernel
         ];
     }
 
-    public function addServices(callable $callback): void
+    public function addServices(Closure $callback): void
     {
         $this->servicesCallback = $callback;
     }

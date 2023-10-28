@@ -9,6 +9,7 @@ use Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand;
 use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 use Symfony\Component\DependencyInjection\Container;
 use TypeError;
 
@@ -18,13 +19,14 @@ use const PHP_VERSION_ID;
 
 class LoadDataFixturesDoctrineCommandTest extends TestCase
 {
-    /**
-     * @group legacy
-     * @expectedDeprecation Argument 2 of Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand::__construct() expects an instance of Doctrine\Persistence\ManagerRegistry, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.
-     */
+    use ExpectDeprecationTrait;
+
+    /** @group legacy */
     public function testInstantiatingWithoutManagerRegistry(): void
     {
         $loader = new SymfonyFixturesLoader(new Container());
+
+        $this->expectDeprecation('Since doctrine/fixtures-bundle 3.2: Argument 2 of Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand::__construct() expects an instance of Doctrine\Persistence\ManagerRegistry, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.');
 
         try {
             new LoadDataFixturesDoctrineCommand($loader);

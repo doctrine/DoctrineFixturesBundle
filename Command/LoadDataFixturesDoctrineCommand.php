@@ -100,7 +100,13 @@ EOT
         assert($em instanceof EntityManagerInterface);
 
         if (! $input->getOption('append')) {
-            if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), ! $input->isInteractive())) {
+            if ('sqlite' === $em->getConnection()->getDatabasePlatform()->getName()) {
+                $params = $em->getConnection()->getParams();
+                $database = $params['path'];
+            } else {
+                $database = $em->getConnection()->getDatabase();
+            }
+            if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $database), ! $input->isInteractive())) {
                 return 0;
             }
         }

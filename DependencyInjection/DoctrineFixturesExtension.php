@@ -16,7 +16,7 @@ use function dirname;
 class DoctrineFixturesExtension extends Extension
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return void
      */

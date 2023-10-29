@@ -39,9 +39,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
     /** @var PurgerFactory[] */
     private $purgerFactories;
 
-    /**
-     * @param PurgerFactory[] $purgerFactories
-     */
+    /** @param PurgerFactory[] $purgerFactories */
     public function __construct(SymfonyFixturesLoader $fixturesLoader, ?ManagerRegistry $doctrine = null, array $purgerFactories = [])
     {
         if ($doctrine === null) {
@@ -71,7 +69,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('purge-exclusions', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'List of database tables to ignore while purging')
             ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command loads data fixtures from your application:
 
   <info>php %command.full_name%</info>

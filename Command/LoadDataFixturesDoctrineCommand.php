@@ -100,8 +100,10 @@ EOT
         assert($em instanceof EntityManagerInterface);
 
         if (! $input->getOption('append')) {
-            if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), ! $input->isInteractive())) {
-                return 0;
+            if ($input->isInteractive()) {
+                if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), false)) {
+                    return 0;
+                }
             }
         }
 

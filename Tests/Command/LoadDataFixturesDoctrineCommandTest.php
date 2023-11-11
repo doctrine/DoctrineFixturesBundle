@@ -40,9 +40,7 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
         }
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testInstantiatingWithManagerRegistry(): void
     {
         $registry = $this->createMock(ManagerRegistry::class);

@@ -152,7 +152,11 @@ Sharing Objects between Fixtures
 When using multiple fixtures files, you can reuse PHP objects across different
 files thanks to the **object references**. Use the ``addReference()`` method to
 give a name to any object and then, use the ``getReference()`` method to get the
-exact same object via its name:
+exact same object via its name.
+
+.. note::
+
+    Adding object references only works for ORM entities or ODM documents.
 
 .. code-block:: php
 
@@ -302,7 +306,11 @@ By default all previously existing data is purged using ``DELETE FROM table`` st
 
 If you want to exclude a set of tables from being purged, e.g. because your schema comes with pre-populated,
 semi-static data, pass the option ``--purge-exclusions``. Specify ``--purge-exclusions`` multiple times to exclude
-multiple tables.
+multiple tables:
+
+.. code-block:: terminal
+
+    $ php bin/console doctrine:fixtures:load --purge-exclusions=post_category --purge-exclusions=comment_type
 
 You can also customize purging behavior significantly more and implement a custom purger plus a custom purger factory::
 
@@ -398,29 +406,42 @@ First, add a new ``PSR-4`` autoload-entry in the ``composer.json`` with the new 
     "autoload-dev": {
         "psr-4": {
             "...": "...",
-            "DataFixtures\\": "fixtures"
+            "DataFixtures\\": "fixtures/"
         }
     },
 
+.. note::
+
+    You need to dump the autoloader with ``composer dump-autoloader``
+
 Then, enable Dependency Injection for the ``fixtures`` directory:
 
-.. code-block:: php
+.. configuration-block::
 
-    // config/services.php
-    namespace Symfony\Component\DependencyInjection\Loader\Configurator;
-
-    return function(ContainerConfigurator $container) : void {
-        $services = $container->services()
-            ->defaults()
-                ->autowire()
-                ->autoconfigure();
-
-        $services->load('DataFixtures\\', '../fixtures');
-    };
+    .. code-block:: yaml
+    
+        # config/services.yaml
+        services:
+            DataFixtures\:
+                resource: '../fixtures'
+    
+    .. code-block:: php
+    
+        // config/services.php
+        namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+    
+        return function(ContainerConfigurator $container) : void {
+            $services = $container->services()
+                ->defaults()
+                    ->autowire()
+                    ->autoconfigure();
+    
+            $services->load('DataFixtures\\', '../fixtures');
+        };
 
 .. caution::
 
     This will not override the default ``src/DataFixtures`` directory when creating fixtures with the
-    `Symfony MakerBundle` (``make:fixtures``).
+    `Symfony MakerBundle`_ (``make:fixtures``).
 
 .. _`Symfony MakerBundle`: https://symfony.com/bundles/SymfonyMakerBundle/current/index.html

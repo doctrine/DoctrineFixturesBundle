@@ -32,7 +32,7 @@
         "symfony/http-kernel": "^5.4|^6.0|^7.0"
     },
     "require-dev": {
-        "doctrine/coding-standard": "^9",
+        "doctrine/coding-standard": "^9 || ^12",
         "phpstan/phpstan": "^1.4.10",
         "phpunit/phpunit": "^9.5.20",
         "symfony/phpunit-bridge": "^6.0.8",

@@ -22,4 +22,12 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+
+    <issueHandlers>
+        <DuplicateClass>
+            <errorLevel type="suppress">
+                <file name="Command/CommandCompatibility.php"/>
+            </errorLevel>
+        </DuplicateClass>
+    </issueHandlers>
 </psalm>

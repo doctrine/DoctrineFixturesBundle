@@ -22,30 +22,31 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use function assert;
 use function implode;
 use function sprintf;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
+use function trigger_deprecation;
 
 /**
  * Load data fixtures from bundles.
  */
 class LoadDataFixturesDoctrineCommand extends DoctrineCommand
 {
-    /** @var SymfonyFixturesLoader */
-    private $fixturesLoader;
+    use CommandCompatibility;
+
+    private SymfonyFixturesLoader $fixturesLoader;
 
     /** @var PurgerFactory[] */
-    private $purgerFactories;
+    private array $purgerFactories;
 
     /** @param PurgerFactory[] $purgerFactories */
     public function __construct(SymfonyFixturesLoader $fixturesLoader, ?ManagerRegistry $doctrine = null, array $purgerFactories = [])
     {
         if ($doctrine === null) {
-            @trigger_error(sprintf(
+            trigger_deprecation(
+                'doctrine/fixtures-bundle',
+                '3.2',
                 'Argument 2 of %s() expects an instance of %s, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.',
                 __METHOD__,
-                ManagerRegistry::class
-            ), E_USER_DEPRECATED);
+                ManagerRegistry::class,
+            );
         }
 
         parent::__construct($doctrine);
@@ -91,8 +92,7 @@ EOT
         );
     }
 
-    /** @return int */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

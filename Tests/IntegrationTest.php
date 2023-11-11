@@ -11,9 +11,7 @@ use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\DependentOnRequiredConstructorArgsFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures;
-use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures;
-use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
@@ -28,9 +26,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
 use function array_map;
-use function assert;
 use function get_class;
-use function method_exists;
 
 class IntegrationTest extends TestCase
 {
@@ -50,7 +46,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine.fixtures.loader');
-        assert($loader instanceof Loader);
+        $this->assertInstanceOf(SymfonyFixturesLoader::class, $loader);
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
@@ -83,7 +79,7 @@ class IntegrationTest extends TestCase
         $container = $kernel->getContainer();
 
         $loader = $container->get('test.doctrine.fixtures.loader');
-        assert($loader instanceof Loader);
+        $this->assertInstanceOf(SymfonyFixturesLoader::class, $loader);
 
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
@@ -98,45 +94,8 @@ class IntegrationTest extends TestCase
         $this->assertInstanceOf(WithDependenciesFixtures::class, $actualFixtures[1]);
     }
 
-    public function testExceptionWithDependenciesWithRequiredArguments(): void
-    {
-        // see https://github.com/doctrine/data-fixtures/pull/274
-        // When that is merged, this test will only run when using
-        // an older version of that library.
-        if (method_exists(Loader::class, 'createFixture')) {
-            $this->markTestSkipped();
-        }
-
-        $kernel = new IntegrationTestKernel('dev', true);
-        $kernel->addServices(static function (ContainerBuilder $c): void {
-            $c->autowire(DependentOnRequiredConstructorArgsFixtures::class)
-                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
-
-            $c->autowire(RequiredConstructorArgsFixtures::class)
-                ->setArgument(0, 'foo')
-                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
-
-            $c->setAlias('test.doctrine.fixtures.loader', new Alias('doctrine.fixtures.loader', true));
-        });
-        $kernel->boot();
-        $container = $kernel->getContainer();
-
-        $loader = $container->get('test.doctrine.fixtures.loader');
-        assert($loader instanceof Loader);
-
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('The getDependencies() method returned a class (Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures) that has required constructor arguments. Upgrade to "doctrine/data-fixtures" version 1.3 or higher to support this.');
-
-        $loader->getFixtures();
-    }
-
     public function testExceptionIfDependentFixtureNotWired(): void
     {
-        // only runs on newer versions of doctrine/data-fixtures
-        if (! method_exists(Loader::class, 'createFixture')) {
-            $this->markTestSkipped();
-        }
-
         $kernel = new IntegrationTestKernel('dev', true);
         $kernel->addServices(static function (ContainerBuilder $c): void {
             $c->autowire(DependentOnRequiredConstructorArgsFixtures::class)
@@ -346,7 +305,7 @@ class IntegrationTest extends TestCase
         $container->set('test.doctrine.fixtures.purger.orm_purger_factory', $purgerFactory);
 
         $command = $container->get('test.doctrine.fixtures_load_command');
-        assert($command instanceof LoadDataFixturesDoctrineCommand);
+        $this->assertInstanceOf(LoadDataFixturesDoctrineCommand::class, $command);
         $tester = new CommandTester($command);
         $tester->execute([], ['interactive' => false]);
     }
@@ -393,7 +352,7 @@ class IntegrationTest extends TestCase
         $container->set('test.doctrine.fixtures.purger.orm_purger_factory', $purgerFactory);
 
         $command = $container->get('test.doctrine.fixtures_load_command');
-        assert($command instanceof LoadDataFixturesDoctrineCommand);
+        $this->assertInstanceOf(LoadDataFixturesDoctrineCommand::class, $command);
         $tester = new CommandTester($command);
         $tester->execute(['--purge-exclusions' => ['excluded_table']], ['interactive' => false]);
     }
@@ -443,7 +402,7 @@ class IntegrationTest extends TestCase
         $container->set('test.doctrine.fixtures.purger.test_factory', $purgerFactory);
 
         $command = $container->get('test.doctrine.fixtures_load_command');
-        assert($command instanceof LoadDataFixturesDoctrineCommand);
+        $this->assertInstanceOf(LoadDataFixturesDoctrineCommand::class, $command);
         $tester = new CommandTester($command);
         $tester->execute(['--purger' => 'test', '--em' => 'alternative'], ['interactive' => false]);
     }
@@ -490,7 +449,7 @@ class IntegrationTest extends TestCase
         $container->set('test.doctrine.fixtures.purger.orm_purger_factory', $purgerFactory);
 
         $command = $container->get('test.doctrine.fixtures_load_command');
-        assert($command instanceof LoadDataFixturesDoctrineCommand);
+        $this->assertInstanceOf(LoadDataFixturesDoctrineCommand::class, $command);
         $tester = new CommandTester($command);
         $tester->execute(['--purge-with-truncate' => true], ['interactive' => false]);
     }

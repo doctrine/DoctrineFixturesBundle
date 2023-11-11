@@ -50,7 +50,7 @@ final class SymfonyFixturesLoader extends Loader
 
     public function addFixture(FixtureInterface $fixture): void
     {
-        $class                        = get_class($fixture);
+        $class                        = $fixture::class;
         $this->loadedFixtures[$class] = $fixture;
 
         $reflection = new ReflectionClass($fixture);
@@ -103,7 +103,7 @@ final class SymfonyFixturesLoader extends Loader
         $filteredFixtures = [];
         foreach ($fixtures as $fixture) {
             foreach ($groups as $group) {
-                $fixtureClass = get_class($fixture);
+                $fixtureClass = $fixture::class;
                 if (isset($this->groupsFixtureMapping[$group][$fixtureClass])) {
                     $filteredFixtures[$fixtureClass] = $fixture;
                     continue 2;
@@ -145,7 +145,7 @@ final class SymfonyFixturesLoader extends Loader
 
         foreach ($dependenciesClasses as $class) {
             if (! array_key_exists($class, $fixtures)) {
-                throw new RuntimeException(sprintf('Fixture "%s" was declared as a dependency for fixture "%s", but it was not included in any of the loaded fixture groups.', $class, get_class($fixture)));
+                throw new RuntimeException(sprintf('Fixture "%s" was declared as a dependency for fixture "%s", but it was not included in any of the loaded fixture groups.', $class, $fixture::class));
             }
         }
     }

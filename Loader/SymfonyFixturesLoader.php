@@ -77,7 +77,7 @@ final class SymfonyFixturesLoader extends SymfonyBridgeLoader
             throw new LogicException(sprintf(
                 'The "%s" fixture class is trying to be loaded, but is not available. Make sure this class is defined as a service and tagged with "%s".',
                 $class,
-                FixturesCompilerPass::FIXTURE_TAG
+                FixturesCompilerPass::FIXTURE_TAG,
             ));
         }
 

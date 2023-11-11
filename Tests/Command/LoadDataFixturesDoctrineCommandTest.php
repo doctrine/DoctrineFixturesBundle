@@ -35,7 +35,7 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
                     '%s::__construct(): Argument #1 ($doctrine) must be of type %s, null given' :
                     'Argument 1 passed to %s::__construct() must be an instance of %s, null given',
                 DoctrineCommand::class,
-                ManagerRegistry::class
+                ManagerRegistry::class,
             ));
 
             throw $e;

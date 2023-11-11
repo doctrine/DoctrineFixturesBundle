@@ -10,10 +10,8 @@ use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Bundle\FixturesBundle\Purger\ORMPurgerFactory;
 use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
-use Doctrine\DBAL\Sharding\PoolingShardConnection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -66,7 +64,6 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('purger', null, InputOption::VALUE_REQUIRED, 'The purger to use for this command', 'default')
             ->addOption('purge-exclusions', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'List of database tables to ignore while purging')
-            ->addOption('shard', null, InputOption::VALUE_REQUIRED, 'The shard connection to use for this command.')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
             ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command loads data fixtures from your application:
@@ -103,17 +100,6 @@ EOT
             if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), ! $input->isInteractive())) {
                 return 0;
             }
-        }
-
-        if ($input->getOption('shard')) {
-            if (! $em->getConnection() instanceof PoolingShardConnection) {
-                throw new LogicException(sprintf(
-                    'Connection of EntityManager "%s" must implement shards configuration.',
-                    $input->getOption('em')
-                ));
-            }
-
-            $em->getConnection()->connect($input->getOption('shard'));
         }
 
         $groups   = $input->getOption('group');

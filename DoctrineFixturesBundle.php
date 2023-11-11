@@ -11,8 +11,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class DoctrineFixturesBundle extends Bundle
 {
-    /** @return void */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new FixturesCompilerPass());
         $container->addCompilerPass(new PurgerFactoryCompilerPass());

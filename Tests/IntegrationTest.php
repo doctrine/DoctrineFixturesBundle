@@ -457,6 +457,5 @@ class IntegrationTest extends TestCase
 
 interface ForwardCompatibleEntityManager extends EntityManagerInterface
 {
-    /** @return mixed */
-    public function wrapInTransaction(callable $func);
+    public function wrapInTransaction(callable $func): mixed;
 }

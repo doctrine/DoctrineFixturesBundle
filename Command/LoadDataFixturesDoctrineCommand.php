@@ -29,8 +29,6 @@ use function trigger_deprecation;
  */
 class LoadDataFixturesDoctrineCommand extends DoctrineCommand
 {
-    use CommandCompatibility;
-
     private SymfonyFixturesLoader $fixturesLoader;
 
     /** @var PurgerFactory[] */
@@ -55,8 +53,7 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
         $this->purgerFactories = $purgerFactories;
     }
 
-    /** @return void */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('doctrine:fixtures:load')
@@ -92,7 +89,7 @@ EOT
         );
     }
 
-    private function doExecute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

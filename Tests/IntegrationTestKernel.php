@@ -18,7 +18,7 @@ use function sys_get_temp_dir;
 
 class IntegrationTestKernel extends Kernel
 {
-    private ?Closure $servicesCallback = null;
+    private Closure|null $servicesCallback = null;
     private int $randomKey;
 
     public function __construct(string $environment, bool $debug)

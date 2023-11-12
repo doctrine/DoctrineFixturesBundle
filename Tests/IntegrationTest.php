@@ -26,7 +26,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
 use function array_map;
-use function get_class;
 
 class IntegrationTest extends TestCase
 {
@@ -51,7 +50,7 @@ class IntegrationTest extends TestCase
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
         $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
+            return $fixture::class;
         }, $actualFixtures);
 
         $this->assertSame([
@@ -84,7 +83,7 @@ class IntegrationTest extends TestCase
         $actualFixtures = $loader->getFixtures();
         $this->assertCount(2, $actualFixtures);
         $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
+            return $fixture::class;
         }, $actualFixtures);
 
         $this->assertSame([
@@ -135,7 +134,7 @@ class IntegrationTest extends TestCase
         $actualFixtures = $loader->getFixtures(['staging']);
         $this->assertCount(1, $actualFixtures);
         $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
+            return $fixture::class;
         }, $actualFixtures);
 
         $this->assertSame([
@@ -222,7 +221,7 @@ class IntegrationTest extends TestCase
 
         $this->assertCount(2, $actualFixtures);
         $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
+            return $fixture::class;
         }, $actualFixtures);
 
         $this->assertSame([
@@ -255,7 +254,7 @@ class IntegrationTest extends TestCase
 
         $this->assertCount(1, $actualFixtures);
         $actualFixtureClasses = array_map(static function ($fixture) {
-            return get_class($fixture);
+            return $fixture::class;
         }, $actualFixtures);
 
         $this->assertSame([

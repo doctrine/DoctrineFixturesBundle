@@ -27,14 +27,12 @@ use function trigger_deprecation;
  */
 class LoadDataFixturesDoctrineCommand extends DoctrineCommand
 {
-    private SymfonyFixturesLoader $fixturesLoader;
-
-    /** @var PurgerFactory[] */
-    private array $purgerFactories;
-
     /** @param PurgerFactory[] $purgerFactories */
-    public function __construct(SymfonyFixturesLoader $fixturesLoader, ?ManagerRegistry $doctrine = null, array $purgerFactories = [])
-    {
+    public function __construct(
+        private SymfonyFixturesLoader $fixturesLoader,
+        ManagerRegistry|null $doctrine = null,
+        private array $purgerFactories = [],
+    ) {
         if ($doctrine === null) {
             trigger_deprecation(
                 'doctrine/fixtures-bundle',
@@ -46,9 +44,6 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
         }
 
         parent::__construct($doctrine);
-
-        $this->fixturesLoader  = $fixturesLoader;
-        $this->purgerFactories = $purgerFactories;
     }
 
     protected function configure(): void

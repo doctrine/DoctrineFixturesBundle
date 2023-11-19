@@ -37,7 +37,7 @@
         "phpstan/phpstan": "^1.10.39",
         "phpunit/phpunit": "^9.6.13",
         "symfony/phpunit-bridge": "^6.3.6",
-        "vimeo/psalm": "^4.30"
+        "vimeo/psalm": "^5.15"
     },
     "conflict": {
         "doctrine/dbal": "< 3"

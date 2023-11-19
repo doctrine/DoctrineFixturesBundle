@@ -27,6 +27,7 @@ use Symfony\Component\DependencyInjection\Definition;
 
 use function array_map;
 use function get_class;
+use function method_exists;
 
 class IntegrationTest extends TestCase
 {
@@ -455,8 +456,14 @@ class IntegrationTest extends TestCase
     }
 }
 
-interface ForwardCompatibleEntityManager extends EntityManagerInterface
-{
-    /** @return mixed */
-    public function wrapInTransaction(callable $func);
+if (method_exists(EntityManagerInterface::class, 'wrapInTransaction')) {
+    interface ForwardCompatibleEntityManager extends EntityManagerInterface
+    {
+    }
+} else {
+    interface ForwardCompatibleEntityManager extends EntityManagerInterface
+    {
+        /** @return mixed */
+        public function wrapInTransaction(callable $func);
+    }
 }

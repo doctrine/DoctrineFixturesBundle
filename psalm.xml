@@ -28,6 +28,7 @@
         <DuplicateClass>
             <errorLevel type="suppress">
                 <file name="Command/CommandCompatibility.php"/>
+                <file name="Tests/IntegrationTest.php"/>
             </errorLevel>
         </DuplicateClass>
     </issueHandlers>

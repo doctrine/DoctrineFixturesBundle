@@ -412,7 +412,7 @@ First, add a new ``PSR-4`` autoload-entry in the ``composer.json`` with the new 
 
 .. note::
 
-    You need to dump the autoloader with ``composer dump-autoloader``
+    You need to dump the autoloader with ``composer dump-autoload``
 
 Then, enable Dependency Injection for the ``fixtures`` directory:
 

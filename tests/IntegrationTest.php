@@ -11,6 +11,8 @@ use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\DependentOnRequiredConstructorArgsFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures;
+use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures;
+use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDeepDependenciesFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\Common\EventManager;
@@ -19,7 +21,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use LogicException;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -173,16 +174,24 @@ class IntegrationTest extends TestCase
         $this->assertCount(0, $loader->getFixtures(['group3']));
     }
 
-    public function testLoadFixturesViaGroupWithMissingDependency(): void
+    public function testLoadFixturesViaGroupWithDependenciesNotInGroup(): void
     {
         $kernel = new IntegrationTestKernel('dev', true);
         $kernel->addServices(static function (ContainerBuilder $c): void {
-            // has a "staging" group via the getGroups() method
             $c->autowire(OtherFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
-            // no getGroups() method
             $c->autowire(WithDependenciesFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->autowire(WithDeepDependenciesFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->autowire(RequiredConstructorArgsFixtures::class)
+                ->setArgument('$fooRequiredArg', 'test')
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->autowire(DependentOnRequiredConstructorArgsFixtures::class)
                 ->addTag(FixturesCompilerPass::FIXTURE_TAG);
 
             $c->setAlias('test.doctrine.fixtures.loader', new Alias('doctrine.fixtures.loader', true));
@@ -193,10 +202,8 @@ class IntegrationTest extends TestCase
         $loader = $container->get('test.doctrine.fixtures.loader');
         $this->assertInstanceOf(SymfonyFixturesLoader::class, $loader);
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Fixture "Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFixtures" was declared as a dependency for fixture "Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures", but it was not included in any of the loaded fixture groups.');
-
-        $loader->getFixtures(['missingDependencyGroup']);
+        self::assertCount(2, $loader->getFixtures(['groupWithDependencies']));
+        self::assertCount(5, $loader->getFixtures(['groupWithDeepDependencies']));
     }
 
     public function testLoadFixturesViaGroupWithFulfilledDependency(): void

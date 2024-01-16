@@ -5,6 +5,11 @@ parameters:
 
 	ignoreErrors:
 		-
+			message: "#^Call to an undefined method Doctrine\\\\Bundle\\\\FixturesBundle\\\\Loader\\\\SymfonyFixturesLoader\\:\\:getFixture\\(\\)\\.$#"
+			count: 1
+			path: src/Loader/SymfonyFixturesLoader.php
+
+		-
 			message: "#^Call to an undefined static method Doctrine\\\\Bundle\\\\FixturesBundle\\\\Loader\\\\SymfonyBridgeLoader\\:\\:addFixture\\(\\)\\.$#"
 			count: 1
 			path: src/Loader/SymfonyFixturesLoader.php

@@ -1,7 +1,7 @@
 /.gitattributes export-ignore
 /.github export-ignore
 /.gitignore export-ignore
-/Tests export-ignore
+/tests export-ignore
 /phpcs.xml.dist export-ignore
 /phpunit.xml.dist export-ignore
 /phpstan.neon.dist export-ignore

@@ -43,7 +43,10 @@
         "doctrine/dbal": "< 3"
     },
     "autoload": {
-        "psr-4": { "Doctrine\\Bundle\\FixturesBundle\\": "" }
+        "psr-4": { "Doctrine\\Bundle\\FixturesBundle\\": "src" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Doctrine\\Bundle\\FixturesBundle\\Tests\\": "tests" }
     },
     "config": {
         "sort-packages": true,

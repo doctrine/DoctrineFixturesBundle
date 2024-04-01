@@ -10,15 +10,8 @@
     findUnusedCode="false"
 >
     <projectFiles>
-        <directory name="Command" />
-        <directory name="DependencyInjection" />
-        <directory name="Loader" />
-        <directory name="Purger" />
-        <directory name="Tests" />
-        <file name="DoctrineFixturesBundle.php" />
-        <file name="Fixture.php" />
-        <file name="FixtureGroupInterface.php" />
-        <file name="ORMFixtureInterface.php" />
+        <directory name="src" />
+        <directory name="tests" />
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>
@@ -27,8 +20,8 @@
     <issueHandlers>
         <DuplicateClass>
             <errorLevel type="suppress">
-                <file name="Command/CommandCompatibility.php"/>
-                <file name="Tests/IntegrationTest.php"/>
+                <file name="src/Command/CommandCompatibility.php"/>
+                <file name="tests/IntegrationTest.php"/>
             </errorLevel>
         </DuplicateClass>
     </issueHandlers>

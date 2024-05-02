@@ -9,7 +9,7 @@ use Doctrine\Bundle\FixturesBundle\ORMFixtureInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class WithDependenciesFixtures implements ORMFixtureInterface, DependentFixtureInterface, FixtureGroupInterface
+class WithDeepDependenciesFixtures implements ORMFixtureInterface, DependentFixtureInterface, FixtureGroupInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -21,7 +21,7 @@ class WithDependenciesFixtures implements ORMFixtureInterface, DependentFixtureI
      */
     public function getDependencies(): array
     {
-        return [OtherFixtures::class];
+        return [WithDependenciesFixtures::class, DependentOnRequiredConstructorArgsFixtures::class];
     }
 
     /**
@@ -29,6 +29,6 @@ class WithDependenciesFixtures implements ORMFixtureInterface, DependentFixtureI
      */
     public static function getGroups(): array
     {
-        return ['missingDependencyGroup', 'fulfilledDependencyGroup'];
+        return ['groupWithDeepDependencies'];
     }
 }

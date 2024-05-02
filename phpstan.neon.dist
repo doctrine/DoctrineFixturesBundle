@@ -2,9 +2,8 @@ parameters:
     phpVersion: 80100
     level: 3
     paths:
-        - .
-    excludePaths:
-        - vendor
+        - src
+        - tests
 
 includes:
     - phpstan-baseline.neon

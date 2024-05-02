@@ -11,22 +11,22 @@
      <!-- Ignore warnings and show progress of the run -->
     <arg value="nps"/>
 
-    <file>.</file>
-    <exclude-pattern>/vendor</exclude-pattern>
+    <file>src</file>
+    <file>tests</file>
 
     <rule ref="Doctrine" />
 
 
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming.SuperfluousSuffix">
-        <exclude-pattern>FixtureGroupInterface.php</exclude-pattern>
-        <exclude-pattern>ORMFixtureInterface.php</exclude-pattern>
+        <exclude-pattern>src/FixtureGroupInterface.php</exclude-pattern>
+        <exclude-pattern>src/ORMFixtureInterface.php</exclude-pattern>
     </rule>
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
-        <exclude-pattern>Loader/SymfonyBridgeLoader.php</exclude-pattern>
-        <exclude-pattern>Command/CommandCompatibility.php</exclude-pattern>
-        <exclude-pattern>Tests/IntegrationTest.php</exclude-pattern>
+        <exclude-pattern>src/Loader/SymfonyBridgeLoader.php</exclude-pattern>
+        <exclude-pattern>src/Command/CommandCompatibility.php</exclude-pattern>
+        <exclude-pattern>tests/IntegrationTest.php</exclude-pattern>
     </rule>
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
-        <exclude-pattern>Tests/IntegrationTest.php</exclude-pattern>
+        <exclude-pattern>tests/IntegrationTest.php</exclude-pattern>
     </rule>
 </ruleset>

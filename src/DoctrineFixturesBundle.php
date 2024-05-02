@@ -9,11 +9,18 @@ use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\PurgerFactor
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
+use function dirname;
+
 class DoctrineFixturesBundle extends Bundle
 {
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new FixturesCompilerPass());
         $container->addCompilerPass(new PurgerFactoryCompilerPass());
+    }
+
+    public function getPath(): string
+    {
+        return dirname(__DIR__);
     }
 }

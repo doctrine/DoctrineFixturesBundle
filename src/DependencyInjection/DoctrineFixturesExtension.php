@@ -20,7 +20,7 @@ class DoctrineFixturesExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $loader = new XmlFileLoader($container, new FileLocator(dirname(__DIR__) . '/Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(dirname(__DIR__) . '/../config'));
 
         $loader->load('services.xml');
 

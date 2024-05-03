@@ -11,9 +11,8 @@ use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\DataFixtures\Loader;
 use LogicException;
 use ReflectionClass;
-use RuntimeException;
 
-use function array_key_exists;
+use function array_keys;
 use function array_values;
 use function get_class;
 use function sprintf;
@@ -100,19 +99,22 @@ final class SymfonyFixturesLoader extends Loader
             return $fixtures;
         }
 
-        $filteredFixtures = [];
-        foreach ($fixtures as $fixture) {
-            foreach ($groups as $group) {
-                $fixtureClass = $fixture::class;
-                if (isset($this->groupsFixtureMapping[$group][$fixtureClass])) {
-                    $filteredFixtures[$fixtureClass] = $fixture;
-                    continue 2;
-                }
+        $requiredFixtures = [];
+        foreach ($groups as $group) {
+            if (! isset($this->groupsFixtureMapping[$group])) {
+                continue;
             }
+
+            $requiredFixtures += $this->collectDependencies(...array_keys($this->groupsFixtureMapping[$group]));
         }
 
-        foreach ($filteredFixtures as $fixture) {
-            $this->validateDependencies($filteredFixtures, $fixture);
+        $filteredFixtures = [];
+        foreach ($fixtures as $order => $fixture) {
+            $fixtureClass = $fixture::class;
+            if (isset($requiredFixtures[$fixtureClass])) {
+                $filteredFixtures[$order] = $fixture;
+                continue;
+            }
         }
 
         return array_values($filteredFixtures);
@@ -131,22 +133,25 @@ final class SymfonyFixturesLoader extends Loader
     }
 
     /**
-     * @param string[] $fixtures An array of fixtures with class names as keys
+     * Collect any dependent fixtures from the given classes.
      *
-     * @throws RuntimeException
+     * @psalm-return array<string,true>
      */
-    private function validateDependencies(array $fixtures, FixtureInterface $fixture): void
+    private function collectDependencies(string ...$fixtureClass): array
     {
-        if (! $fixture instanceof DependentFixtureInterface) {
-            return;
-        }
+        $dependencies = [];
 
-        $dependenciesClasses = $fixture->getDependencies();
+        foreach ($fixtureClass as $class) {
+            $dependencies[$class] = true;
+            $fixture              = $this->getFixture($class);
 
-        foreach ($dependenciesClasses as $class) {
-            if (! array_key_exists($class, $fixtures)) {
-                throw new RuntimeException(sprintf('Fixture "%s" was declared as a dependency for fixture "%s", but it was not included in any of the loaded fixture groups.', $class, $fixture::class));
+            if (! $fixture instanceof DependentFixtureInterface) {
+                continue;
             }
+
+            $dependencies += $this->collectDependencies(...$fixture->getDependencies());
         }
+
+        return $dependencies;
     }
 }

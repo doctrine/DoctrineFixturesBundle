@@ -1,29 +1,5 @@
 parameters:
-	excludePaths:
-		# Contains an error that is impossible to ignore
-		- tests/IntegrationTest.php
-
 	ignoreErrors:
-		-
-			message: "#^Call to an undefined method Doctrine\\\\Bundle\\\\FixturesBundle\\\\Loader\\\\SymfonyFixturesLoader\\:\\:getFixture\\(\\)\\.$#"
-			count: 1
-			path: src/Loader/SymfonyFixturesLoader.php
-
-		-
-			message: "#^Call to an undefined static method Doctrine\\\\Bundle\\\\FixturesBundle\\\\Loader\\\\SymfonyBridgeLoader\\:\\:addFixture\\(\\)\\.$#"
-			count: 1
-			path: src/Loader/SymfonyFixturesLoader.php
-
-		-
-			message: "#^Call to an undefined static method Doctrine\\\\Bundle\\\\FixturesBundle\\\\Loader\\\\SymfonyBridgeLoader\\:\\:getFixtures\\(\\)\\.$#"
-			count: 1
-			path: src/Loader/SymfonyFixturesLoader.php
-
-		-
-			message: "#^Class Doctrine\\\\Bundle\\\\FixturesBundle\\\\Loader\\\\SymfonyFixturesLoader does not have a constructor and must be instantiated without any parameters\\.$#"
-			count: 2
-			path: tests/Command/LoadDataFixturesDoctrineCommandTest.php
-
 		-
 			message: "#^Constructor of class Doctrine\\\\Bundle\\\\FixturesBundle\\\\Tests\\\\Fixtures\\\\FooBundle\\\\DataFixtures\\\\RequiredConstructorArgsFixtures has an unused parameter \\$fooRequiredArg\\.$#"
 			count: 1

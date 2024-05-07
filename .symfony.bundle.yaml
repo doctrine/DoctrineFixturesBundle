@@ -5,7 +5,6 @@ branches:
     - "3.6.x"
     - "3.7.x"
 maintained_branches:
-    - "3.5.x"
     - "3.6.x"
     - "3.7.x"
 doc_dir: "docs/"

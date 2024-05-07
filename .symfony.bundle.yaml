@@ -8,5 +8,5 @@ maintained_branches:
     - "3.5.x"
     - "3.6.x"
     - "3.7.x"
-doc_dir: "docs/"
+doc_dir: {"3.5.x": "Resources/doc/", "3.6.x": "docs/", "3.7.x": "docs/"}
 dev_branch: "3.7.x"

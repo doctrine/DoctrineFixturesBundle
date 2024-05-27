@@ -12,35 +12,17 @@ This bundle is compatible with any database supported by `Doctrine ORM`_
 Installation
 ------------
 
-In Symfony 4 or higher applications that use `Symfony Flex`_, open a command
-console, enter your project directory and run the following command:
+If you're using `Symfony Flex`_, run this command and you're done:
 
 .. code-block:: terminal
 
     $ composer require --dev orm-fixtures
 
-Starting from Symfony 4.0, Flex should be used by default and register the
-bundle for you, and in that case you can skip to the next section and start
-writing fixtures.
-
-In Symfony 3 applications (or when not using Symfony Flex), run this other
-command instead:
+If you're not using Flex, run this other command instead:
 
 .. code-block:: terminal
 
     $ composer require --dev doctrine/doctrine-fixtures-bundle
-
-You will also need to enable the bundle. In Symfony 3 and earlier applications,
-update the ``AppKernel`` class::
-
-    // app/AppKernel.php
-
-    // ...
-    // registerBundles()
-    if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
-        // ...
-        $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
-    }
 
 Writing Fixtures
 ----------------

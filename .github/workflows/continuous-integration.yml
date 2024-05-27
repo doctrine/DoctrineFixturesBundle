@@ -57,7 +57,7 @@ jobs:
         if: "${{ matrix.stability == 'dev' }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependencies }}"
           composer-options: "--prefer-dist"
@@ -70,14 +70,14 @@ jobs:
         run: "vendor/bin/phpunit --coverage-clover=coverage.xml"
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v3"
+        uses: "actions/upload-artifact@v4"
         if: "${{ ! contains(matrix.extra_constraint, '/') }}"
         with:
           name: "phpunit-${{ matrix.dependencies }}-${{ matrix.stability }}-${{ matrix.php-version }}.coverage"
           path: "coverage.xml"
 
       - name: "Upload coverage file, sanitize the name"
-        uses: "actions/upload-artifact@v3"
+        uses: "actions/upload-artifact@v4"
         if: "${{ contains(matrix.extra_constraint, '/') }}"
         with:
           name: "phpunit-symfony-lts-${{ matrix.php-version }}.coverage"
@@ -96,11 +96,13 @@ jobs:
           fetch-depth: 2
 
       - name: "Download coverage files"
-        uses: "actions/download-artifact@v3"
+        uses: "actions/download-artifact@v4"
         with:
           path: "reports"
 
       - name: "Upload to Codecov"
-        uses: "codecov/codecov-action@v3"
+        uses: "codecov/codecov-action@v4"
         with:
           directory: reports
+        env:
+          CODECOV_TOKEN: "${{ secrets.CODECOV_TOKEN }}"

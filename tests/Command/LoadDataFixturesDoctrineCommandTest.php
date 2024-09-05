@@ -25,7 +25,7 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
     public function testInstantiatingWithoutManagerRegistry(): void
     {
         $container = new Container();
-        $loader = new SymfonyFixturesLoader(false, $container);
+        $loader    = new SymfonyFixturesLoader(false, $container);
 
         $this->expectDeprecation('Since doctrine/fixtures-bundle 3.2: Argument 2 of Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand::__construct() expects an instance of Doctrine\Persistence\ManagerRegistry, not passing it will throw a \TypeError in DoctrineFixturesBundle 4.0.');
 
@@ -47,9 +47,9 @@ class LoadDataFixturesDoctrineCommandTest extends TestCase
     /** @doesNotPerformAssertions */
     public function testInstantiatingWithManagerRegistry(): void
     {
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry  = $this->createMock(ManagerRegistry::class);
         $container = new Container();
-        $loader = new SymfonyFixturesLoader(false, $container);
+        $loader    = new SymfonyFixturesLoader(false, $container);
 
         new LoadDataFixturesDoctrineCommand($loader, $registry);
     }

@@ -10,8 +10,8 @@ use Exception;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 use function dirname;
 
@@ -21,6 +21,7 @@ class DoctrineFixturesExtension extends Extension
      * {@inheritDoc}
      *
      * @return void
+     *
      * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container): void
@@ -30,7 +31,7 @@ class DoctrineFixturesExtension extends Extension
         $loader->load('services.xml');
 
         $configuration = $this->getConfiguration($configs, $container);
-        $config = $this->processConfiguration($configuration, $configs);
+        $config        = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('doctrine_fixtures.use_container_aware_loader', $config['use_container_aware_loader']);
 
@@ -38,6 +39,13 @@ class DoctrineFixturesExtension extends Extension
             ->addTag(FixturesCompilerPass::FIXTURE_TAG);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param array $config
+     *
+     * @return ConfigurationInterface|null
+     */
     public function getConfiguration(array $config, ContainerBuilder $container): ?ConfigurationInterface
     {
         return new Configuration();

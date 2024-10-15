@@ -10,19 +10,31 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use LogicException;
 use ReflectionClass;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use function array_keys;
 use function array_values;
+use function class_exists;
 use function get_class;
 use function sprintf;
 
 final class SymfonyFixturesLoader extends SymfonyBridgeLoader
 {
+    private bool $useContainerAwareLoader;
+
+    private ?ContainerInterface $container = null;
+
     /** @var FixtureInterface[] */
     private array $loadedFixtures = [];
 
     /** @var array<string, array<string, bool>> */
     private array $groupsFixtureMapping = [];
+
+    public function __construct(bool $useContainerAwareLoader, ?ContainerInterface $container = null)
+    {
+        $this->useContainerAwareLoader = $useContainerAwareLoader;
+        $this->container               = $container;
+    }
 
     /**
      * @internal
@@ -46,8 +58,14 @@ final class SymfonyFixturesLoader extends SymfonyBridgeLoader
         }
     }
 
+    /** @psalm-suppress UndefinedClass */
     public function addFixture(FixtureInterface $fixture): void
     {
+        // phpcs:ignore
+        if ($this->useContainerAwareLoader && class_exists(\Symfony\Component\DependencyInjection\ContainerAwareInterface::class) && $fixture instanceof \Symfony\Component\DependencyInjection\ContainerAwareInterface) {
+            $fixture->setContainer($this->container);
+        }
+
         $class                        = get_class($fixture);
         $this->loadedFixtures[$class] = $fixture;
 

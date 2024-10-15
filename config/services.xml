@@ -12,7 +12,8 @@
         </service>
 
         <service id="doctrine.fixtures.loader" class="Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader" public="false">
-            <argument type="service" id="service_container" />
+            <argument>%doctrine_fixtures.use_container_aware_loader%</argument>
+            <argument type="service" id="service_container" on-invalid="null" />
         </service>
 
         <service id="doctrine.fixtures.purger.orm_purger_factory" class="Doctrine\Bundle\FixturesBundle\Purger\ORMPurgerFactory" public="false">

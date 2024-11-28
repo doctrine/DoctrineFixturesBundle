@@ -14,7 +14,7 @@ use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\OtherFi
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\RequiredConstructorArgsFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDeepDependenciesFixtures;
 use Doctrine\Bundle\FixturesBundle\Tests\Fixtures\FooBundle\DataFixtures\WithDependenciesFixtures;
-use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\Common\DataFixtures\Purger\ORMPurgerInterface;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -302,7 +302,7 @@ class IntegrationTest extends TestCase
         $container->set('doctrine', $registry);
 
         $purgerFactory = $this->createMock(PurgerFactory::class);
-        $purger        = $this->createMock(ORMPurger::class);
+        $purger        = $this->createMock(ORMPurgerInterface::class);
         $purgerFactory
             ->expects(self::once())
             ->method('createForEntityManager')
@@ -349,7 +349,7 @@ class IntegrationTest extends TestCase
         $container->set('doctrine', $registry);
 
         $purgerFactory = $this->createMock(PurgerFactory::class);
-        $purger        = $this->createMock(ORMPurger::class);
+        $purger        = $this->createMock(ORMPurgerInterface::class);
         $purgerFactory
             ->expects(self::once())
             ->method('createForEntityManager')
@@ -399,7 +399,7 @@ class IntegrationTest extends TestCase
         $container->set('doctrine', $registry);
 
         $purgerFactory = $this->createMock(PurgerFactory::class);
-        $purger        = $this->createMock(ORMPurger::class);
+        $purger        = $this->createMock(ORMPurgerInterface::class);
         $purgerFactory
             ->expects(self::once())
             ->method('createForEntityManager')
@@ -446,7 +446,7 @@ class IntegrationTest extends TestCase
         $container->set('doctrine', $registry);
 
         $purgerFactory = $this->createMock(PurgerFactory::class);
-        $purger        = $this->createMock(ORMPurger::class);
+        $purger        = $this->createMock(ORMPurgerInterface::class);
         $purgerFactory
             ->expects(self::once())
             ->method('createForEntityManager')

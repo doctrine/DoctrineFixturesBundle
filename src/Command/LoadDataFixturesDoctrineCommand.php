@@ -12,6 +12,7 @@ use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\AbstractLogger;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -126,9 +127,27 @@ class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             $input->getOption('purge-with-truncate'),
         );
         $executor = new ORMExecutor($em, $purger);
-        $executor->setLogger(static function ($message) use ($ui): void {
-            $ui->text(sprintf('  <comment>></comment> <info>%s</info>', $message));
+        $executor->setLogger(new class ($ui) extends AbstractLogger {
+            private SymfonyStyle $ui;
+
+            public function __construct(SymfonyStyle $ui)
+            {
+                $this->ui = $ui;
+            }
+
+            /** {@inheritDoc} */
+            public function log($level, $message, array $context = []): void
+            {
+                $this->ui->text(sprintf('  <comment>></comment> <info>%s</info>', $message));
+            }
+
+            /** @deprecated to be removed when dropping support for doctrine/data-fixtures <1.8 */
+            public function __invoke(string $message): void
+            {
+                $this->log(0, $message);
+            }
         });
+
         $executor->execute($fixtures, $input->getOption('append'));
 
         return 0;

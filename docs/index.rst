@@ -42,7 +42,7 @@ Create a fixtures class and start adding products::
 
     class AppFixtures extends Fixture
     {
-        public function load(ObjectManager $manager)
+        public function load(ObjectManager $manager): void
         {
             // create 20 products! Bam!
             for ($i = 0; $i < 20; $i++) {
@@ -102,7 +102,7 @@ injection::
         }
 
         // ...
-        public function load(ObjectManager $manager)
+        public function load(ObjectManager $manager): void
         {
             $user = new User();
             $user->setUsername('admin');
@@ -148,7 +148,7 @@ exact same object via its name.
     {
         public const ADMIN_USER_REFERENCE = 'admin-user';
 
-        public function load(ObjectManager $manager)
+        public function load(ObjectManager $manager): void
         {
             $userAdmin = new User('admin', 'pass_1234');
             $manager->persist($userAdmin);
@@ -165,7 +165,7 @@ exact same object via its name.
     // ...
     class GroupFixtures extends Fixture
     {
-        public function load(ObjectManager $manager)
+        public function load(ObjectManager $manager): void
         {
             $userGroup = new Group('administrators');
             // this reference returns the User object created in UserFixtures
@@ -197,7 +197,7 @@ an array of the fixture classes that must be loaded before this one::
     // ...
     class UserFixtures extends Fixture
     {
-        public function load(ObjectManager $manager)
+        public function load(ObjectManager $manager): void
         {
             // ...
         }
@@ -211,12 +211,12 @@ an array of the fixture classes that must be loaded before this one::
 
     class GroupFixtures extends Fixture implements DependentFixtureInterface
     {
-        public function load(ObjectManager $manager)
+        public function load(ObjectManager $manager): void
         {
             // ...
         }
 
-        public function getDependencies()
+        public function getDependencies(): array
         {
             return [
                 UserFixtures::class,
@@ -304,7 +304,7 @@ You can also customize purging behavior significantly more and implement a custo
     // ...
     class CustomPurger implements PurgerInterface
     {
-        public function purge() : void
+        public function purge(): void
         {
             // ...
         }
@@ -358,7 +358,7 @@ The next step is to register our custom purger factory and specify its alias.
 
         use App\Purger\CustomerPurgerFactory;
 
-        return function(ContainerConfigurator $configurator) : void {
+        return function(ContainerConfigurator $configurator): void {
             $services = $configurator->services();
 
             $services->set(CustomerPurgerFactory::class)
@@ -412,7 +412,7 @@ Then, enable Dependency Injection for the ``fixtures`` directory:
         // config/services.php
         namespace Symfony\Component\DependencyInjection\Loader\Configurator;
     
-        return function(ContainerConfigurator $container) : void {
+        return function(ContainerConfigurator $container): void {
             $services = $container->services()
                 ->defaults()
                     ->autowire()

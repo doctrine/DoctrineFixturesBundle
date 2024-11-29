@@ -11,6 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
 use function rand;
@@ -35,6 +36,8 @@ class IntegrationTestKernel extends Kernel
 
     /**
      * {@inheritDoc}
+     *
+     * @return array<mixed, BundleInterface>
      */
     public function registerBundles(): array
     {

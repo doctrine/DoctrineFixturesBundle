@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class RequiredConstructorArgsFixtures implements ORMFixtureInterface
 {
-    public function __construct(string $fooRequiredArg)
+    public function __construct(public string $fooRequiredArg)
     {
     }
 

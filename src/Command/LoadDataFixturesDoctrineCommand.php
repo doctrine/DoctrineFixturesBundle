@@ -13,6 +13,7 @@ use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\AbstractLogger;
+use Stringable;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -123,7 +124,7 @@ final class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             }
 
             /** {@inheritDoc} */
-            public function log($level, $message, array $context = []): void
+            public function log(mixed $level, string|Stringable $message, array $context = []): void
             {
                 $this->ui->text(sprintf('  <comment>></comment> <info>%s</info>', $message));
             }

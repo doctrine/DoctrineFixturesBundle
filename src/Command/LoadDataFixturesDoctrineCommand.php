@@ -25,7 +25,7 @@ use function sprintf;
 /**
  * Load data fixtures from bundles.
  */
-class LoadDataFixturesDoctrineCommand extends DoctrineCommand
+final class LoadDataFixturesDoctrineCommand extends DoctrineCommand
 {
     /** @param PurgerFactory[] $purgerFactories */
     public function __construct(

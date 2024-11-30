@@ -1,6 +1,11 @@
 UPGRADE to 4.0
 ==============
 
+## Final classes
+
+Some classes have been marked as `final` because they are not supposed to be
+extended. Consider using composition instead of inheritance.
+
 ## Mandatory ManagerRegistry argument
 
 It is now mandatory to pass a `ManagerRegistry` instance to the constructor of

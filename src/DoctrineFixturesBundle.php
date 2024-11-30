@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 use function dirname;
 
-class DoctrineFixturesBundle extends Bundle
+final class DoctrineFixturesBundle extends Bundle
 {
     public function build(ContainerBuilder $container): void
     {

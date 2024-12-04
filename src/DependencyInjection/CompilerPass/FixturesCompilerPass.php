@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
+/** @internal */
 final class FixturesCompilerPass implements CompilerPassInterface
 {
     public const FIXTURE_TAG = 'doctrine.fixture.orm';

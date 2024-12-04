@@ -13,6 +13,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 use function dirname;
 
+/** @internal */
 final class DoctrineFixturesExtension extends Extension
 {
     /**

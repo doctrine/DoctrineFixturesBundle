@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 use function sprintf;
 
+/** @internal */
 final class PurgerFactoryCompilerPass implements CompilerPassInterface
 {
     public const PURGER_FACTORY_TAG = 'doctrine.fixtures.purger_factory';

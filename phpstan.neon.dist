@@ -4,9 +4,3 @@ parameters:
     paths:
         - src
         - tests
-    excludePaths:
-        # Contains an issue that cannot be ignored
-        - tests/IntegrationTest.php
-
-includes:
-    - phpstan-baseline.neon

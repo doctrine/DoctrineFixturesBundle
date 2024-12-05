@@ -66,7 +66,7 @@ final class SymfonyFixturesLoader extends Loader
      * Overridden to not allow new fixture classes to be instantiated.
      * {@inheritDoc}
      */
-    protected function createFixture($class): FixtureInterface
+    protected function createFixture(string $class): FixtureInterface
     {
         /*
          * We don't actually need to create the fixture. We just

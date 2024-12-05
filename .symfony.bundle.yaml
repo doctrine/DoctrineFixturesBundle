@@ -4,7 +4,9 @@ branches:
     - "3.5.x"
     - "3.6.x"
     - "3.7.x"
+    - "4.0.x"
 maintained_branches:
     - "3.7.x"
+    - "4.0.x"
 doc_dir: "docs/"
-dev_branch: "3.7.x"
+dev_branch: "4.0.x"

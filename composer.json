@@ -27,7 +27,7 @@
         "doctrine/data-fixtures": "^2.0",
         "doctrine/doctrine-bundle": "^2.2",
         "doctrine/orm": "^2.14.0 || ^3.0",
-        "doctrine/persistence": "^2.4 || ^3.0",
+        "doctrine/persistence": "^2.4 || ^3.0 || ^4.0",
         "psr/log": "^2 || ^3",
         "symfony/config": "^6.4 || ^7.0",
         "symfony/console": "^6.4 || ^7.0",

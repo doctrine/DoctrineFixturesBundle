@@ -5,6 +5,7 @@
          colors="true"
          bootstrap="vendor/autoload.php"
          displayDetailsOnTestsThatTriggerDeprecations="true"
+         cacheDirectory=".phpunit.cache"
     >
     <testsuites>
         <testsuite name="DoctrineFixturesBundle for the Symfony Framework">

@@ -11,7 +11,7 @@ types from this bundle need to be updated to match the new signatures.
 Some classes have been marked as `final` because they are not supposed to be
 extended. Consider using composition instead of inheritance.
 
-## Mandatory ManagerRegistry argument
+## Mandatory `ManagerRegistry` argument
 
 It is now mandatory to pass a `ManagerRegistry` instance to the constructor of
 `Doctrine\Bundle\FixturesBundle\Command\LoadDataFixturesDoctrineCommand`.

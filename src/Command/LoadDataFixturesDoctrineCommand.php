@@ -7,6 +7,7 @@ namespace Doctrine\Bundle\FixturesBundle\Command;
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\PurgerFactoryCompilerPass;
 use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
+use Doctrine\Bundle\FixturesBundle\ORMFixtureInterface;
 use Doctrine\Bundle\FixturesBundle\Purger\ORMPurgerFactory;
 use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -49,26 +50,27 @@ final class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('purger', null, InputOption::VALUE_REQUIRED, 'The purger to use for this command', 'default')
             ->addOption('purge-exclusions', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'List of database tables to ignore while purging')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
+            ->addOption('list', 'l', InputOption::VALUE_NONE, 'list fixtures in a table without running them, respects the --group filter')
             ->setHelp(<<<'EOT'
                 The <info>%command.name%</info> command loads data fixtures from your application:
-                
+
                   <info>php %command.full_name%</info>
-                
+
                 Fixtures are services that are tagged with <comment>doctrine.fixture.orm</comment>.
-                
+
                 If you want to append the fixtures instead of flushing the database first you can use the <comment>--append</comment> option:
-                
+
                   <info>php %command.full_name%</info> <comment>--append</comment>
-                
+
                 By default Doctrine Data Fixtures uses DELETE statements to drop the existing rows from the database.
                 If you want to use a TRUNCATE statement instead you can use the <comment>--purge-with-truncate</comment> flag:
-                
+
                   <info>php %command.full_name%</info> <comment>--purge-with-truncate</comment>
-                
+
                 To execute only fixtures that live in a certain group, use:
-                
+
                   <info>php %command.full_name%</info> <comment>--group=group1</comment>
-                
+
                 EOT);
     }
 
@@ -79,7 +81,7 @@ final class LoadDataFixturesDoctrineCommand extends DoctrineCommand
         $em = $this->getDoctrine()->getManager($input->getOption('em'));
         assert($em instanceof EntityManagerInterface);
 
-        if (! $input->getOption('append')) {
+        if (! $input->getOption('list') && ! $input->getOption('append')) {
             if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), ! $input->isInteractive())) {
                 return 0;
             }
@@ -87,6 +89,23 @@ final class LoadDataFixturesDoctrineCommand extends DoctrineCommand
 
         $groups   = $input->getOption('group');
         $fixtures = $this->fixturesLoader->getFixtures($groups);
+
+        if ($input->getOption('list')) {
+            $ui->table(
+                ['name', 'group', 'dependencies'],
+                array_map(
+                    /** @param ORMFixtureInterface|FixtureGroupInterface|DependentFixtureInterface $fixture */
+                    fn(ORMFixtureInterface $fixture) => [
+                        $fixture::class,
+                        implode(',', method_exists($fixture, 'getGroups') ? $fixture->getGroups() : []),
+                        implode(',', method_exists($fixture, 'getDependencies') ? $fixture->getDependencies() : [])
+                    ],
+                    $fixtures
+                )
+            );
+            return 0;
+        }
+
         if (! $fixtures) {
             $message = 'Could not find any fixture services to load';
 

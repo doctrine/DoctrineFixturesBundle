@@ -91,11 +91,11 @@ final class SymfonyFixturesLoader extends Loader
      *
      * @return FixtureInterface[]
      */
-    public function getFixtures(array $groups = []): array
+    public function getFixtures(array $groups = [], ?string $filterName = null): array
     {
         $fixtures = parent::getFixtures();
 
-        if (empty($groups)) {
+        if (empty($groups) && is_null($filterName)) {
             return $fixtures;
         }
 
@@ -111,7 +111,10 @@ final class SymfonyFixturesLoader extends Loader
         $filteredFixtures = [];
         foreach ($fixtures as $order => $fixture) {
             $fixtureClass = $fixture::class;
-            if (isset($requiredFixtures[$fixtureClass])) {
+            if (
+                isset($requiredFixtures[$fixtureClass])
+                && (is_null($filterName) || str_contains($fixtureClass, $filterName))
+            ) {
                 $filteredFixtures[$order] = $fixture;
                 continue;
             }

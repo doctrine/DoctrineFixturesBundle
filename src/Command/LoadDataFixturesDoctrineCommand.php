@@ -51,6 +51,7 @@ final class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->addOption('purge-exclusions', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'List of database tables to ignore while purging')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
             ->addOption('list', 'l', InputOption::VALUE_NONE, 'list fixtures in a table without running them, respects the --group filter')
+            ->addOption('filter-name', 'f', InputOption::VALUE_REQUIRED, 'provide all or part of a fully-qualified class name of a fixture to filter to')
             ->setHelp(<<<'EOT'
                 The <info>%command.name%</info> command loads data fixtures from your application:
 
@@ -87,8 +88,9 @@ final class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             }
         }
 
-        $groups   = $input->getOption('group');
-        $fixtures = $this->fixturesLoader->getFixtures($groups);
+        $groups = $input->getOption('group');
+        $filterName = $input->hasOption('filter-name') ? $input->getOption('filter-name') : null;
+        $fixtures = $this->fixturesLoader->getFixtures($groups, $filterName);
 
         if ($input->getOption('list')) {
             $ui->table(

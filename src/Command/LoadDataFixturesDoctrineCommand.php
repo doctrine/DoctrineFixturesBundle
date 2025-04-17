@@ -6,6 +6,7 @@ namespace Doctrine\Bundle\FixturesBundle\Command;
 
 use Doctrine\Bundle\DoctrineBundle\Command\DoctrineCommand;
 use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\PurgerFactoryCompilerPass;
+use Doctrine\Bundle\FixturesBundle\Loader\FixturesProviderInterface;
 use Doctrine\Bundle\FixturesBundle\Purger\ORMPurgerFactory;
 use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -30,7 +31,7 @@ final class LoadDataFixturesDoctrineCommand extends DoctrineCommand
 {
     /** @param PurgerFactory[] $purgerFactories */
     public function __construct(
-        private Loader $fixturesLoader,
+        private FixturesProviderInterface $fixturesLoader,
         ManagerRegistry $doctrine,
         /** @var array<string, ORMPurgerFactory> $purgerFactories */
         private array $purgerFactories = [],

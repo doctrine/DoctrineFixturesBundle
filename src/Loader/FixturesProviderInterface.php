@@ -6,10 +6,11 @@ namespace Doctrine\Bundle\FixturesBundle\Loader;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 
-interface FixturesProviderInterface
+interface FixturesProvider
 {
     /**
      * @param string[] $groups
+     *
      * @return FixtureInterface[]
      */
     public function getFixtures(array $groups = []): array;

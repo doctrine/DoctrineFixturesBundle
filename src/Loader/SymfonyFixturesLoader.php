@@ -17,7 +17,7 @@ use function array_values;
 use function get_class;
 use function sprintf;
 
-final class SymfonyFixturesLoader extends Loader
+final class SymfonyFixturesLoader extends Loader implements FixturesProvider
 {
     /** @var FixtureInterface[] */
     private array $loadedFixtures = [];

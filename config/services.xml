@@ -12,9 +12,9 @@
         </service>
 
         <service id="doctrine.fixtures.provider" alias="doctrine.fixtures.loader" />
-        <service id="doctrine.fixtures.loader" class="Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader" public="false" />
+        <service id="doctrine.fixtures.loader" class="Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader" />
 
-        <service id="doctrine.fixtures.purger.orm_purger_factory" class="Doctrine\Bundle\FixturesBundle\Purger\ORMPurgerFactory" public="false">
+        <service id="doctrine.fixtures.purger.orm_purger_factory" class="Doctrine\Bundle\FixturesBundle\Purger\ORMPurgerFactory">
             <tag name="doctrine.fixtures.purger_factory" alias="default"/>
         </service>
     </services>

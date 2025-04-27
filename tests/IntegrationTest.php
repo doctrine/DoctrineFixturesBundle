@@ -459,6 +459,54 @@ class IntegrationTest extends TestCase
         $tester = new CommandTester($command);
         $tester->execute(['--purge-with-truncate' => true], ['interactive' => false]);
     }
+
+    public function testRunCommandWithDryRunOption(): void
+    {
+        $kernel = new IntegrationTestKernel('dev', true);
+        $kernel->addServices(static function (ContainerBuilder $c): void {
+            // has a "staging" group via the getGroups() method
+            $c->autowire(OtherFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            // no getGroups() method
+            $c->autowire(WithDependenciesFixtures::class)
+                ->addTag(FixturesCompilerPass::FIXTURE_TAG);
+
+            $c->getDefinition('doctrine')
+                ->setPublic(true)
+                ->setSynthetic(true);
+
+            $c->setAlias('test.doctrine.fixtures.purger.orm_purger_factory', new Alias('doctrine.fixtures.purger.orm_purger_factory', true));
+
+            $c->setAlias('test.doctrine.fixtures_load_command', new Alias('doctrine.fixtures_load_command', true));
+        });
+        $kernel->boot();
+        $container = $kernel->getContainer();
+
+        $em       = $this->createConfiguredMock(ForwardCompatibleEntityManager::class, ['getConnection' => $this->createMock(Connection::class), 'getEventManager' => $this->createMock(EventManager::class)]);
+        $registry = $this->createMock(ManagerRegistry::class);
+        $registry
+            ->expects(self::once())
+            ->method('getManager')
+            ->with(null)
+            ->willReturn($em);
+        $container->set('doctrine', $registry);
+
+        $purgerFactory = $this->createMock(PurgerFactory::class);
+        $purger        = $this->createMock(ORMPurgerInterface::class);
+        $purgerFactory
+            ->expects(self::once())
+            ->method('createForEntityManager')
+            ->with(null, $em, [])
+            ->willReturn($purger);
+        $container->set('test.doctrine.fixtures.purger.orm_purger_factory', $purgerFactory);
+
+        $command = $container->get('test.doctrine.fixtures_load_command');
+        $this->assertInstanceOf(LoadDataFixturesDoctrineCommand::class, $command);
+        $tester = new CommandTester($command);
+        $tester->execute(['--dry-run' => true], ['interactive' => false]);
+        $this->assertStringContainsString('(dry-run)', $tester->getDisplay());
+    }
 }
 
 interface ForwardCompatibleEntityManager extends EntityManagerInterface

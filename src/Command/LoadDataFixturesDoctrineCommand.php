@@ -9,6 +9,7 @@ use Doctrine\Bundle\FixturesBundle\DependencyInjection\CompilerPass\PurgerFactor
 use Doctrine\Bundle\FixturesBundle\Loader\FixturesProvider;
 use Doctrine\Bundle\FixturesBundle\Purger\ORMPurgerFactory;
 use Doctrine\Bundle\FixturesBundle\Purger\PurgerFactory;
+use Doctrine\Common\DataFixtures\Executor\DryRunORMExecutor;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -44,6 +45,7 @@ final class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             ->setName('doctrine:fixtures:load')
             ->setDescription('Load data fixtures to your database')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.')
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Load the fixtures as a dry run.')
             ->addOption('group', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Only load fixtures that belong to this group')
             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'The entity manager to use for this command.')
             ->addOption('purger', null, InputOption::VALUE_REQUIRED, 'The purger to use for this command', 'default')
@@ -68,6 +70,10 @@ final class LoadDataFixturesDoctrineCommand extends DoctrineCommand
                 To execute only fixtures that live in a certain group, use:
                 
                   <info>php %command.full_name%</info> <comment>--group=group1</comment>
+
+                You can also load the fixtures as a <comment>--dry-run</comment>:
+
+                  <info>php %command.full_name% --dry-run</info>
                 
                 EOT);
     }
@@ -79,7 +85,7 @@ final class LoadDataFixturesDoctrineCommand extends DoctrineCommand
         $em = $this->getDoctrine()->getManager($input->getOption('em'));
         assert($em instanceof EntityManagerInterface);
 
-        if (! $input->getOption('append')) {
+        if (! $input->getOption('dry-run') && ! $input->getOption('append')) {
             if (! $ui->confirm(sprintf('Careful, database "%s" will be purged. Do you want to continue?', $em->getConnection()->getDatabase()), ! $input->isInteractive())) {
                 return 0;
             }
@@ -111,13 +117,20 @@ final class LoadDataFixturesDoctrineCommand extends DoctrineCommand
             $factory = $this->purgerFactories[$input->getOption('purger')];
         }
 
-        $purger   = $factory->createForEntityManager(
+        $purger = $factory->createForEntityManager(
             $input->getOption('em'),
             $em,
             $input->getOption('purge-exclusions'),
             $input->getOption('purge-with-truncate'),
         );
-        $executor = new ORMExecutor($em, $purger);
+
+        if ($input->getOption('dry-run')) {
+            $ui->text('  <comment>(dry-run)</comment>');
+            $executor = new DryRunORMExecutor($em, $purger);
+        } else {
+            $executor = new ORMExecutor($em, $purger);
+        }
+
         $executor->setLogger(new class ($ui) extends AbstractLogger {
             public function __construct(private SymfonyStyle $ui)
             {

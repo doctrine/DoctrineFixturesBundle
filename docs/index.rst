@@ -299,11 +299,19 @@ You can also customize purging behavior significantly more and implement a custo
     // src/Purger/CustomPurger.php
     namespace App\Purger;
 
-    use Doctrine\Common\DataFixtures\Purger\PurgerInterface;
+    use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+    use Doctrine\Common\DataFixtures\Purger\ORMPurgerInterface;
+    use Doctrine\ORM\EntityManagerInterface;
 
-    // ...
-    class CustomPurger implements PurgerInterface
+    class CustomPurger implements ORMPurgerInterface
     {
+        private EntityManagerInterface $entityManager;
+
+        public function setEntityManager(EntityManagerInterface $em): void
+        {
+            $this->entityManager = $em;
+        }
+
         public function purge(): void
         {
             // ...
@@ -319,7 +327,7 @@ You can also customize purging behavior significantly more and implement a custo
     {
         public function createForEntityManager(?string $emName, EntityManagerInterface $em, array $excluded = [], bool $purgeWithTruncate = false) : PurgerInterface
         {
-            return new CustomPurger($em);
+            return new CustomPurger();
         }
     }
 

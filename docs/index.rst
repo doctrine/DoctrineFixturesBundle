@@ -69,7 +69,7 @@ Once your fixtures have been written, load them by executing this command:
 .. caution::
 
     By default the ``load`` command **purges the database**, removing all data
-    from every table. To append your fixtures' data add the ``--append`` option.
+    from every table. To append your fixtures' data, add the ``--append`` option.
 
 This command looks for all services tagged with ``doctrine.fixture.orm``. If you're
 using the `default service configuration`_, any class that implements ``ORMFixtureInterface``
@@ -85,7 +85,7 @@ To see other options for the command, run:
 Accessing Services from the Fixtures
 ------------------------------------
 
-In some cases you may need to access your application's services inside a fixtures
+In some cases, you may need to access your application's services inside a fixtures
 class. No problem! Your fixtures class is a service, so you can use normal dependency
 injection::
 
@@ -177,8 +177,8 @@ exact same object via its name.
     }
 
 The only caveat of using references is that fixtures need to be loaded in a
-certain order (in this example, if the ``Group`` fixtures are load before the
-``User`` fixtures, you'll see an error). By default Doctrine loads the fixture
+certain order (in this example, if the ``Group`` fixtures are loaded before the
+``User`` fixtures, you'll see an error). By default, Doctrine loads the fixture
 files in alphabetical order, but you can control their order as explained in the
 next section.
 
@@ -299,11 +299,19 @@ You can also customize purging behavior significantly more and implement a custo
     // src/Purger/CustomPurger.php
     namespace App\Purger;
 
-    use Doctrine\Common\DataFixtures\Purger\PurgerInterface;
+    use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+    use Doctrine\Common\DataFixtures\Purger\ORMPurgerInterface;
+    use Doctrine\ORM\EntityManagerInterface;
 
-    // ...
-    class CustomPurger implements PurgerInterface
+    class CustomPurger implements ORMPurgerInterface
     {
+        private EntityManagerInterface $entityManager;
+
+        public function setEntityManager(EntityManagerInterface $em): void
+        {
+            $this->entityManager = $em;
+        }
+
         public function purge(): void
         {
             // ...
@@ -319,7 +327,7 @@ You can also customize purging behavior significantly more and implement a custo
     {
         public function createForEntityManager(?string $emName, EntityManagerInterface $em, array $excluded = [], bool $purgeWithTruncate = false) : PurgerInterface
         {
-            return new CustomPurger($em);
+            return new CustomPurger();
         }
     }
 

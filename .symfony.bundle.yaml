@@ -9,6 +9,8 @@ branches:
 maintained_branches:
     - "3.7.x"
     - "4.1.x"
+    - "4.2.x"
+    - "4.3.x"
 doc_dir: "docs/"
-current_branch: "4.1.x"
-dev_branch: "4.1.x"
+current_branch: "4.2.x"
+dev_branch: "4.3.x"

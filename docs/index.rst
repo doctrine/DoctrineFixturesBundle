@@ -84,13 +84,8 @@ To see other options for the command, run:
 Accessing Services from the Fixtures
 ------------------------------------
 
-<<<<<<< HEAD
-In some cases you may need to access your application's services inside a fixtures
-class. No problem! Your fixtures class is a service, so you can use normal dependency
-=======
 In some cases, you may need to access your application's services inside a fixtures
 class. Your fixtures class is a service, so you can use normal dependency
->>>>>>> f2f1778 (Docs review)
 injection::
 
     // src/DataFixtures/AppFixtures.php

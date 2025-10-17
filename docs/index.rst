@@ -138,7 +138,7 @@ exact same object via its name.
 
 .. note::
 
-    Adding object references only works for ORM entities or ODM documents.
+    Adding object references only works for ORM entities.
 
 .. code-block:: php
 

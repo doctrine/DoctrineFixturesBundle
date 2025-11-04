@@ -25,7 +25,7 @@
     "require": {
         "php": "^8.1",
         "doctrine/data-fixtures": "^2.2",
-        "doctrine/doctrine-bundle": "^2.2 || ^3.0",
+        "doctrine/doctrine-bundle": "^2.2 || ^3.0 || ^4.0",
         "doctrine/orm": "^2.14.0 || ^3.0",
         "doctrine/persistence": "^2.4 || ^3.0 || ^4.0",
         "psr/log": "^2 || ^3",

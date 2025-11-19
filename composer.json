@@ -39,7 +39,7 @@
     "require-dev": {
         "doctrine/coding-standard": "14.0.0",
         "phpstan/phpstan": "2.1.11",
-        "phpunit/phpunit": "^10.5.38 || 11.4.14"
+        "phpunit/phpunit": "^10.5.38 || 11.4.14 || 12.4.3"
     },
     "conflict": {
         "doctrine/dbal": "< 3"

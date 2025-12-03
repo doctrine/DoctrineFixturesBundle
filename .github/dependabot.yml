@@ -8,11 +8,11 @@ updates:
     open-pull-requests-limit: 10
     labels:
       - "Dependencies"
-    target-branch: "3.7.x"
+    target-branch: "4.3.x"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     labels:
       - "CI"
-    target-branch: "3.7.x"
+    target-branch: "4.3.x"

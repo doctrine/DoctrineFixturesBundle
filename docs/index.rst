@@ -1,9 +1,8 @@
 DoctrineFixturesBundle
 ======================
 
-Fixtures are used to load a "fake" set of data into a database that can then
-be used for testing or to help give you some interesting data while you're
-developing your application.
+Fixtures are used to load a sample set of data into a database that can then
+be used for testing or to provide useful data while you're developing your application.
 
 This bundle is compatible with any database supported by `Doctrine ORM`_
 (MySQL, PostgreSQL, SQLite, etc.). If you are using MongoDB, you must use
@@ -30,8 +29,8 @@ Writing Fixtures
 Data fixtures are PHP classes where you create objects and persist them to the
 database.
 
-Imagine that you want to add some ``Product`` objects to your database. No problem!
-Create a fixtures class and start adding products::
+Imagine that you want to add some ``Product`` objects to your database. To do this,
+create a fixtures class and start adding products::
 
     // src/DataFixtures/AppFixtures.php
     namespace App\DataFixtures;
@@ -44,7 +43,7 @@ Create a fixtures class and start adding products::
     {
         public function load(ObjectManager $manager): void
         {
-            // create 20 products! Bam!
+            // create 20 products with random prices
             for ($i = 0; $i < 20; $i++) {
                 $product = new Product();
                 $product->setName('product '.$i);
@@ -86,7 +85,7 @@ Accessing Services from the Fixtures
 ------------------------------------
 
 In some cases, you may need to access your application's services inside a fixtures
-class. No problem! Your fixtures class is a service, so you can use normal dependency
+class. Your fixtures class is a service, so you can use normal dependency
 injection::
 
     // src/DataFixtures/AppFixtures.php
@@ -120,9 +119,9 @@ injection::
 Splitting Fixtures into Separate Files
 --------------------------------------
 
-In most applications, creating all your fixtures in just one class is fine.
-This class may end up being a bit long, but it's worth it because having one
-file helps keeping things simple.
+In many applications, creating all your fixtures in one class is sufficient.
+This class may become very long, but having a single file can help keep related
+things together.
 
 If you do decide to split your fixtures into separate files, Symfony helps you
 solve the two most common issues: sharing objects between fixtures and loading
@@ -138,7 +137,7 @@ exact same object via its name.
 
 .. note::
 
-    Adding object references only works for ORM entities or ODM documents.
+    Adding object references only works for ORM entities.
 
 .. code-block:: php
 
@@ -176,8 +175,8 @@ exact same object via its name.
         }
     }
 
-The only caveat of using references is that fixtures need to be loaded in a
-certain order (in this example, if the ``Group`` fixtures are loaded before the
+When using references, you must be careful about the order in which the fixtures
+are loaded (in this example, if the ``Group`` fixtures are loaded before the
 ``User`` fixtures, you'll see an error). By default, Doctrine loads the fixture
 files in alphabetical order, but you can control their order as explained in the
 next section.
@@ -283,7 +282,7 @@ fixture using the ``UserFixtures`` group:
 Specifying purging behavior
 ---------------------------
 
-By default all previously existing data is purged using ``DELETE FROM table`` statements. If you prefer to use
+By default, all previously existing data is purged using ``DELETE FROM table`` statements. If you prefer to use
 ``TRUNCATE table`` statements for purging, use ``--purge-with-truncate``.
 
 If you want to exclude a set of tables from being purged, e.g. because your schema comes with pre-populated,
@@ -386,8 +385,8 @@ With the ``--purger`` option we can now specify to use ``my_purger`` instead of 
 Loading Fixtures in Dry Run mode
 --------------------------------
 
-The ``--dry-run`` option allows you to simulate the execution of your fixtures 
-and see what would happen if they were executed, without actually applying 
+The ``--dry-run`` option allows you to simulate the execution of your fixtures
+and see what would happen if they were executed, without actually applying
 any changes to the database.
 
 This way, you can inspect the behavior of your fixtures safely, without modifying your database.
@@ -404,7 +403,7 @@ You can also combine ``--dry-run`` with other options such as ``--append`` or ``
 
 .. note::
 
-    When using ``--dry-run`` option, all persisting operations are skipped.  
+    When using ``--dry-run`` option, all persisting operations are skipped.
     The fixtures will be processed, and any logging or output will behave as usual,
     but no database changes will occur.
 

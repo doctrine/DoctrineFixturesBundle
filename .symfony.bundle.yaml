@@ -10,7 +10,6 @@ branches:
     - "4.3.x"
     - "4.4.x"
 maintained_branches:
-    - "3.7.x"
     - "4.3.x"
     - "4.4.x"
 doc_dir: "docs/"

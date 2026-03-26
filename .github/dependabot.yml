@@ -16,3 +16,7 @@ updates:
     labels:
       - "CI"
     target-branch: "4.3.x"
+    groups:
+      doctrine:
+        patterns:
+          - "doctrine/*"

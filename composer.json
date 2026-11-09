@@ -38,7 +38,7 @@
     },
     "require-dev": {
         "doctrine/coding-standard": "14.0.0",
-        "phpstan/phpstan": "2.3.4",
+        "phpstan/phpstan": "2.3.5",
         "phpunit/phpunit": "^10.5.66 || 11.5.57"
     },
     "conflict": {
